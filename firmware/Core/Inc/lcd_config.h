@@ -49,7 +49,7 @@
 #define DEV_RST_PIN RST_Screen_Pin
 #define DEV_DC_PIN  DC_Screen_Pin
 #define DEV_CS_PIN	CS_S_Pin
-#define DEV_BL_PIN	TIM3->CCR2
+#define DEV_BL_PIN	TIM1->CCR2
 
 /**
  * GPIO read and write
