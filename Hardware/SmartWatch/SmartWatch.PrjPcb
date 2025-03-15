@@ -135,7 +135,7 @@ GenerateClassCluster=0
 DocumentUniqueId=RVMWEDUH
 
 [Document6]
-DocumentPath=..\..\..\..\..\..\Downloads\AZ1117CH2_3_3TRG1\AltiumDesigner\InputPower.SchDoc
+DocumentPath=..\..\..\..\..\..\Downloads\AZ1117CH2_3_3TRG1\AltiumDesigner\LDOs.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
