@@ -135,7 +135,7 @@ GenerateClassCluster=0
 DocumentUniqueId=RVMWEDUH
 
 [Document6]
-DocumentPath=..\..\..\..\..\..\Downloads\AZ1117CH2_3_3TRG1\AltiumDesigner\LDOs.SchDoc
+DocumentPath=LDOs.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -167,6 +167,23 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=OYPGNAAE
+
+[Document8]
+DocumentPath=Smart_Watch.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=GPIPJDTR
 
 [Configuration1]
 Name=Sources
