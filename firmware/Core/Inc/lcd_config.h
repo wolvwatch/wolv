@@ -33,10 +33,10 @@
 #define _DEV_CONFIG_H_
 
 #include "stm32l4xx_hal.h"
+#include "stm32l4xx_hal_spi.h"
+#include "stm32l4xx_hal_tim.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "spi.h"
-#include "tim.h"
 #include "main.h"
 
 #define UBYTE   uint8_t
@@ -49,7 +49,7 @@
 #define DEV_RST_PIN RST_Screen_Pin
 #define DEV_DC_PIN  DC_Screen_Pin
 #define DEV_CS_PIN	CS_S_Pin
-#define DEV_BL_PIN	TIM3->CCR2
+#define DEV_BL_PIN	TIM1->CCR2
 
 /**
  * GPIO read and write

@@ -303,7 +303,7 @@ static void LCD_1IN28_InitReg(void)
 	LCD_1IN28_SendData_8Bit(0x4E);
 	LCD_1IN28_SendData_8Bit(0x00);
 
-  LCD_1IN28_SendCommand(0x98);
+    LCD_1IN28_SendCommand(0x98);
 	LCD_1IN28_SendData_8Bit(0x3e);
 	LCD_1IN28_SendData_8Bit(0x07);
 

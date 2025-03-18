@@ -53,7 +53,7 @@ int DEV_Module_Init(void)
     DEV_Digital_Write(DEV_CS_PIN, 1);
     DEV_Digital_Write(DEV_RST_PIN, 1);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-		return 0;
+	return 0;
 }
 
 void DEV_Module_Exit(void)
