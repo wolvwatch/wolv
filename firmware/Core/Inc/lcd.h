@@ -39,8 +39,9 @@ void screen_init(uint8_t scan_dir);
 void screen_clear(uint16_t Color);
 void screen_display(uint16_t *Image);
 void screen_display_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uint8_t Yend, uint8_t *Image);
-void screen_display_point(uint16_t X, uint16_t Y, uint16_t Color);
+void screen_set_point(uint16_t x, uint16_t y, uint16_t color);
 
 void screen_draw_paint(uint16_t x, uint16_t y, uint16_t Color);
 void screen_set_backlight(uint16_t Value);
+void screen_render();
 #endif

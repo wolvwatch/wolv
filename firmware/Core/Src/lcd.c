@@ -27,6 +27,54 @@
 LCD_1IN28_ATTRIBUTES LCD_1IN28;
 extern SPI_HandleTypeDef hspi1;
 
+uint8_t delta_modified = 0;
+uint16_t dt_x_min;
+uint16_t dt_x_max;
+uint16_t dt_y_min;
+uint16_t dt_y_max;
+
+uint16_t pixels[LCD_1IN28_HEIGHT][LCD_1IN28_WIDTH] = {};
+
+static void _update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t max_y) {
+	if (!delta_modified || min_x < dt_x_min) dt_x_min = min_x;
+	if (!delta_modified || max_x > dt_x_max) dt_x_max = max_x;
+	if (!delta_modified || min_y < dt_y_min) dt_y_min = min_y;
+	if (!delta_modified || max_y > dt_y_max) dt_y_max = max_y;
+	delta_modified = 1;
+}
+
+void screen_render() {
+	uint16_t y_diff = dt_y_max - dt_y_min + 1;
+	uint16_t x_diff = dt_x_max - dt_x_min + 1;
+	uint32_t n_pix = y_diff * x_diff;
+
+	int index = 0;
+	uint16_t buf[n_pix] = {};
+	for (int i = dt_y_min; i <= dt_y_max; i++) {
+		for (int j = dt_x_min; j <= dt_x_max; j++) buf[index++] = pixels[i][j];
+	}
+
+	screen_set_windows(dt_x_min, dt_y_min, dt_x_max, dt_y_max);
+    SET_DC_HIGH;
+    SET_CS_LOW;
+	uint32_t bytes_remaining = n_pix * 2;
+	uint32_t offset = 0;
+	while (bytes_remaining > 0) {
+		if (bytes_remaining > 60000) {
+			HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + offset, 60000, HAL_MAX_DELAY);
+			offset += 60000;
+			bytes_remaining -= 60000;
+		} else {
+			HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + offset, bytes_remaining, HAL_MAX_DELAY);
+			bytes_remaining = 0;
+		}
+	}
+    SET_DC_LOW;
+    SET_CS_HIGH;
+
+
+	delta_modified = 0;
+}
 /******************************************************************************
  function :	Hardware reset
  parameter:
@@ -390,19 +438,17 @@ void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend,
  parameter:
  ******************************************************************************/
 void screen_clear(uint16_t color) {
-	uint16_t buf[240*240];
-
-	for (uint16_t i = 0; i < 240*240; i++) {
-		buf[i] = color;
+	for (int i = 0; i < 240; i++) {
+		for (int j = 0; j < 240; j++) {
+			pixels[i][j] = color;
+		}
 	}
+	_update_delta(0, 0, 239, 239);
+}
 
-    screen_set_windows(0, 0, 240-1, 240-1);
-    SET_DC_HIGH;
-    SET_CS_LOW;
-    HAL_SPI_Transmit(&hspi1, (uint8_t*) buf, 60000, HAL_MAX_DELAY);
-    HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + 60000, (240*240*2-60000), HAL_MAX_DELAY);
-    SET_DC_LOW;
-    SET_CS_HIGH;
+void screen_set_point(uint16_t x, uint16_t y, uint16_t color) {
+	pixels[y][x] = color;
+	_update_delta(x, y, x, y);
 }
 
 
@@ -447,8 +493,8 @@ void screen_display_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend,
  Color :	Set the color
  ******************************************************************************/
 void screen_draw_paint(uint16_t x, uint16_t y, uint16_t Color) {
-	//screen_set_windows(x,y,x,y);
-	//LCD_1IN28_SendData_16Bit(Color);
+	screen_set_windows(x,y,x,y);
+	LCD_1IN28_SendData_16Bit(Color);
 }
 
 /*******************************************************************************
@@ -460,4 +506,3 @@ void screen_draw_paint(uint16_t x, uint16_t y, uint16_t Color) {
 void LCD_1IN28_SetBackLight(uint16_t Value) {
 	//DEV_Set_PWM(Value);
 }
-

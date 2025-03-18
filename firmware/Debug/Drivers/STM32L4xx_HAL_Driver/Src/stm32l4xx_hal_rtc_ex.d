@@ -1,5 +1,5 @@
-Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o: \
- ../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
+Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rtc_ex.o: \
+ ../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rtc_ex.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
