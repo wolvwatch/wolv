@@ -1,0 +1,13 @@
+../Core/Src/lcd.c:34:13:screen_reset	8	static
+../Core/Src/lcd.c:48:13:LCD_1IN28_SendCommand	24	static
+../Core/Src/lcd.c:61:13:LCD_1IN28_SendData_8Bit	24	static
+../Core/Src/lcd.c:74:13:LCD_1IN28_SendData_16Bit	24	static
+../Core/Src/lcd.c:86:13:LCD_1IN28_InitReg	8	static
+../Core/Src/lcd.c:324:13:LCD_1IN28_SetAttributes	24	static
+../Core/Src/lcd.c:349:6:screen_init	16	static
+../Core/Src/lcd.c:369:6:screen_set_windows	24	static
+../Core/Src/lcd.c:392:6:screen_clear	115224	static
+../Core/Src/lcd.c:413:6:screen_display	115224	static
+../Core/Src/lcd.c:425:6:screen_display_windows	32	static
+../Core/Src/lcd.c:449:6:screen_draw_paint	16	static
+../Core/Src/lcd.c:460:6:LCD_1IN28_SetBackLight	16	static
