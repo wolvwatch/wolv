@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   00011079  00000000  00000000  0005bbf3  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    001066b1  00000000  00000000  0006cc6c  2**0
+ 18 .debug_str    001066e4  00000000  00000000  0006cc6c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0017331d  2**0
+ 19 .comment      00000043  00000000  00000000  00173350  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000564c  00000000  00000000  00173360  2**2
+ 20 .debug_frame  0000564c  00000000  00000000  00173394  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000005b  00000000  00000000  001789ac  2**0
+ 21 .debug_line_str 0000005b  00000000  00000000  001789e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1051,12 +1051,6 @@ Disassembly of section .text:
  8000d20:	41f00000 	.word	0x41f00000
 
 08000d24 <Paint_NewImage>:
- width   :   The width of the picture
- Height  :   The height of the picture
- Color   :   Whether the picture is inverted
- ******************************************************************************/
-void Paint_NewImage(uint16_t Width, uint16_t Height, uint16_t Rotate,
-		uint16_t Color) {
  8000d24:	b590      	push	{r4, r7, lr}
  8000d26:	b083      	sub	sp, #12
  8000d28:	af00      	add	r7, sp, #0
@@ -1072,76 +1066,56 @@ void Paint_NewImage(uint16_t Width, uint16_t Height, uint16_t Rotate,
  8000d3c:	807b      	strh	r3, [r7, #2]
  8000d3e:	4613      	mov	r3, r2
  8000d40:	803b      	strh	r3, [r7, #0]
-	Paint.WidthMemory = Width;
  8000d42:	4a1c      	ldr	r2, [pc, #112]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d44:	88fb      	ldrh	r3, [r7, #6]
  8000d46:	8113      	strh	r3, [r2, #8]
-	Paint.HeightMemory = Height;
  8000d48:	4a1a      	ldr	r2, [pc, #104]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d4a:	88bb      	ldrh	r3, [r7, #4]
  8000d4c:	8153      	strh	r3, [r2, #10]
-	Paint.Color = Color;
  8000d4e:	4a19      	ldr	r2, [pc, #100]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d50:	883b      	ldrh	r3, [r7, #0]
  8000d52:	8193      	strh	r3, [r2, #12]
-	Paint.WidthByte = Width;
  8000d54:	4a17      	ldr	r2, [pc, #92]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d56:	88fb      	ldrh	r3, [r7, #6]
  8000d58:	8253      	strh	r3, [r2, #18]
-	Paint.HeightByte = Height;
  8000d5a:	4a16      	ldr	r2, [pc, #88]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d5c:	88bb      	ldrh	r3, [r7, #4]
  8000d5e:	8293      	strh	r3, [r2, #20]
-	printf("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte,
  8000d60:	4b14      	ldr	r3, [pc, #80]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d62:	8a5b      	ldrh	r3, [r3, #18]
  8000d64:	b29b      	uxth	r3, r3
  8000d66:	4619      	mov	r1, r3
-			Paint.HeightByte);
  8000d68:	4b12      	ldr	r3, [pc, #72]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d6a:	8a9b      	ldrh	r3, [r3, #20]
  8000d6c:	b29b      	uxth	r3, r3
-	printf("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte,
  8000d6e:	461a      	mov	r2, r3
  8000d70:	4811      	ldr	r0, [pc, #68]	@ (8000db8 <Paint_NewImage+0x94>)
  8000d72:	f005 fbc5 	bl	8006500 <iprintf>
-
-	Paint.Rotate = Rotate;
  8000d76:	4a0f      	ldr	r2, [pc, #60]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d78:	887b      	ldrh	r3, [r7, #2]
  8000d7a:	81d3      	strh	r3, [r2, #14]
-	Paint.Mirror = MIRROR_NONE;
  8000d7c:	4b0d      	ldr	r3, [pc, #52]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d7e:	2200      	movs	r2, #0
  8000d80:	821a      	strh	r2, [r3, #16]
-
-	if (Rotate == ROTATE_0 || Rotate == ROTATE_180) {
  8000d82:	887b      	ldrh	r3, [r7, #2]
  8000d84:	2b00      	cmp	r3, #0
  8000d86:	d002      	beq.n	8000d8e <Paint_NewImage+0x6a>
  8000d88:	887b      	ldrh	r3, [r7, #2]
  8000d8a:	2bb4      	cmp	r3, #180	@ 0xb4
  8000d8c:	d106      	bne.n	8000d9c <Paint_NewImage+0x78>
-		Paint.Width = Width;
  8000d8e:	4a09      	ldr	r2, [pc, #36]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d90:	88fb      	ldrh	r3, [r7, #6]
  8000d92:	8093      	strh	r3, [r2, #4]
-		Paint.Height = Height;
  8000d94:	4a07      	ldr	r2, [pc, #28]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d96:	88bb      	ldrh	r3, [r7, #4]
  8000d98:	80d3      	strh	r3, [r2, #6]
  8000d9a:	e006      	b.n	8000daa <Paint_NewImage+0x86>
-	} else {
-		Paint.Width = Height;
  8000d9c:	4a05      	ldr	r2, [pc, #20]	@ (8000db4 <Paint_NewImage+0x90>)
  8000d9e:	88bb      	ldrh	r3, [r7, #4]
  8000da0:	8093      	strh	r3, [r2, #4]
-		Paint.Height = Width;
  8000da2:	4a04      	ldr	r2, [pc, #16]	@ (8000db4 <Paint_NewImage+0x90>)
  8000da4:	88fb      	ldrh	r3, [r7, #6]
  8000da6:	80d3      	strh	r3, [r2, #6]
-	}
-}
  8000da8:	bf00      	nop
  8000daa:	bf00      	nop
  8000dac:	370c      	adds	r7, #12
@@ -1152,21 +1126,13 @@ void Paint_NewImage(uint16_t Width, uint16_t Height, uint16_t Rotate,
  8000db8:	08009d18 	.word	0x08009d18
 
 08000dbc <Paint_SetDisplayFunction>:
-/******************************************************************************
- function:	Select DisplayF untion
- parameter:
- Display :   Pointer to display funtion
- ******************************************************************************/
-void Paint_SetDisplayFunction(void (*Display)(uint16_t, uint16_t, uint16_t)) {
  8000dbc:	b480      	push	{r7}
  8000dbe:	b083      	sub	sp, #12
  8000dc0:	af00      	add	r7, sp, #0
  8000dc2:	6078      	str	r0, [r7, #4]
-	DISPLAY = Display;
  8000dc4:	4a04      	ldr	r2, [pc, #16]	@ (8000dd8 <Paint_SetDisplayFunction+0x1c>)
  8000dc6:	687b      	ldr	r3, [r7, #4]
  8000dc8:	6013      	str	r3, [r2, #0]
-}
  8000dca:	bf00      	nop
  8000dcc:	370c      	adds	r7, #12
  8000dce:	46bd      	mov	sp, r7
@@ -1176,12 +1142,6 @@ void Paint_SetDisplayFunction(void (*Display)(uint16_t, uint16_t, uint16_t)) {
  8000dd8:	20040208 	.word	0x20040208
 
 08000ddc <Paint_SetPixel>:
- parameter:
- Xpoint  :   At point X
- Ypoint  :   At point Y
- Color   :   Painted colors
- ******************************************************************************/
-void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000ddc:	b580      	push	{r7, lr}
  8000dde:	b084      	sub	sp, #16
  8000de0:	af00      	add	r7, sp, #0
@@ -1191,7 +1151,6 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000de8:	80bb      	strh	r3, [r7, #4]
  8000dea:	4613      	mov	r3, r2
  8000dec:	807b      	strh	r3, [r7, #2]
-	if (Xpoint > Paint.Width || Ypoint > Paint.Height) {
  8000dee:	4b50      	ldr	r3, [pc, #320]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000df0:	889b      	ldrh	r3, [r3, #4]
  8000df2:	b29b      	uxth	r3, r3
@@ -1204,15 +1163,9 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e00:	88ba      	ldrh	r2, [r7, #4]
  8000e02:	429a      	cmp	r2, r3
  8000e04:	d903      	bls.n	8000e0e <Paint_SetPixel+0x32>
-		Debug("Exceeding display boundaries\r\n");
  8000e06:	484b      	ldr	r0, [pc, #300]	@ (8000f34 <Paint_SetPixel+0x158>)
  8000e08:	f005 fbe2 	bl	80065d0 <puts>
-		return;
  8000e0c:	e08c      	b.n	8000f28 <Paint_SetPixel+0x14c>
-	}
-	uint16_t X, Y;
-
-	switch (Paint.Rotate) {
  8000e0e:	4b48      	ldr	r3, [pc, #288]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e10:	89db      	ldrh	r3, [r3, #14]
  8000e12:	b29b      	uxth	r3, r3
@@ -1228,22 +1181,12 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e2c:	d002      	beq.n	8000e34 <Paint_SetPixel+0x58>
  8000e2e:	2b5a      	cmp	r3, #90	@ 0x5a
  8000e30:	d005      	beq.n	8000e3e <Paint_SetPixel+0x62>
-		X = Ypoint;
-		Y = Paint.HeightMemory - Xpoint - 1;
-		break;
-
-	default:
-		return;
  8000e32:	e076      	b.n	8000f22 <Paint_SetPixel+0x146>
-		X = Xpoint;
  8000e34:	88fb      	ldrh	r3, [r7, #6]
  8000e36:	81fb      	strh	r3, [r7, #14]
-		Y = Ypoint;
  8000e38:	88bb      	ldrh	r3, [r7, #4]
  8000e3a:	81bb      	strh	r3, [r7, #12]
-		break;
  8000e3c:	e026      	b.n	8000e8c <Paint_SetPixel+0xb0>
-		X = Paint.WidthMemory - Ypoint - 1;
  8000e3e:	4b3c      	ldr	r3, [pc, #240]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e40:	891b      	ldrh	r3, [r3, #8]
  8000e42:	b29a      	uxth	r2, r3
@@ -1252,12 +1195,9 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e48:	b29b      	uxth	r3, r3
  8000e4a:	3b01      	subs	r3, #1
  8000e4c:	81fb      	strh	r3, [r7, #14]
-		Y = Xpoint;
  8000e4e:	88fb      	ldrh	r3, [r7, #6]
  8000e50:	81bb      	strh	r3, [r7, #12]
-		break;
  8000e52:	e01b      	b.n	8000e8c <Paint_SetPixel+0xb0>
-		X = Paint.WidthMemory - Xpoint - 1;
  8000e54:	4b36      	ldr	r3, [pc, #216]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e56:	891b      	ldrh	r3, [r3, #8]
  8000e58:	b29a      	uxth	r2, r3
@@ -1266,7 +1206,6 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e5e:	b29b      	uxth	r3, r3
  8000e60:	3b01      	subs	r3, #1
  8000e62:	81fb      	strh	r3, [r7, #14]
-		Y = Paint.HeightMemory - Ypoint - 1;
  8000e64:	4b32      	ldr	r3, [pc, #200]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e66:	895b      	ldrh	r3, [r3, #10]
  8000e68:	b29a      	uxth	r2, r3
@@ -1275,12 +1214,9 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e6e:	b29b      	uxth	r3, r3
  8000e70:	3b01      	subs	r3, #1
  8000e72:	81bb      	strh	r3, [r7, #12]
-		break;
  8000e74:	e00a      	b.n	8000e8c <Paint_SetPixel+0xb0>
-		X = Ypoint;
  8000e76:	88bb      	ldrh	r3, [r7, #4]
  8000e78:	81fb      	strh	r3, [r7, #14]
-		Y = Paint.HeightMemory - Xpoint - 1;
  8000e7a:	4b2d      	ldr	r3, [pc, #180]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e7c:	895b      	ldrh	r3, [r3, #10]
  8000e7e:	b29a      	uxth	r2, r3
@@ -1289,11 +1225,7 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000e84:	b29b      	uxth	r3, r3
  8000e86:	3b01      	subs	r3, #1
  8000e88:	81bb      	strh	r3, [r7, #12]
-		break;
  8000e8a:	bf00      	nop
-	}
-
-	switch (Paint.Mirror) {
  8000e8c:	4b28      	ldr	r3, [pc, #160]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000e8e:	8a1b      	ldrh	r3, [r3, #16]
  8000e90:	b29b      	uxth	r3, r3
@@ -1305,10 +1237,6 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000ea0:	08000ead 	.word	0x08000ead
  8000ea4:	08000ebf 	.word	0x08000ebf
  8000ea8:	08000ed1 	.word	0x08000ed1
-	case MIRROR_NONE:
-		break;
-	case MIRROR_HORIZONTAL:
-		X = Paint.WidthMemory - X - 1;
  8000eac:	4b20      	ldr	r3, [pc, #128]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000eae:	891b      	ldrh	r3, [r3, #8]
  8000eb0:	b29a      	uxth	r2, r3
@@ -1317,10 +1245,7 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000eb6:	b29b      	uxth	r3, r3
  8000eb8:	3b01      	subs	r3, #1
  8000eba:	81fb      	strh	r3, [r7, #14]
-		break;
  8000ebc:	e01a      	b.n	8000ef4 <Paint_SetPixel+0x118>
-	case MIRROR_VERTICAL:
-		Y = Paint.HeightMemory - Y - 1;
  8000ebe:	4b1c      	ldr	r3, [pc, #112]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000ec0:	895b      	ldrh	r3, [r3, #10]
  8000ec2:	b29a      	uxth	r2, r3
@@ -1329,10 +1254,7 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000ec8:	b29b      	uxth	r3, r3
  8000eca:	3b01      	subs	r3, #1
  8000ecc:	81bb      	strh	r3, [r7, #12]
-		break;
  8000ece:	e011      	b.n	8000ef4 <Paint_SetPixel+0x118>
-	case MIRROR_ORIGIN:
-		X = Paint.WidthMemory - X - 1;
  8000ed0:	4b17      	ldr	r3, [pc, #92]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000ed2:	891b      	ldrh	r3, [r3, #8]
  8000ed4:	b29a      	uxth	r2, r3
@@ -1341,7 +1263,6 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000eda:	b29b      	uxth	r3, r3
  8000edc:	3b01      	subs	r3, #1
  8000ede:	81fb      	strh	r3, [r7, #14]
-		Y = Paint.HeightMemory - Y - 1;
  8000ee0:	4b13      	ldr	r3, [pc, #76]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000ee2:	895b      	ldrh	r3, [r3, #10]
  8000ee4:	b29a      	uxth	r2, r3
@@ -1350,16 +1271,8 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000eea:	b29b      	uxth	r3, r3
  8000eec:	3b01      	subs	r3, #1
  8000eee:	81bb      	strh	r3, [r7, #12]
-		break;
  8000ef0:	e000      	b.n	8000ef4 <Paint_SetPixel+0x118>
-		break;
  8000ef2:	bf00      	nop
-	default:
-		return;
-	}
-
-	// printf("x = %d, y = %d\r\n", X, Y);
-	if (X > Paint.WidthMemory || Y > Paint.HeightMemory) {
  8000ef4:	4b0e      	ldr	r3, [pc, #56]	@ (8000f30 <Paint_SetPixel+0x154>)
  8000ef6:	891b      	ldrh	r3, [r3, #8]
  8000ef8:	b29b      	uxth	r3, r3
@@ -1372,15 +1285,9 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000f06:	89ba      	ldrh	r2, [r7, #12]
  8000f08:	429a      	cmp	r2, r3
  8000f0a:	d903      	bls.n	8000f14 <Paint_SetPixel+0x138>
-		Debug("Exceeding display boundaries\r\n");
  8000f0c:	4809      	ldr	r0, [pc, #36]	@ (8000f34 <Paint_SetPixel+0x158>)
  8000f0e:	f005 fb5f 	bl	80065d0 <puts>
-		return;
  8000f12:	e009      	b.n	8000f28 <Paint_SetPixel+0x14c>
-	}
-
-	// UDOUBLE Addr = X / 8 + Y * Paint.WidthByte;
-	DISPLAY(X, Y, Color);
  8000f14:	4b08      	ldr	r3, [pc, #32]	@ (8000f38 <Paint_SetPixel+0x15c>)
  8000f16:	681b      	ldr	r3, [r3, #0]
  8000f18:	887a      	ldrh	r2, [r7, #2]
@@ -1388,12 +1295,9 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000f1c:	89f8      	ldrh	r0, [r7, #14]
  8000f1e:	4798      	blx	r3
  8000f20:	e002      	b.n	8000f28 <Paint_SetPixel+0x14c>
-		return;
  8000f22:	bf00      	nop
  8000f24:	e000      	b.n	8000f28 <Paint_SetPixel+0x14c>
-		return;
  8000f26:	bf00      	nop
-}
  8000f28:	3710      	adds	r7, #16
  8000f2a:	46bd      	mov	sp, r7
  8000f2c:	bd80      	pop	{r7, pc}
@@ -1403,12 +1307,6 @@ void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color) {
  8000f38:	20040208 	.word	0x20040208
 
 08000f3c <draw_img_c>:
-			}
-		}
-	}
-}
-
-void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000f3c:	b082      	sub	sp, #8
  8000f3e:	b580      	push	{r7, lr}
  8000f40:	b086      	sub	sp, #24
@@ -1419,15 +1317,12 @@ void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000f4e:	71fb      	strb	r3, [r7, #7]
  8000f50:	460b      	mov	r3, r1
  8000f52:	71bb      	strb	r3, [r7, #6]
-	for (int i = 0; i < img.height; i++) {
  8000f54:	2300      	movs	r3, #0
  8000f56:	617b      	str	r3, [r7, #20]
  8000f58:	e02b      	b.n	8000fb2 <draw_img_c+0x76>
-		for (int j = 0; j < img.width; j++) {
  8000f5a:	2300      	movs	r3, #0
  8000f5c:	613b      	str	r3, [r7, #16]
  8000f5e:	e020      	b.n	8000fa2 <draw_img_c+0x66>
-			uint16_t word_idx = i * img.width + j;
  8000f60:	8cba      	ldrh	r2, [r7, #36]	@ 0x24
  8000f62:	697b      	ldr	r3, [r7, #20]
  8000f64:	b29b      	uxth	r3, r3
@@ -1437,7 +1332,6 @@ void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000f6e:	b29b      	uxth	r3, r3
  8000f70:	4413      	add	r3, r2
  8000f72:	81fb      	strh	r3, [r7, #14]
-			Paint_SetPixel(j + x, i + y, img.data[word_idx]);
  8000f74:	79fb      	ldrb	r3, [r7, #7]
  8000f76:	b29a      	uxth	r2, r3
  8000f78:	693b      	ldr	r3, [r7, #16]
@@ -1457,7 +1351,6 @@ void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000f94:	881b      	ldrh	r3, [r3, #0]
  8000f96:	461a      	mov	r2, r3
  8000f98:	f7ff ff20 	bl	8000ddc <Paint_SetPixel>
-		for (int j = 0; j < img.width; j++) {
  8000f9c:	693b      	ldr	r3, [r7, #16]
  8000f9e:	3301      	adds	r3, #1
  8000fa0:	613b      	str	r3, [r7, #16]
@@ -1466,7 +1359,6 @@ void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000fa6:	693b      	ldr	r3, [r7, #16]
  8000fa8:	4293      	cmp	r3, r2
  8000faa:	dbd9      	blt.n	8000f60 <draw_img_c+0x24>
-	for (int i = 0; i < img.height; i++) {
  8000fac:	697b      	ldr	r3, [r7, #20]
  8000fae:	3301      	adds	r3, #1
  8000fb0:	617b      	str	r3, [r7, #20]
@@ -1475,9 +1367,6 @@ void draw_img_c(uint8_t x, uint8_t y, tImage img) {
  8000fb6:	697b      	ldr	r3, [r7, #20]
  8000fb8:	4293      	cmp	r3, r2
  8000fba:	dbce      	blt.n	8000f5a <draw_img_c+0x1e>
-		}
-	}
-}
  8000fbc:	bf00      	nop
  8000fbe:	bf00      	nop
  8000fc0:	3718      	adds	r7, #24
@@ -4655,82 +4544,51 @@ void SysTick_Handler(void)
  8002364:	bd80      	pop	{r7, pc}
 
 08002366 <_getpid>:
-void initialise_monitor_handles()
-{
-}
-
-int _getpid(void)
-{
  8002366:	b480      	push	{r7}
  8002368:	af00      	add	r7, sp, #0
-  return 1;
  800236a:	2301      	movs	r3, #1
-}
  800236c:	4618      	mov	r0, r3
  800236e:	46bd      	mov	sp, r7
  8002370:	f85d 7b04 	ldr.w	r7, [sp], #4
  8002374:	4770      	bx	lr
 
 08002376 <_kill>:
-
-int _kill(int pid, int sig)
-{
  8002376:	b580      	push	{r7, lr}
  8002378:	b082      	sub	sp, #8
  800237a:	af00      	add	r7, sp, #0
  800237c:	6078      	str	r0, [r7, #4]
  800237e:	6039      	str	r1, [r7, #0]
-  (void)pid;
-  (void)sig;
-  errno = EINVAL;
  8002380:	f004 fa8a 	bl	8006898 <__errno>
  8002384:	4603      	mov	r3, r0
  8002386:	2216      	movs	r2, #22
  8002388:	601a      	str	r2, [r3, #0]
-  return -1;
  800238a:	f04f 33ff 	mov.w	r3, #4294967295
-}
  800238e:	4618      	mov	r0, r3
  8002390:	3708      	adds	r7, #8
  8002392:	46bd      	mov	sp, r7
  8002394:	bd80      	pop	{r7, pc}
 
 08002396 <_exit>:
-
-void _exit (int status)
-{
  8002396:	b580      	push	{r7, lr}
  8002398:	b082      	sub	sp, #8
  800239a:	af00      	add	r7, sp, #0
  800239c:	6078      	str	r0, [r7, #4]
-  _kill(status, -1);
  800239e:	f04f 31ff 	mov.w	r1, #4294967295
  80023a2:	6878      	ldr	r0, [r7, #4]
  80023a4:	f7ff ffe7 	bl	8002376 <_kill>
-  while (1) {}    /* Make sure we hang here */
  80023a8:	bf00      	nop
  80023aa:	e7fd      	b.n	80023a8 <_exit+0x12>
 
 080023ac <_read>:
-}
-
-__attribute__((weak)) int _read(int file, char *ptr, int len)
-{
  80023ac:	b580      	push	{r7, lr}
  80023ae:	b086      	sub	sp, #24
  80023b0:	af00      	add	r7, sp, #0
  80023b2:	60f8      	str	r0, [r7, #12]
  80023b4:	60b9      	str	r1, [r7, #8]
  80023b6:	607a      	str	r2, [r7, #4]
-  (void)file;
-  int DataIdx;
-
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
  80023b8:	2300      	movs	r3, #0
  80023ba:	617b      	str	r3, [r7, #20]
  80023bc:	e00a      	b.n	80023d4 <_read+0x28>
-  {
-    *ptr++ = __io_getchar();
  80023be:	f3af 8000 	nop.w
  80023c2:	4601      	mov	r1, r0
  80023c4:	68bb      	ldr	r3, [r7, #8]
@@ -4738,7 +4596,6 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
  80023c8:	60ba      	str	r2, [r7, #8]
  80023ca:	b2ca      	uxtb	r2, r1
  80023cc:	701a      	strb	r2, [r3, #0]
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
  80023ce:	697b      	ldr	r3, [r7, #20]
  80023d0:	3301      	adds	r3, #1
  80023d2:	617b      	str	r3, [r7, #20]
@@ -4746,42 +4603,28 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
  80023d6:	687b      	ldr	r3, [r7, #4]
  80023d8:	429a      	cmp	r2, r3
  80023da:	dbf0      	blt.n	80023be <_read+0x12>
-  }
-
-  return len;
  80023dc:	687b      	ldr	r3, [r7, #4]
-}
  80023de:	4618      	mov	r0, r3
  80023e0:	3718      	adds	r7, #24
  80023e2:	46bd      	mov	sp, r7
  80023e4:	bd80      	pop	{r7, pc}
 
 080023e6 <_write>:
-
-__attribute__((weak)) int _write(int file, char *ptr, int len)
-{
  80023e6:	b580      	push	{r7, lr}
  80023e8:	b086      	sub	sp, #24
  80023ea:	af00      	add	r7, sp, #0
  80023ec:	60f8      	str	r0, [r7, #12]
  80023ee:	60b9      	str	r1, [r7, #8]
  80023f0:	607a      	str	r2, [r7, #4]
-  (void)file;
-  int DataIdx;
-
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
  80023f2:	2300      	movs	r3, #0
  80023f4:	617b      	str	r3, [r7, #20]
  80023f6:	e009      	b.n	800240c <_write+0x26>
-  {
-    __io_putchar(*ptr++);
  80023f8:	68bb      	ldr	r3, [r7, #8]
  80023fa:	1c5a      	adds	r2, r3, #1
  80023fc:	60ba      	str	r2, [r7, #8]
  80023fe:	781b      	ldrb	r3, [r3, #0]
  8002400:	4618      	mov	r0, r3
  8002402:	f3af 8000 	nop.w
-  for (DataIdx = 0; DataIdx < len; DataIdx++)
  8002406:	697b      	ldr	r3, [r7, #20]
  8002408:	3301      	adds	r3, #1
  800240a:	617b      	str	r3, [r7, #20]
@@ -4789,27 +4632,18 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
  800240e:	687b      	ldr	r3, [r7, #4]
  8002410:	429a      	cmp	r2, r3
  8002412:	dbf1      	blt.n	80023f8 <_write+0x12>
-  }
-  return len;
  8002414:	687b      	ldr	r3, [r7, #4]
-}
  8002416:	4618      	mov	r0, r3
  8002418:	3718      	adds	r7, #24
  800241a:	46bd      	mov	sp, r7
  800241c:	bd80      	pop	{r7, pc}
 
 0800241e <_close>:
-
-int _close(int file)
-{
  800241e:	b480      	push	{r7}
  8002420:	b083      	sub	sp, #12
  8002422:	af00      	add	r7, sp, #0
  8002424:	6078      	str	r0, [r7, #4]
-  (void)file;
-  return -1;
  8002426:	f04f 33ff 	mov.w	r3, #4294967295
-}
  800242a:	4618      	mov	r0, r3
  800242c:	370c      	adds	r7, #12
  800242e:	46bd      	mov	sp, r7
@@ -4817,23 +4651,15 @@ int _close(int file)
  8002434:	4770      	bx	lr
 
 08002436 <_fstat>:
-
-
-int _fstat(int file, struct stat *st)
-{
  8002436:	b480      	push	{r7}
  8002438:	b083      	sub	sp, #12
  800243a:	af00      	add	r7, sp, #0
  800243c:	6078      	str	r0, [r7, #4]
  800243e:	6039      	str	r1, [r7, #0]
-  (void)file;
-  st->st_mode = S_IFCHR;
  8002440:	683b      	ldr	r3, [r7, #0]
  8002442:	f44f 5200 	mov.w	r2, #8192	@ 0x2000
  8002446:	605a      	str	r2, [r3, #4]
-  return 0;
  8002448:	2300      	movs	r3, #0
-}
  800244a:	4618      	mov	r0, r3
  800244c:	370c      	adds	r7, #12
  800244e:	46bd      	mov	sp, r7
@@ -4841,17 +4667,11 @@ int _fstat(int file, struct stat *st)
  8002454:	4770      	bx	lr
 
 08002456 <_isatty>:
-
-int _isatty(int file)
-{
  8002456:	b480      	push	{r7}
  8002458:	b083      	sub	sp, #12
  800245a:	af00      	add	r7, sp, #0
  800245c:	6078      	str	r0, [r7, #4]
-  (void)file;
-  return 1;
  800245e:	2301      	movs	r3, #1
-}
  8002460:	4618      	mov	r0, r3
  8002462:	370c      	adds	r7, #12
  8002464:	46bd      	mov	sp, r7
@@ -4859,21 +4679,13 @@ int _isatty(int file)
  800246a:	4770      	bx	lr
 
 0800246c <_lseek>:
-
-int _lseek(int file, int ptr, int dir)
-{
  800246c:	b480      	push	{r7}
  800246e:	b085      	sub	sp, #20
  8002470:	af00      	add	r7, sp, #0
  8002472:	60f8      	str	r0, [r7, #12]
  8002474:	60b9      	str	r1, [r7, #8]
  8002476:	607a      	str	r2, [r7, #4]
-  (void)file;
-  (void)ptr;
-  (void)dir;
-  return 0;
  8002478:	2300      	movs	r3, #0
-}
  800247a:	4618      	mov	r0, r3
  800247c:	3714      	adds	r7, #20
  800247e:	46bd      	mov	sp, r7
@@ -4882,44 +4694,23 @@ int _lseek(int file, int ptr, int dir)
 	...
 
 08002488 <_sbrk>:
- *
- * @param incr Memory size
- * @return Pointer to allocated memory
- */
-void *_sbrk(ptrdiff_t incr)
-{
  8002488:	b580      	push	{r7, lr}
  800248a:	b086      	sub	sp, #24
  800248c:	af00      	add	r7, sp, #0
  800248e:	6078      	str	r0, [r7, #4]
-  extern uint8_t _end; /* Symbol defined in the linker script */
-  extern uint8_t _estack; /* Symbol defined in the linker script */
-  extern uint32_t _Min_Stack_Size; /* Symbol defined in the linker script */
-  const uint32_t stack_limit = (uint32_t)&_estack - (uint32_t)&_Min_Stack_Size;
  8002490:	4a14      	ldr	r2, [pc, #80]	@ (80024e4 <_sbrk+0x5c>)
  8002492:	4b15      	ldr	r3, [pc, #84]	@ (80024e8 <_sbrk+0x60>)
  8002494:	1ad3      	subs	r3, r2, r3
  8002496:	617b      	str	r3, [r7, #20]
-  const uint8_t *max_heap = (uint8_t *)stack_limit;
  8002498:	697b      	ldr	r3, [r7, #20]
  800249a:	613b      	str	r3, [r7, #16]
-  uint8_t *prev_heap_end;
-
-  /* Initialize heap end at first call */
-  if (NULL == __sbrk_heap_end)
  800249c:	4b13      	ldr	r3, [pc, #76]	@ (80024ec <_sbrk+0x64>)
  800249e:	681b      	ldr	r3, [r3, #0]
  80024a0:	2b00      	cmp	r3, #0
  80024a2:	d102      	bne.n	80024aa <_sbrk+0x22>
-  {
-    __sbrk_heap_end = &_end;
  80024a4:	4b11      	ldr	r3, [pc, #68]	@ (80024ec <_sbrk+0x64>)
  80024a6:	4a12      	ldr	r2, [pc, #72]	@ (80024f0 <_sbrk+0x68>)
  80024a8:	601a      	str	r2, [r3, #0]
-  }
-
-  /* Protect heap from growing into the reserved MSP stack */
-  if (__sbrk_heap_end + incr > max_heap)
  80024aa:	4b10      	ldr	r3, [pc, #64]	@ (80024ec <_sbrk+0x64>)
  80024ac:	681a      	ldr	r2, [r3, #0]
  80024ae:	687b      	ldr	r3, [r7, #4]
@@ -4927,32 +4718,22 @@ void *_sbrk(ptrdiff_t incr)
  80024b2:	693a      	ldr	r2, [r7, #16]
  80024b4:	429a      	cmp	r2, r3
  80024b6:	d207      	bcs.n	80024c8 <_sbrk+0x40>
-  {
-    errno = ENOMEM;
  80024b8:	f004 f9ee 	bl	8006898 <__errno>
  80024bc:	4603      	mov	r3, r0
  80024be:	220c      	movs	r2, #12
  80024c0:	601a      	str	r2, [r3, #0]
-    return (void *)-1;
  80024c2:	f04f 33ff 	mov.w	r3, #4294967295
  80024c6:	e009      	b.n	80024dc <_sbrk+0x54>
-  }
-
-  prev_heap_end = __sbrk_heap_end;
  80024c8:	4b08      	ldr	r3, [pc, #32]	@ (80024ec <_sbrk+0x64>)
  80024ca:	681b      	ldr	r3, [r3, #0]
  80024cc:	60fb      	str	r3, [r7, #12]
-  __sbrk_heap_end += incr;
  80024ce:	4b07      	ldr	r3, [pc, #28]	@ (80024ec <_sbrk+0x64>)
  80024d0:	681a      	ldr	r2, [r3, #0]
  80024d2:	687b      	ldr	r3, [r7, #4]
  80024d4:	4413      	add	r3, r2
  80024d6:	4a05      	ldr	r2, [pc, #20]	@ (80024ec <_sbrk+0x64>)
  80024d8:	6013      	str	r3, [r2, #0]
-
-  return (void *)prev_heap_end;
  80024da:	68fb      	ldr	r3, [r7, #12]
-}
  80024dc:	4618      	mov	r0, r3
  80024de:	3718      	adds	r7, #24
  80024e0:	46bd      	mov	sp, r7
@@ -4992,108 +4773,48 @@ void SystemInit(void)
  8002514:	e000ed00 	.word	0xe000ed00
 
 08002518 <Reset_Handler>:
-
-    .section	.text.Reset_Handler
-	.weak	Reset_Handler
-	.type	Reset_Handler, %function
-Reset_Handler:
-  ldr   sp, =_estack    /* Set stack pointer */
  8002518:	f8df d034 	ldr.w	sp, [pc, #52]	@ 8002550 <LoopForever+0x2>
-
-/* Call the clock system initialization function.*/
-    bl  SystemInit
  800251c:	f7ff ffea 	bl	80024f4 <SystemInit>
-
-/* Copy the data segment initializers from flash to SRAM */
-  ldr r0, =_sdata
  8002520:	480c      	ldr	r0, [pc, #48]	@ (8002554 <LoopForever+0x6>)
-  ldr r1, =_edata
  8002522:	490d      	ldr	r1, [pc, #52]	@ (8002558 <LoopForever+0xa>)
-  ldr r2, =_sidata
  8002524:	4a0d      	ldr	r2, [pc, #52]	@ (800255c <LoopForever+0xe>)
-  movs r3, #0
  8002526:	2300      	movs	r3, #0
-  b LoopCopyDataInit
  8002528:	e002      	b.n	8002530 <LoopCopyDataInit>
 
 0800252a <CopyDataInit>:
-
-CopyDataInit:
-  ldr r4, [r2, r3]
  800252a:	58d4      	ldr	r4, [r2, r3]
-  str r4, [r0, r3]
  800252c:	50c4      	str	r4, [r0, r3]
-  adds r3, r3, #4
  800252e:	3304      	adds	r3, #4
 
 08002530 <LoopCopyDataInit>:
-
-LoopCopyDataInit:
-  adds r4, r0, r3
  8002530:	18c4      	adds	r4, r0, r3
-  cmp r4, r1
  8002532:	428c      	cmp	r4, r1
-  bcc CopyDataInit
  8002534:	d3f9      	bcc.n	800252a <CopyDataInit>
-  
-/* Zero fill the bss segment. */
-  ldr r2, =_sbss
  8002536:	4a0a      	ldr	r2, [pc, #40]	@ (8002560 <LoopForever+0x12>)
-  ldr r4, =_ebss
  8002538:	4c0a      	ldr	r4, [pc, #40]	@ (8002564 <LoopForever+0x16>)
-  movs r3, #0
  800253a:	2300      	movs	r3, #0
-  b LoopFillZerobss
  800253c:	e001      	b.n	8002542 <LoopFillZerobss>
 
 0800253e <FillZerobss>:
-
-FillZerobss:
-  str  r3, [r2]
  800253e:	6013      	str	r3, [r2, #0]
-  adds r2, r2, #4
  8002540:	3204      	adds	r2, #4
 
 08002542 <LoopFillZerobss>:
-
-LoopFillZerobss:
-  cmp r2, r4
  8002542:	42a2      	cmp	r2, r4
-  bcc FillZerobss
  8002544:	d3fb      	bcc.n	800253e <FillZerobss>
-
-/* Call static constructors */
-    bl __libc_init_array
  8002546:	f004 f9ad 	bl	80068a4 <__libc_init_array>
-/* Call the application's entry point.*/
-	bl	main
  800254a:	f7ff f95b 	bl	8001804 <main>
 
 0800254e <LoopForever>:
-
-LoopForever:
-    b LoopForever
  800254e:	e7fe      	b.n	800254e <LoopForever>
-  ldr   sp, =_estack    /* Set stack pointer */
  8002550:	200a0000 	.word	0x200a0000
-  ldr r0, =_sdata
  8002554:	20040000 	.word	0x20040000
-  ldr r1, =_edata
  8002558:	200401d4 	.word	0x200401d4
-  ldr r2, =_sidata
  800255c:	0801dd14 	.word	0x0801dd14
-  ldr r2, =_sbss
  8002560:	200401d4 	.word	0x200401d4
-  ldr r4, =_ebss
  8002564:	2005c66c 	.word	0x2005c66c
 
 08002568 <ADC1_IRQHandler>:
- * @retval : None
-*/
-    .section	.text.Default_Handler,"ax",%progbits
-Default_Handler:
-Infinite_Loop:
-	b	Infinite_Loop
  8002568:	e7fe      	b.n	8002568 <ADC1_IRQHandler>
 
 0800256a <HAL_Init>:
