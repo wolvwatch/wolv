@@ -23,6 +23,10 @@
 #define SET_CS_LOW HAL_GPIO_WritePin(SCRN_CS_GPIO_Port, SCRN_CS_Pin, GPIO_PIN_RESET)
 #define SET_DC_HIGH HAL_GPIO_WritePin(SCRN_DC_GPIO_Port, SCRN_DC_Pin, GPIO_PIN_SET)
 #define SET_DC_LOW HAL_GPIO_WritePin(SCRN_DC_GPIO_Port, SCRN_DC_Pin, GPIO_PIN_RESET)
+#define SET_SCL_HIGH HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_SET)
+#define SET_SCL_LOW HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET)
+#define SET_SDA_HIGH HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET)
+#define SET_SDA_LOW HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET)
 
 LCD_1IN28_ATTRIBUTES LCD_1IN28;
 extern SPI_HandleTypeDef hspi1;
@@ -35,6 +39,45 @@ uint16_t dt_y_max;
 
 uint16_t pixels[LCD_1IN28_HEIGHT][LCD_1IN28_WIDTH] = {};
 
+static void LCD_1IN28_SendCommand(uint8_t reg) {
+	SET_DC_LOW;
+	SET_CS_LOW;
+	uint8_t buf[1] = { reg };
+	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
+	SET_CS_HIGH;
+}
+
+/******************************************************************************
+ function :	send data
+ parameter:
+ Data : Write data
+ ******************************************************************************/
+static void LCD_1IN28_SendData_8Bit(uint8_t data) {
+	SET_DC_HIGH;
+	SET_CS_LOW;
+	uint8_t buf[1] = { data };
+	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
+	SET_CS_HIGH;
+}
+
+static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uint8_t Yend) {
+	//set the X coordinates
+	LCD_1IN28_SendCommand(0x2A);
+	LCD_1IN28_SendData_8Bit(0x00);
+	LCD_1IN28_SendData_8Bit(Xstart);
+	LCD_1IN28_SendData_8Bit(0x00);
+	LCD_1IN28_SendData_8Bit(Xend);
+
+	//set the Y coordinates
+	LCD_1IN28_SendCommand(0x2B);
+	LCD_1IN28_SendData_8Bit(0x00);
+	LCD_1IN28_SendData_8Bit(Ystart);
+	LCD_1IN28_SendData_8Bit(0x00);
+	LCD_1IN28_SendData_8Bit(Yend);
+
+	LCD_1IN28_SendCommand(0X2C);
+}
+
 static void _update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t max_y) {
 	if (!delta_modified || min_x < dt_x_min) dt_x_min = min_x;
 	if (!delta_modified || max_x > dt_x_max) dt_x_max = max_x;
@@ -44,13 +87,13 @@ static void _update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16
 }
 
 void screen_render() {
-	uint16_t y_diff = dt_y_max - dt_y_min + 1;
-	uint16_t x_diff = dt_x_max - dt_x_min + 1;
+	uint8_t y_diff = dt_y_max - dt_y_min + 1;
+	uint8_t x_diff = dt_x_max - dt_x_min + 1;
 	uint32_t n_pix = y_diff * x_diff;
 
 	int index = 0;
 	uint16_t buf[n_pix] = {};
-	for (int i = dt_y_min; i <= dt_y_max; i++) {
+	for (int i = dt_y_max; i > dt_y_min; i--) {
 		for (int j = dt_x_min; j <= dt_x_max; j++) buf[index++] = pixels[i][j];
 	}
 
@@ -60,10 +103,10 @@ void screen_render() {
 	uint32_t bytes_remaining = n_pix * 2;
 	uint32_t offset = 0;
 	while (bytes_remaining > 0) {
-		if (bytes_remaining > 60000) {
-			HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + offset, 60000, HAL_MAX_DELAY);
-			offset += 60000;
-			bytes_remaining -= 60000;
+		if (bytes_remaining > 65000) {
+			HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + offset, 65000, HAL_MAX_DELAY);
+			offset += 65000;
+			bytes_remaining -= 65000;
 		} else {
 			HAL_SPI_Transmit(&hspi1, (uint8_t*) buf + offset, bytes_remaining, HAL_MAX_DELAY);
 			bytes_remaining = 0;
@@ -93,26 +136,7 @@ static void screen_reset(void) {
  parameter:
  Reg : Command register
  ******************************************************************************/
-static void LCD_1IN28_SendCommand(uint8_t reg) {
-	SET_DC_LOW;
-	SET_CS_LOW;
-	uint8_t buf[1] = { reg };
-	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
-	SET_CS_HIGH;
-}
 
-/******************************************************************************
- function :	send data
- parameter:
- Data : Write data
- ******************************************************************************/
-static void LCD_1IN28_SendData_8Bit(uint8_t data) {
-	SET_DC_HIGH;
-	SET_CS_LOW;
-	uint8_t buf[1] = { data };
-	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
-	SET_CS_HIGH;
-}
 
 /******************************************************************************
  function :	send data
@@ -132,51 +156,13 @@ static void LCD_1IN28_SendData_16Bit(uint16_t data) {
  parameter:
  ******************************************************************************/
 static void LCD_1IN28_InitReg(void) {
-	LCD_1IN28_SendCommand(0xEF);
-	LCD_1IN28_SendCommand(0xEB);
-	LCD_1IN28_SendData_8Bit(0x14);
+	LCD_1IN28_SendCommand(0x11);
+	HAL_Delay(120);
+	LCD_1IN28_SendCommand(0x29);
+	HAL_Delay(20);
 
 	LCD_1IN28_SendCommand(0xFE);
 	LCD_1IN28_SendCommand(0xEF);
-
-	LCD_1IN28_SendCommand(0xEB);
-	LCD_1IN28_SendData_8Bit(0x14);
-
-	LCD_1IN28_SendCommand(0x84);
-	LCD_1IN28_SendData_8Bit(0x40);
-
-	LCD_1IN28_SendCommand(0x85);
-	LCD_1IN28_SendData_8Bit(0xFF);
-
-	LCD_1IN28_SendCommand(0x86);
-	LCD_1IN28_SendData_8Bit(0xFF);
-
-	LCD_1IN28_SendCommand(0x87);
-	LCD_1IN28_SendData_8Bit(0xFF);
-
-	LCD_1IN28_SendCommand(0x88);
-	LCD_1IN28_SendData_8Bit(0x0A);
-
-	LCD_1IN28_SendCommand(0x89);
-	LCD_1IN28_SendData_8Bit(0x21);
-
-	LCD_1IN28_SendCommand(0x8A);
-	LCD_1IN28_SendData_8Bit(0x00);
-
-	LCD_1IN28_SendCommand(0x8B);
-	LCD_1IN28_SendData_8Bit(0x80);
-
-	LCD_1IN28_SendCommand(0x8C);
-	LCD_1IN28_SendData_8Bit(0x01);
-
-	LCD_1IN28_SendCommand(0x8D);
-	LCD_1IN28_SendData_8Bit(0x01);
-
-	LCD_1IN28_SendCommand(0x8E);
-	LCD_1IN28_SendData_8Bit(0xFF);
-
-	LCD_1IN28_SendCommand(0x8F);
-	LCD_1IN28_SendData_8Bit(0xFF);
 
 	LCD_1IN28_SendCommand(0xB6);
 	LCD_1IN28_SendData_8Bit(0x00);
@@ -188,42 +174,14 @@ static void LCD_1IN28_InitReg(void) {
 	LCD_1IN28_SendCommand(0x3A);
 	LCD_1IN28_SendData_8Bit(0x05);
 
-	LCD_1IN28_SendCommand(0x90);
-	LCD_1IN28_SendData_8Bit(0x08);
-	LCD_1IN28_SendData_8Bit(0x08);
-	LCD_1IN28_SendData_8Bit(0x08);
-	LCD_1IN28_SendData_8Bit(0x08);
-
-	LCD_1IN28_SendCommand(0xBD);
-	LCD_1IN28_SendData_8Bit(0x06);
-
-	LCD_1IN28_SendCommand(0xBC);
-	LCD_1IN28_SendData_8Bit(0x00);
-
-	LCD_1IN28_SendCommand(0xFF);
-	LCD_1IN28_SendData_8Bit(0x60);
-	LCD_1IN28_SendData_8Bit(0x01);
-	LCD_1IN28_SendData_8Bit(0x04);
-
 	LCD_1IN28_SendCommand(0xC3);
 	LCD_1IN28_SendData_8Bit(0x13);
+
 	LCD_1IN28_SendCommand(0xC4);
 	LCD_1IN28_SendData_8Bit(0x13);
 
 	LCD_1IN28_SendCommand(0xC9);
 	LCD_1IN28_SendData_8Bit(0x22);
-
-	LCD_1IN28_SendCommand(0xBE);
-	LCD_1IN28_SendData_8Bit(0x11);
-
-	LCD_1IN28_SendCommand(0xE1);
-	LCD_1IN28_SendData_8Bit(0x10);
-	LCD_1IN28_SendData_8Bit(0x0E);
-
-	LCD_1IN28_SendCommand(0xDF);
-	LCD_1IN28_SendData_8Bit(0x21);
-	LCD_1IN28_SendData_8Bit(0x0c);
-	LCD_1IN28_SendData_8Bit(0x02);
 
 	LCD_1IN28_SendCommand(0xF0);
 	LCD_1IN28_SendData_8Bit(0x45);
@@ -256,13 +214,6 @@ static void LCD_1IN28_InitReg(void) {
 	LCD_1IN28_SendData_8Bit(0x36);
 	LCD_1IN28_SendData_8Bit(0x37);
 	LCD_1IN28_SendData_8Bit(0x6F);
-
-	LCD_1IN28_SendCommand(0xED);
-	LCD_1IN28_SendData_8Bit(0x1B);
-	LCD_1IN28_SendData_8Bit(0x0B);
-
-	LCD_1IN28_SendCommand(0xAE);
-	LCD_1IN28_SendData_8Bit(0x77);
 
 	LCD_1IN28_SendCommand(0xCD);
 	LCD_1IN28_SendData_8Bit(0x63);
@@ -358,10 +309,11 @@ static void LCD_1IN28_InitReg(void) {
 	LCD_1IN28_SendCommand(0x35);
 	LCD_1IN28_SendCommand(0x21);
 
-	LCD_1IN28_SendCommand(0x11);
-	HAL_Delay(120);
-	LCD_1IN28_SendCommand(0x29);
-	HAL_Delay(20);
+	LCD_1IN28_SendCommand(0xF6);
+	LCD_1IN28_SendData_8Bit(0b11001000);
+
+	LCD_1IN28_SendCommand(0xB0);
+	LCD_1IN28_SendData_8Bit(0b01100001);
 }
 
 /********************************************************************************
@@ -414,31 +366,14 @@ void screen_init(uint8_t scan_dir) {
  Xend    :   X direction end coordinates
  Yend    :   Y direction end coordinates
  ********************************************************************************/
-void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend,
-		uint8_t Yend) {
-	//set the X coordinates
-	LCD_1IN28_SendCommand(0x2A);
-	LCD_1IN28_SendData_8Bit(0x00);
-	LCD_1IN28_SendData_8Bit(Xstart);
-	LCD_1IN28_SendData_8Bit(0x00);
-	LCD_1IN28_SendData_8Bit(Xend);
 
-	//set the Y coordinates
-	LCD_1IN28_SendCommand(0x2B);
-	LCD_1IN28_SendData_8Bit(0x00);
-	LCD_1IN28_SendData_8Bit(Ystart);
-	LCD_1IN28_SendData_8Bit(0x00);
-	LCD_1IN28_SendData_8Bit(Yend);
-
-	LCD_1IN28_SendCommand(0X2C);
-}
 
 /******************************************************************************
  function :	Clear screen
  parameter:
  ******************************************************************************/
 void screen_clear(uint16_t color) {
-	for (int i = 0; i < 240; i++) {
+    for (int i = 0; i < 240; i++) {
 		for (int j = 0; j < 240; j++) {
 			pixels[i][j] = color;
 		}

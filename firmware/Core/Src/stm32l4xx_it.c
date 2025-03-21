@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
 #include "gui.h"
-#include <stm32l4xx_hal_rtc.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
