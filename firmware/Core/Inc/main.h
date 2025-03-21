@@ -61,8 +61,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TIM2_CH1_Haptic_Pin GPIO_PIN_0
 #define TIM2_CH1_Haptic_GPIO_Port GPIOA
-#define TIM1_CH1_BL_Screen_Pin GPIO_PIN_8
-#define TIM1_CH1_BL_Screen_GPIO_Port GPIOA
+#define SCRN_DC_Pin GPIO_PIN_5
+#define SCRN_DC_GPIO_Port GPIOA
 #define RST_Screen_Pin GPIO_PIN_9
 #define RST_Screen_GPIO_Port GPIOA
 #define DC_Screen_Pin GPIO_PIN_10
@@ -75,8 +75,10 @@ void Error_Handler(void);
 #define Flashing_SWCLK_GPIO_Port GPIOA
 #define ACC_Shutdown_Pin GPIO_PIN_2
 #define ACC_Shutdown_GPIO_Port GPIOD
-#define Heart_Rate_INT_Pin GPIO_PIN_9
-#define Heart_Rate_INT_GPIO_Port GPIOB
+#define SCRN_CS_Pin GPIO_PIN_8
+#define SCRN_CS_GPIO_Port GPIOB
+#define SCRN_RST_Pin GPIO_PIN_9
+#define SCRN_RST_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

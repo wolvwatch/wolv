@@ -12,3 +12,10 @@ Status\ Report.txt
 *.PcbDoc.htm
 *.SchDocPreview
 *.PcbDocPreview
+
+# STM32CubeIDE
+.metadata
+.settings
+Release/
+Debug/
+.launch
