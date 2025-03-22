@@ -20,6 +20,6 @@ void Send_HeartRate_UART(void);
 extern uint32_t ir_buffer[];
 extern uint8_t buffer_index;
 extern uint32_t last_peak_time;
-extern uint8_t bpm;
+extern float bpm;
 
 #endif /* INC_HEARTRATE_H_ */
