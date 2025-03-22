@@ -279,8 +279,7 @@ typedef struct {
 void set_gui_settings(gui_settings_t settings);
 void update_gui();
 void draw_img(uint8_t x, uint8_t y, const bitmap_t *img, color_t foreground, color_t background, float scale);
-void draw_time(uint8_t start_x, uint8_t start_y, color_t foreground, color_t background, const float scale,
-			   font_bitmap_t *font, uint8_t hours, uint8_t minutes, uint8_t seconds, uint8_t am);
+void draw_current_time(uint8_t start_x, uint8_t start_y, font_bitmap_t *font, color_t foreground, color_t background, float scale);
 void draw_string(uint8_t x, uint8_t y, char* str, font_bitmap_t *font, color_t foreground, color_t background, float scale);
 
 /**

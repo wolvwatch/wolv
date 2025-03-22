@@ -79,6 +79,9 @@
 #include <string.h> //memset()
 #include <math.h>
 
+#include "stm32l4xx_hal.h"
+#include "stm32l4xx_ll_rtc.h"
+
 volatile PAINT Paint;
 
 void (*DISPLAY)(uint16_t, uint16_t, uint16_t);
@@ -514,9 +517,9 @@ void draw_img(uint8_t x, uint8_t y, const bitmap_t *img, const color_t foregroun
     const uint16_t scaled_height = (uint16_t) (img->height * scale);
 
     uint16_t bytes_per_row = (img->width + 7) / 8;
-    for (int i = 0; i < scaled_height; i++) {
+    for (uint16_t i = 0; i < scaled_height; i++) {
         const uint16_t sy = (uint16_t) (i / scale);
-        for (int j = 0; j < scaled_width; j++) {
+        for (uint16_t j = 0; j < scaled_width; j++) {
             const uint16_t sx = (uint16_t) (j / scale);
 
             uint16_t byte_idx = sy * bytes_per_row + (sx / 8);
@@ -541,9 +544,18 @@ void draw_string(uint8_t x, uint8_t y, char* str, font_bitmap_t *font, color_t f
     }
 }
 
-void draw_time(uint8_t start_x, uint8_t start_y, color_t foreground, color_t background, const float scale,
-               font_bitmap_t *font, uint8_t hours, uint8_t minutes, uint8_t seconds, uint8_t am) {
+extern RTC_HandleTypeDef hrtc;
 
+void draw_current_time(uint8_t start_x, uint8_t start_y, font_bitmap_t *font, color_t foreground, color_t background, const float scale) {
+    RTC_TimeTypeDef time;
+    RTC_DateTypeDef date;
+    HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BCD);
+
+    char time_str[9] = {};
+    sprintf(time_str, "%02u:%02u:%02u %s", time.Hours, time.Minutes, time.Seconds, time.TimeFormat == RTC_HOURFORMAT12_AM ? "AM" : "PM");
+
+    draw_string(start_x, start_y, time_str, font, foreground, background, scale);
 }
 
 void update_gui() {
