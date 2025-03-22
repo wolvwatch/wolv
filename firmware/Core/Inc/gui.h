@@ -66,7 +66,8 @@
 #ifndef __GUI_PAINT_H
 #define __GUI_PAINT_H
 
-#include "fonts.h"
+#include <stdint.h>
+#include "bitmaps.h"
 /**
  * Image attributes
  **/
@@ -107,27 +108,155 @@ typedef enum {
  * image color
  **/
 
-#define WHITE					0xFFFF
-#define BLACK					0x0000
-#define BLUE 					0x001F
-#define BRED 					0XF81F
-#define GRED 					0XFFE0
-#define GBLUE					0X07FF
-#define RED  					0xF800
-#define MAGENTA				0xF81F
-#define GREEN					0x07E0
-#define CYAN 					0x7FFF
-#define YELLOW				0xFFE0
-#define BROWN					0XBC40
-#define BRRED					0XFC07
-#define GRAY 					0X8430
-#define DARKBLUE			0X01CF
-#define LIGHTBLUE			0X7D7C
-#define GRAYBLUE      0X5458
-#define LIGHTGREEN    0X841F
-#define LGRAY 			  0XC618
-#define LGRAYBLUE     0XA651
-#define LBBLUE        0X2B12
+#define ALICEBLUE 0xDFF7
+#define ANTIQUEWHITE 0x5DEF
+#define AQUA 0xFF07
+#define AQUAMARINE 0xFA7F
+#define AZURE 0xFFF7
+#define BEIGE 0xBBF7
+#define BISQUE 0x38FF
+#define BLACK 0x0000
+#define BLANCHEDALMOND 0x59FF
+#define BLUE 0xF800
+#define BLUEVIOLET 0x5C89
+#define BROWN 0x45A1
+#define BURLYWOOD 0xD0DD
+#define CADETBLUE 0xF45C
+#define CHARTREUSE 0xE07F
+#define CHOCOLATE 0x43D3
+#define CORAL 0xEAFB
+#define CORNFLOWERBLUE 0xBD64
+#define CORNSILK 0xDBFF
+#define CRIMSON 0xA7D8
+#define CYAN 0xFF07
+#define DARKBLUE 0x1100
+#define DARKCYAN 0x5104
+#define DARKGOLDENROD 0x21BC
+#define DARKGRAY 0x55AD
+#define DARKGREEN 0x2003
+#define DARKGREY 0x55AD
+#define DARKKHAKI 0xADBD
+#define DARKMAGENTA 0x1188
+#define DARKOLIVEGREEN 0x4553
+#define DARKORANGE 0x60FC
+#define DARKORCHID 0x9999
+#define DARKRED 0x0088
+#define DARKSALMON 0xAFEC
+#define DARKSEAGREEN 0xF18D
+#define DARKSLATEBLUE 0xF149
+#define DARKSLATEGRAY 0x692A
+#define DARKSLATEGREY 0x692A
+#define DARKTURQUOISE 0x7A06
+#define DARKVIOLET 0x1A90
+#define DEEPPINK 0xB2F8
+#define DEEPSKYBLUE 0xFF05
+#define DIMGRAY 0x4D6B
+#define DIMGREY 0x4D6B
+#define DODGERBLUE 0x9F1C
+#define FIREBRICK 0x04B1
+#define FLORALWHITE 0xDEFF
+#define FORESTGREEN 0x4424
+#define FUCHSIA 0x1FF8
+#define GAINSBORO 0xFBDE
+#define GHOSTWHITE 0xBFF7
+#define GOLD 0xA0FE
+#define GOLDENROD 0x24DD
+#define GRAY 0x1084
+#define GREEN 0x0004
+#define GREENYELLOW 0xE5AF
+#define GREY 0x1084
+#define HONEYDEW 0xFEF7
+#define HOTPINK 0x56FB
+#define INDIANRED 0xEBCA
+#define INDIGO 0x1048
+#define IVORY 0xFEFF
+#define KHAKI 0x31F7
+#define LAVENDER 0x3FE7
+#define LAVENDERBLUSH 0x9EFF
+#define LAWNGREEN 0xE07F
+#define LEMONCHIFFON 0xD9FF
+#define LIGHTBLUE 0xDCAE
+#define LIGHTCORAL 0x10F4
+#define LIGHTCYAN 0xFFE7
+#define LIGHTGOLDENRODYELLOW 0xDAFF
+#define LIGHTGRAY 0x9AD6
+#define LIGHTGREEN 0x7297
+#define LIGHTGREY 0x9AD6
+#define LIGHTPINK 0xB8FD
+#define LIGHTSALMON 0x0FFD
+#define LIGHTSEAGREEN 0x9525
+#define LIGHTSKYBLUE 0x7F86
+#define LIGHTSLATEGRAY 0x5374
+#define LIGHTSLATEGREY 0x5374
+#define LIGHTSTEELBLUE 0x3BB6
+#define LIGHTYELLOW 0xFCFF
+#define LIME 0xE007
+#define LIMEGREEN 0x6636
+#define LINEN 0x9CFF
+#define MAGENTA 0x1FF8
+#define MAROON 0x0080
+#define MEDIUMAQUAMARINE 0x7566
+#define MEDIUMBLUE 0x1900
+#define MEDIUMORCHID 0xBABA
+#define MEDIUMPURPLE 0x9B93
+#define MEDIUMSEAGREEN 0x8E3D
+#define MEDIUMSLATEBLUE 0x5D7B
+#define MEDIUMSPRINGGREEN 0xD307
+#define MEDIUMTURQUOISE 0x994E
+#define MEDIUMVIOLETRED 0xB0C0
+#define MIDNIGHTBLUE 0xCE18
+#define MINTCREAM 0xFFF7
+#define MISTYROSE 0x3CFF
+#define MOCCASIN 0x36FF
+#define NAVAJOWHITE 0xF5FE
+#define NAVY 0x1000
+#define OLDLACE 0xBCFF
+#define OLIVE 0x0084
+#define OLIVEDRAB 0x646C
+#define ORANGE 0x20FD
+#define ORANGERED 0x20FA
+#define ORCHID 0x9ADB
+#define PALEGOLDENROD 0x55EF
+#define PALEGREEN 0xD39F
+#define PALETURQUOISE 0x7DAF
+#define PALEVIOLETRED 0x92DB
+#define PAPAYAWHIP 0x7AFF
+#define PEACHPUFF 0xD7FE
+#define PERU 0x27CC
+#define PINK 0x19FE
+#define PLUM 0x1BDD
+#define POWDERBLUE 0xDDAE
+#define PURPLE 0x1080
+#define REBECCAPURPLE 0x9160
+#define RED 0x001F
+#define ROSYBROWN 0x71BC
+#define ROYALBLUE 0x5C43
+#define SADDLEBROWN 0x228A
+#define SALMON 0x0EFC
+#define SANDYBROWN 0x2CF5
+#define SEAGREEN 0x4A2C
+#define SEASHELL 0xBDFF
+#define SIENNA 0x85A2
+#define SILVER 0x18C6
+#define SKYBLUE 0x7D86
+#define SLATEBLUE 0xD96A
+#define SLATEGRAY 0x1274
+#define SLATEGREY 0x1274
+#define SNOW 0xDFFF
+#define SPRINGGREEN 0xEF07
+#define STEELBLUE 0x1644
+#define TAN 0xB1D5
+#define TEAL 0x1004
+#define THISTLE 0xFBDD
+#define TOMATO 0x08FB
+#define TURQUOISE 0x1A47
+#define VIOLET 0x1DEC
+#define WHEAT 0xF6F6
+#define WHITE 0xFFFF
+#define WHITESMOKE 0xBEF7
+#define YELLOW 0xE0FF
+#define YELLOWGREEN 0x669E
+
 
 #define IMAGE_BACKGROUND    WHITE
 #define FONT_FOREGROUND     BLACK
@@ -147,25 +276,12 @@ typedef struct {
 	color_t accent_color;
 } gui_settings_t;
 
-typedef struct {
-	const uint16_t *data;
-	uint16_t width;
-	uint16_t height;
-	uint8_t dataSize;
-} tImage;
-typedef struct {
-	long int code;
-	const tImage *image;
-} tChar;
-typedef struct {
-	int length;
-	const tChar *chars;
-} tFont;
-
 void set_gui_settings(gui_settings_t settings);
 void update_gui();
-void draw_img(uint8_t x, uint8_t y, tImage img);
-void draw_img_c(uint8_t x, uint8_t y, tImage img);
+void draw_img(uint8_t x, uint8_t y, const bitmap_t *img, color_t foreground, color_t background, float scale);
+void draw_time(uint8_t start_x, uint8_t start_y, color_t foreground, color_t background, const float scale,
+			   font_bitmap_t *font, uint8_t hours, uint8_t minutes, uint8_t seconds, uint8_t am);
+void draw_string(uint8_t x, uint8_t y, char* str, font_bitmap_t *font, color_t foreground, color_t background, float scale);
 
 /**
  * The size of the point
@@ -242,21 +358,6 @@ void Paint_DrawRectangle(uint16_t Xstart, uint16_t Ystart, uint16_t Xend,
 		uint16_t Yend, uint16_t Color, DOT_PIXEL Line_width, DRAW_FILL Filled);
 void Paint_DrawCircle(uint16_t X_Center, uint16_t Y_Center, uint16_t Radius,
 		uint16_t Color, DOT_PIXEL Line_width, DRAW_FILL Draw_Fill);
-
-//Display string
-void Paint_DrawChar(uint16_t Xstart, uint16_t Ystart, const char Acsii_Char,
-		sFONT *Font, uint16_t Color_Background, uint16_t Color_Foreground);
-void Paint_DrawString_EN(uint16_t Xstart, uint16_t Ystart, const char *pString,
-		sFONT *Font, uint16_t Color_Background, uint16_t Color_Foreground);
-void Paint_DrawString_CN(uint16_t Xstart, uint16_t Ystart, const char *pString,
-		cFONT *font, uint16_t Color_Background, uint16_t Color_Foreground);
-void Paint_DrawNum(uint16_t Xpoint, uint16_t Ypoint, int32_t Nummber,
-		sFONT *Font, uint16_t Color_Background, uint16_t Color_Foreground);
-void Paint_DrawFloatNum(uint16_t Xpoint, uint16_t Ypoint, double Nummber,
-		uint8_t Decimal_Point, sFONT *Font, uint16_t Color_Background,
-		uint16_t Color_Foreground);
-void Paint_DrawTime(uint16_t Xstart, uint16_t Ystart, PAINT_TIME *pTime,
-		sFONT *Font, uint16_t Color_Background, uint16_t Color_Foreground);
 
 //pic
 void Paint_DrawImage(const unsigned char *image, uint16_t Startx,
