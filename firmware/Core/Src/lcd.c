@@ -78,7 +78,7 @@ static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uin
 	LCD_1IN28_SendCommand(0X2C);
 }
 
-static void _update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t max_y) {
+static void update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_t max_y) {
 	if (!delta_modified || min_x < dt_x_min) dt_x_min = min_x;
 	if (!delta_modified || max_x > dt_x_max) dt_x_max = max_x;
 	if (!delta_modified || min_y < dt_y_min) dt_y_min = min_y;
@@ -378,12 +378,12 @@ void screen_clear(uint16_t color) {
 			pixels[i][j] = color;
 		}
 	}
-	_update_delta(0, 0, 239, 239);
+	update_delta(0, 0, 239, 239);
 }
 
 void screen_set_point(uint16_t x, uint16_t y, uint16_t color) {
-	pixels[y][x] = color;
-	_update_delta(x, y, x, y);
+	pixels[y][x] = (color << 8) | (color >> 8);
+	update_delta(x, y, x, y);
 }
 
 
