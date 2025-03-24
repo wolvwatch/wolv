@@ -51,7 +51,13 @@ void tx_byte(const uint8_t sub_addr, const uint8_t data) {
 void max30102_init() {
     tx_byte(MODE_CFG, RESET | MODE_HR);
     HAL_Delay(50); // wait for reset
-    tx_byte(MODE_CFG, RESET | MODE_HR);
+    tx_byte(IR_EN_1, A_FULL);
+    tx_byte(FIFO_WR, 0);
+    tx_byte(FIFO_OVF, 0);
+    tx_byte(FIFO_RD, 0);
+    tx_byte(FIFO_CFG, SMP_AVE_4 | FIFO_ROLLOVER_EN);
+    tx_byte(LED_PULSE_AMP, LED_PULSE_AMP_HR);
+    tx_byte(LED_PULSE_AMP + 1, LED_PULSE_AMP_SPO2);
 }
 
 void rx(uint8_t sub_addr, uint8_t *data, const uint16_t size) {
