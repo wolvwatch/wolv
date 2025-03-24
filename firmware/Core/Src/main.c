@@ -22,9 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "heartrate.h"
 #include "lcd.h"
 #include "gui.h"
+#include "max30102.h"
 #include "stm32l4xx_hal.h"
 /* USER CODE END Includes */
 
@@ -65,9 +65,9 @@ static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM4_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_RTC_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -108,12 +108,9 @@ int main(void)
   MX_TIM1_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
-  MX_I2C1_Init();
   MX_LPUART1_UART_Init();
   MX_RTC_Init();
-  /* USER CODE BEGIN 2 */
-  MAX30102_Init();
-  MX_TIM4_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   Paint_SetDisplayFunction(&screen_set_point);
   Paint_NewImage(240, 240, 0, 0);
@@ -123,7 +120,9 @@ int main(void)
   draw_string(90, 150, "64 bpm", &roboto, WHITE, BLACK, 0.25);
   draw_img(55, 175, &steps, 0x344B, BLACK, 0.12);
   draw_string(90, 180, "6281 steps", &roboto, WHITE, BLACK, 0.25);
+  uint8_t buf[5] = {0};
   screen_render();
+  max30102_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -561,10 +560,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, SCRN_DC_Pin|RST_Screen_Pin|DC_Screen_Pin|CS_S_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(ACC_Shutdown_GPIO_Port, ACC_Shutdown_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SCRN_CS_Pin|SCRN_RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SCRN_CS_GPIO_Port, SCRN_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(ACC_Shutdown_GPIO_Port, ACC_Shutdown_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PE2 PE3 */
   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
@@ -645,16 +647,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB10 */
-  GPIO_InitStruct.Pin = GPIO_PIN_10;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PB12 PB13 PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15;
+  /*Configure GPIO pins : PB12 PB13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -669,13 +663,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF14_TIM15;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_6;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  /*Configure GPIO pin : SCRN_RST_Pin */
+  GPIO_InitStruct.Pin = SCRN_RST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF13_SAI2;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(SCRN_RST_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SCRN_CS_Pin */
+  GPIO_InitStruct.Pin = SCRN_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SCRN_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PC7 */
   GPIO_InitStruct.Pin = GPIO_PIN_7;
@@ -724,6 +724,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PD7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
   /*Configure GPIO pin : PB4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -732,12 +738,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SCRN_CS_Pin SCRN_RST_Pin */
-  GPIO_InitStruct.Pin = SCRN_CS_Pin|SCRN_RST_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
