@@ -4,22 +4,54 @@
 extern I2C_HandleTypeDef hi2c1;
 #define MAX30102_ADDR  0xAE
 
-#define FIFO_CFG_REG 0x08
-#define MODE_CFG_REG 0x09
-#define IR_EN_REG 0x02
-#define LED_PULSE_AMP_LED1 0x0C
-#define LED_PULSE_AMP_LED2 0x0C
+#define IR_STATUS_1 0x00
+#define A_FULL 0b1 << 7
+#define PPG_RDY 0b1 << 6
+#define ALC_OVF 0b1 << 5
+#define PWR_RDY 0b1
 
-#define FIFO_WR_PTR_REG 0x04
-#define FIFO_OVF_PTR_REG 0x05
-#define FIFO_RD_PTR_REG 0x06
-#define FIFO_DATA_REG 0x07
+#define IR_STATUS_2 0x01
+#define IR_DIE_TMP_RDY 0b1 << 1
 
-void tx(uint8_t sub_addr, uint8_t *data, const uint16_t size) {
-    uint8_t buf[size + 1];
-    buf[0] = sub_addr;
-    for (int i = 0; i < size; i++) buf[i + 1] = data[i];
-    HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDR, buf, size + 1, HAL_MAX_DELAY);
+#define IR_EN_1 0x02
+#define IR_EN_2 0x03
+#define FIFO_WR 0x04
+#define FIFO_OVF 0x05
+#define FIFO_RD 0x06
+#define FIFO_DATA 0x07
+
+#define FIFO_CFG 0x08
+#define SMP_AVE_1 0b000 << 5
+#define SMP_AVE_2 0b001 << 5
+#define SMP_AVE_4 0b010 << 5
+#define SMP_AVE_8 0b011 << 5
+#define SMP_AVE_16 0b100 << 5
+#define SMP_AVE_32 0b101 << 5
+#define FIFO_ROLLOVER_EN 0b1 << 4
+
+#define MODE_CFG 0x09
+#define SHDN 0b1 << 7
+#define RESET 0b1 << 6
+#define MODE_HR 0b010
+#define MODE_SPO2 0b011
+#define MODE_MULTI 0b111
+
+#define SPO2_CFG 0x0A
+#define LED_PULSE_AMP 0x0C
+#define LED_PULSE_AMP_HR 0x24
+#define LED_PULSE_AMP_SPO2 0x00
+
+#define MULTI_LED_CFG 0x11
+
+void tx_byte(const uint8_t sub_addr, const uint8_t data) {
+    uint8_t buf[2] = {sub_addr, data};
+    HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDR, buf, 2, HAL_MAX_DELAY);
+}
+
+void max30102_init() {
+    tx_byte(MODE_CFG, RESET | MODE_HR);
+    HAL_Delay(50); // wait for reset
+    tx_byte(MODE_CFG, RESET | MODE_HR);
 }
 
 void rx(uint8_t sub_addr, uint8_t *data, const uint16_t size) {
@@ -39,26 +71,7 @@ static uint8_t get_fifo_rd_ptr() {
     return ptr;
 }
 
-#define M_RESET 0b1 << 6
-#define M_HR 0b010
-#define F_SMP_AVE 0b100 << 5
-#define F_ROLLOVER_EN 0b0 << 4
-#define IR_A_FULL 0b1 << 7
 
-void max30102_init() {
-    uint8_t fifo_cfg = F_SMP_AVE | F_ROLLOVER_EN;
-    uint8_t mode_cfg = M_RESET | M_HR;
-    uint8_t ir_cfg = IR_A_FULL;
-    uint8_t led1_a = 0x2F;
-    uint8_t led2_a = 0;
-
-    tx(MODE_CFG_REG, &mode_cfg, 1);
-    HAL_Delay(200);
-    tx(FIFO_CFG_REG, &fifo_cfg, 1);
-    tx(IR_EN_REG, &ir_cfg, 1);
-    tx(LED_PULSE_AMP_LED1, &led1_a, 1);
-    tx(LED_PULSE_AMP_LED2, &led2_a, 1);
-}
 
 static uint32_t red_spls[16] = {};
 static uint32_t ir_spls[16] = {};
