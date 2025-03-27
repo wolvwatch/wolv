@@ -1,0 +1,73 @@
+Altium Designer Pick and Place Locations
+C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\Pick Place\Pick Place for Smart_Watch.txt
+
+========================================================================================================================
+File Design Information:
+
+Date:       26/03/25
+Time:       22:57
+Revision:   4d7ea04f4412c68c6f3ca51f42614c00f95239b9
+Variant:    No variations
+Units used: mil
+
+Designator Comment            Layer       Footprint                          Center-X(mil) Center-Y(mil) Rotation Description                                                                                                   
+R7         RC0603FR-0710KP    BottomLayer RES-0603                           4230.000      2245.000      90       "RES SMD 10K OHM 1% 1/10W 0603"                                                                               
+R1         ERJP03F4700V       BottomLayer RES_ERJP03_PAN                     4124.500      2435.000      180      "470 Ohms ±1% 0.2W, 1/5W Chip Resistor 0603 (1608 Metric) Automotive AEC-Q200, Pulse Withstanding Thick Film" 
+C8         CC0402KRX7R7BB104  TopLayer    CAP-0402                           3775.000      3019.685      90       "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+U5         ADXL362BCCZ-RL7    TopLayer    LGA_CC-16-4_ADI                    4180.000      3405.000      0        "Accelerometer X, Y, Z Axis ±2g, 4g, 8g 6.25Hz ~ 400Hz 16-LGA (3x3.25)"                                       
+3V3        5003               TopLayer    TEST-POINT-0001                    4375.000      3750.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+VBAT       5003               TopLayer    TEST-POINT-0001                    3715.000      3735.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+R12        CRCW12100000Z0EA   BottomLayer RES_CRCW_1210_VIS                  3955.000      2210.000      90       "No Description Available"                                                                                    
+R11        CRCW12100000Z0EA   TopLayer    RES_CRCW_1210_VIS                  3810.000      3290.000      270      "No Description Available"                                                                                    
+R10        CRCW12100000Z0EA   BottomLayer RES_CRCW_1210_VIS                  4135.000      2215.000      90       "No Description Available"                                                                                    
+R6         ERJP03F4700V       BottomLayer RES_ERJP03_PAN                     4125.000      2365.000      0        "470 Ohms ±1% 0.2W, 1/5W Chip Resistor 0603 (1608 Metric) Automotive AEC-Q200, Pulse Withstanding Thick Film" 
+D3         BL-HKC36G-AV-TRB   BottomLayer LED-0603                           3945.000      2368.500      90       "LED YELLOW CLEAR 0603 SMD"                                                                                   
+D1         BL-HKC36G-AV-TRB   BottomLayer LED-0603                           3978.500      2480.000      0        "LED YELLOW CLEAR 0603 SMD"                                                                                   
+U7         TPS62172DSGR       TopLayer    DSG0008A_NV                        4055.000      3775.000      0        "No Description Available"                                                                                    
+R9         RC0603FR-07100KL   TopLayer    RES-0603                           4174.331      3774.410      270      "RES SMD 100K OHM 1% 1/10W 0603"                                                                              
+L1         SRN8040-2R2Y       BottomLayer PWRIND-2.2U-0001                   4125.000      3665.000      0        "2.2 µH Semi-Shielded Drum Core, Wirewound Inductor 6.3 A 13mOhm Max Nonstandard"                             
+D2         PDS760-13          TopLayer    DO-POWERDI5                        3858.780      3618.386      90       "DIODE SCHOTTKY 60V 7A POWERDI5"                                                                              
+C15        LMK316AB7226KL-TR  TopLayer    CAP-1206_-_duplicate               4184.780      3665.000      0        "10V 22uF X7R ±10% 1206 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"                                    
+C14        CC0603KRX5R6BB106  TopLayer    CAP-0603                           3975.000      3796.496      270      "CAP CER 10UF 10V X5R 0603"                                                                                   
+J2         SM02B-GHS-TB       TopLayer    CONN_SM02B-GHS_JST                 3472.008      2699.606      270      "No Description Available"                                                                                    
+J12        SM02B-GHS-TB       TopLayer    CONN_SM02B-GHS_JST                 3467.008      2990.394      270      "No Description Available"                                                                                    
+J11        SM02B-GHS-TB       TopLayer    CONN_SM02B-GHS_JST                 3467.008      3275.394      270      "No Description Available"                                                                                    
+J10        SM02B-GHS-TB       TopLayer    CONN_SM02B-GHS_JST                 3640.000      3531.492      180      "No Description Available"                                                                                    
+J9         B6B-ZR-SM4-TF      TopLayer    CONN_B6B-ZR-SM4-TF_JST             4070.000      2239.783      180      "No Description Available"                                                                                    
+J8         B6B-ZR-SM4-TF      TopLayer    CONN_B6B-ZR-SM4-TF_JST             4610.000      2514.783      180      "No Description Available"                                                                                    
+M3         5003               TopLayer    TEST-POINT-0001                    3275.000      2840.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+M2         5003               TopLayer    TEST-POINT-0001                    3275.000      2980.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+SDA        5003               TopLayer    TEST-POINT-0001                    4555.000      2210.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+TX         5003               TopLayer    TEST-POINT-0001                    3765.000      2160.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+M1         5003               TopLayer    TEST-POINT-0001                    3275.000      3120.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+SCL        5003               TopLayer    TEST-POINT-0001                    4410.000      2145.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+RX         5003               TopLayer    TEST-POINT-0001                    3760.000      2250.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+J1         B8B-PH-SM4-TBLFSN  TopLayer    CONN_B8B-PH-SM4-TB_JST_-_DUPLICATE 4664.329      3143.110      90       "No Description Available"                                                                                    
+U6         HC-05              BottomLayer XCVR_HC-05                         4650.000      3098.858      0        "Bluetooth to Serial Port Module"                                                                             
+C13        CC0402KRX7R7BB104  TopLayer    CAP-0402                           4420.000      3099.685      270      "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+SCLK       5003               TopLayer    TEST-POINT-0001                    5010.000      2877.500      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+MISO       5003               TopLayer    TEST-POINT-0001                    5000.000      3200.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+MOSI       5003               TopLayer    TEST-POINT-0001                    5010.000      3045.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+CS_ACC     5003               TopLayer    TEST-POINT-0001                    4525.000      3745.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+CS_LCD     5003               TopLayer    TEST-POINT-0001                    4990.000      2725.000      0        "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+P2         "Header 4"         TopLayer    HDR1X4                             3514.645      2370.355      135      "Header, 4-Pin"                                                                                               
+P1         "Header 5"         TopLayer    HDR1X5                             4540.000      3625.000      180      "Header, 5-Pin"                                                                                               
+R5         CRCW12100000Z0EA   TopLayer    RES_CRCW_1210_VIS                  4399.000      3395.000      180      "No Description Available"                                                                                    
+BT1        3024-2             BottomLayer BAT_3024-2                         3772.579      2991.263      90       ""                                                                                                            
+GND        5003               TopLayer    TEST-POINT-0001                    4410.000      2250.000      90       "Oranange PC Test Point, Miniature Phoisphor Bronze Silver Plating Through Hole Mounting Type"                
+U2         STM32L433RCT6      TopLayer    LQFP64-10X10MM                     4130.000      2945.000      0        "ARM® Cortex®-M4 STM32L4 Microcontroller IC 32-Bit Single-Core 80MHz 256KB (256K x 8) FLASH 64-LQFP (10x10)"  
+R4         RC0603FR-074K7L    TopLayer    RES-0603                           4485.000      2665.000      180      "RES 4.7K OHM 1% 1/10W 0603"                                                                                  
+R3         RC0603FR-074K7L    TopLayer    RES-0603                           4920.000      2561.496      90       "RES 4.7K OHM 1% 1/10W 0603"                                                                                  
+U3         W25Q16JVSSIQ       TopLayer    W25Q16JVSSIQ_WIN-M                 3805.000      2495.000      0        "FLASH - NOR Memory IC 16Mbit SPI - Quad I/O 133 MHz 8-SOIC"                                                  
+R2         RC0603FR-074K7L    TopLayer    RES-0603                           4680.000      2670.000      0        "RES 4.7K OHM 1% 1/10W 0603"                                                                                  
+Q1         T2N7002AK,LM       TopLayer    IC-SOT23-3                         3665.000      2735.000      180      "MOSFET N-CH 60V 200MA SOT23"                                                                                 
+C12        CC0402KRX7R7BB104  TopLayer    CAP-0402                           4215.000      3500.000      0        "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+C11        CC0603KRX7R7BB105  TopLayer    CAP-0603                           4215.000      3551.339      0        "CAP CER 1UF 16V X7R 0603"                                                                                    
+C10        CC0402KRX7R7BB104  TopLayer    CAP-0402                           4059.681      3447.729      180      "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+C7         CC0603KRX7R7BB105  TopLayer    CAP-0603                           3717.429      2868.195      90       "CAP CER 1UF 16V X7R 0603"                                                                                    
+C6         CC0402KRX7R7BB104  TopLayer    CAP-0402                           3832.547      2869.317      90       "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+C5         GRM2195C1H103JA01D TopLayer    CAP-0805                           3778.925      2870.014      90       "CAP CER 10000PF 50V C0G/NP0 0805"                                                                            
+C4         CC0603KRX5R8BB475  TopLayer    CAP-0603                           3994.596      3292.949      0        "CAP CER 4.7UF 25V X5R 0603"                                                                                  
+C3         CC0402KRX7R7BB104  TopLayer    CAP-0402                           3983.992      2648.390      180      "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+C2         CC0402KRX7R7BB104  TopLayer    CAP-0402                           3997.202      3241.610      0        "CAP CER 0.1UF 16V X7R 0402"                                                                                  
+C1         CC0402KRX7R7BB104  TopLayer    CAP-0402                           4295.948      2653.390      180      "CAP CER 0.1UF 16V X7R 0402"                                                                                  

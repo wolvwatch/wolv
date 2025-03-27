@@ -1,10 +1,10 @@
-|RECORD=BOM|VERSION=6|FILENAME=C:\Users\amsie\OneDrive\Documents\GitHub\eecs373_FinalProject\Hardware\SmartWatch\SmartWatch.$$$|KIND=ALTIUM_DESIGNER_LIVEBOM|DATE=27.03.2025|TIME=02:42:58|CURRENCY=USD|PRODUCTIONQUANTITY=1|PERUNITTARGETPRICE=0|PERUNITACTUALPRICE=0
+|RECORD=BOM|VERSION=6|FILENAME=C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\SmartWatch.$$$|KIND=ALTIUM_DESIGNER_LIVEBOM|DATE=27.03.2025|TIME=02:54:42|CURRENCY=USD|PRODUCTIONQUANTITY=1|PERUNITTARGETPRICE=0|PERUNITACTUALPRICE=0
 |RECORD=GeneralOptions|OPENEXPORTED=False|ADDTOPROJECT=False|FORCEFIT=False|NOTFITTED=False|TEMPLATEFILENAME=|BATCHMODE=0|SUPPLIERPRODQTY=0|SUPPLIERAUTOQTY=False|SUPPLIERUSECACHEDPRICING=False|SUPPLIERCURRENCY=|SOLUTIONSPERITEM=1|SUPPLIERSPERSOLUTION=1|DISPLAYTOTALROW=False|DISPLAYSUBTOTALSFORGROUPS=False|INCLUDEPCBPARAMETERS=False|INCLUDEDBPARAMETERS=False|INCLUDEVAULTPARAMETERS=False|INCLUDECLOUDPARAMETERS=False|INCLUDEDOCUMENTPARAMETERS=False|FILTEROUTRISKYSOLUTIONS=True|DESIGNATORGROUPING=No
 |RECORD=SortOrderOptions|SORTORDER=
 |RECORD=GroupOrderOptions|GROUPORDER=
 |RECORD=VisibleOrderOptions|VISIBLEORDER=Line #=53!Comment=146!Description=100!Designator=100!Quantity=66!JLC Part Number=106!Manufacturer 1=99!Manufacturer Part Number 1=166!Manufacturer Lifecycle 1=142!Supplier 1=72!Supplier Part Number 1=138!Supplier Unit Price 1=122!Supplier Subtotal 1=116
 |RECORD=VisibleOrderOptions2|BASEVIEW=Line #=53!Comment=146!Description=-1!Designator=-1!Quantity=66!JLC Part Number=106!Manufacturer 1=99!Manufacturer Part Number 1=166!Manufacturer Lifecycle 1=142!Supplier 1=72!Supplier Part Number 1=138!Supplier Unit Price 1=122!Supplier Subtotal 1=116|FLATVIEW=Line #=53!Comment=146!Description=-1!Designator=77!Manufacturer 1=99!Manufacturer Part Number 1=166!Manufacturer Lifecycle 1=142!Supplier 1=72!Supplier Part Number 1=138!Supplier Unit Price 1=122!Supplier Subtotal 1=116|CONSOLIDATEDVIEW=Line #=53!Comment=146!Description=-1!Designator=-1!Quantity=66!Manufacturer 1=99!Manufacturer Part Number 1=166!Manufacturer Lifecycle 1=142!Supplier 1=72!Supplier Part Number 1=138!Supplier Unit Price 1=122!Supplier Subtotal 1=116
-|RECORD=CustomColumns|CUSTOMCOLUMNS=JLC Part Number=-1
+|RECORD=CustomColumns|CUSTOMCOLUMNS=JLC Part Number=106
 |RECORD=ColumnsAliases|COLUMNSALIASES=Comment=Name
 |RECORD=FilterOptions|FILTER=
 |RECORD=CheckGroupCompParamsOptions|CHECKGROUPCOMPPARAMS=Comment=0,Description=0,Value=0,Footprint=1

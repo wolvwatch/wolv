@@ -1,0 +1,722 @@
+*************************************************************
+FileName = Smart_Watch.GBR
+AutoAperture = True
+*************************************************************
+Generating : Top Layer
+      File : Smart_Watch.GTL
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+*************************************************************
+
+*************************************************************
+Generating : Layer 1
+      File : Smart_Watch.G1
+
+    Adding Layer      : Layer 1
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D35
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+*************************************************************
+
+*************************************************************
+Generating : Layer 2
+      File : Smart_Watch.G2
+
+    Adding Layer      : Layer 2
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+*************************************************************
+
+*************************************************************
+Generating : Bottom Layer
+      File : Smart_Watch.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D19
+    D21
+    D35
+    D36
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
+    D51
+    D52
+*************************************************************
+
+*************************************************************
+Generating : Bottom Pad Master
+      File : Smart_Watch.GPB
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D19
+    D21
+    D39
+    D40
+    D41
+    D42
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
+    D51
+    D52
+*************************************************************
+
+*************************************************************
+Generating : Top Pad Master
+      File : Smart_Watch.GPT
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D39
+    D40
+    D41
+    D42
+*************************************************************
+
+*************************************************************
+Generating : Top Overlay
+      File : Smart_Watch.GTO
+
+    Adding Layer      : Top Overlay
+
+
+Used DCodes :
+    D53
+    D54
+    D55
+    D56
+    D57
+*************************************************************
+
+*************************************************************
+Generating : Bottom Overlay
+      File : Smart_Watch.GBO
+
+    Adding Layer      : Bottom Overlay
+
+
+Used DCodes :
+    D53
+    D56
+    D58
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : Smart_Watch.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D12
+    D13
+    D16
+    D17
+    D18
+    D21
+    D22
+    D23
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D60
+    D61
+    D62
+    D63
+    D64
+    D65
+    D66
+    D67
+    D68
+    D69
+    D70
+    D71
+    D72
+    D73
+    D74
+    D75
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : Smart_Watch.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D21
+    D45
+    D63
+    D70
+    D71
+    D72
+    D73
+    D74
+    D75
+    D76
+    D77
+    D78
+    D79
+    D80
+    D81
+    D82
+*************************************************************
+
+*************************************************************
+Generating : Top Paste
+      File : Smart_Watch.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D33
+    D34
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : Smart_Watch.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D19
+    D21
+    D45
+    D46
+    D47
+    D48
+    D50
+    D51
+    D52
+    D83
+*************************************************************
+
+*************************************************************
+Generating : Keep-Out Layer
+      File : Smart_Watch.GKO
+
+    Adding Layer      : Keep-Out Layer
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 1
+      File : Smart_Watch.GM1
+
+    Adding Layer      : Mechanical 1
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Top Outline
+      File : Smart_Watch.GM2
+
+    Adding Layer      : Top Outline
+
+
+Used DCodes :
+    D84
+*************************************************************
+
+*************************************************************
+Generating : Bottom Outline
+      File : Smart_Watch.GM3
+
+    Adding Layer      : Bottom Outline
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Top 3D Body
+      File : Smart_Watch.GM4
+
+    Adding Layer      : Top 3D Body
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Top Assembly
+      File : Smart_Watch.GM5
+
+    Adding Layer      : Top Assembly
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 6
+      File : Smart_Watch.GM6
+
+    Adding Layer      : Mechanical 6
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Top Courtyard
+      File : Smart_Watch.GM7
+
+    Adding Layer      : Top Courtyard
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 13
+      File : Smart_Watch.GM13
+
+    Adding Layer      : Mechanical 13
+
+
+Used DCodes :
+    D56
+    D57
+    D59
+    D85
+    D86
+    D87
+    D88
+    D89
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 15
+      File : Smart_Watch.GM15
+
+    Adding Layer      : Mechanical 15
+
+
+Used DCodes :
+    D53
+    D89
+    D90
+    D91
+*************************************************************
+
+*************************************************************
+Generating : Top Component Center
+      File : Smart_Watch.GM16
+
+    Adding Layer      : Top Component Center
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Bottom Assembly
+      File : Smart_Watch.GM20
+
+    Adding Layer      : Bottom Assembly
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Bottom Courtyard
+      File : Smart_Watch.GM21
+
+    Adding Layer      : Bottom Courtyard
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 22
+      File : Smart_Watch.GM22
+
+    Adding Layer      : Mechanical 22
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Bottom 3D Body
+      File : Smart_Watch.GM23
+
+    Adding Layer      : Bottom 3D Body
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Bottom Component Center
+      File : Smart_Watch.GM24
+
+    Adding Layer      : Bottom Component Center
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Profile
+      File : Smart_Watch.GM
+
+
+Used DCodes :
+    D92
+*************************************************************
+
+*************************************************************
+Generating : Non-plated through-hole drill file
+      File : Smart_Watch.GBR1
+
+
+Used DCodes :
+*************************************************************
+
+*************************************************************
+Generating : Plated through-hole drill file
+      File : Smart_Watch.GBR2
+
+
+Used DCodes :
+    D93
+    D94
+    D95
+    D96
+    D97
+    D98
+*************************************************************
+
+*************************************************************
+Generating : Blind or buried via drill file for drill pairs
+      File : Smart_Watch.GBR3
+
+
+Used DCodes :
+    D97
+*************************************************************
+
+*************************************************************
+Generating : Blind or buried via drill file for drill pairs
+      File : Smart_Watch.GBR4
+
+
+Used DCodes :
+    D97
+*************************************************************
+
+*************************************************************
+Generating : Blind or buried via drill file for drill pairs
+      File : Smart_Watch.GBR5
+
+
+Used DCodes :
+    D97
+*************************************************************
+
+*************************************************************
+Generating : Blind or buried via drill file for drill pairs
+      File : Smart_Watch.GBR6
+
+
+Used DCodes :
+    D97
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Smart_Watch.GD1
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D59
+    D100
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Smart_Watch.GD2
+
+    Adding Drill Pair : Top Layer-Layer 1
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Smart_Watch.GD3
+
+    Adding Drill Pair : Top Layer-Layer 2
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Smart_Watch.GD4
+
+    Adding Drill Pair : Layer 1-Bottom Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Smart_Watch.GD5
+
+    Adding Drill Pair : Layer 2-Bottom Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Smart_Watch.GG1
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Smart_Watch.GG2
+
+    Adding Drill Pair : Top Layer-Layer 1
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Smart_Watch.GG3
+
+    Adding Drill Pair : Top Layer-Layer 2
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Smart_Watch.GG4
+
+    Adding Drill Pair : Layer 1-Bottom Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D59
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Smart_Watch.GG5
+
+    Adding Drill Pair : Layer 2-Bottom Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D59
+*************************************************************
+

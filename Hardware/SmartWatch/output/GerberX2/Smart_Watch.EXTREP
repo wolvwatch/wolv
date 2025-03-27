@@ -1,0 +1,54 @@
+------------------------------------------------------------------------------------------
+Gerber File Extension Report For: Smart_Watch.GBR   3/26/2025  10:57:09 PM
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+Layer Extension     Layer Description                      
+------------------------------------------------------------------------------------------
+.GTL                Top Layer                               
+.G1                 Layer 1                                 
+.G2                 Layer 2                                 
+.GBL                Bottom Layer                            
+.GPB                Bottom Pad Master                       
+.GPT                Top Pad Master                          
+.GTO                Top Overlay                             
+.GBO                Bottom Overlay                          
+.GTS                Top Solder                              
+.GBS                Bottom Solder                           
+.GTP                Top Paste                               
+.GBP                Bottom Paste                            
+.GKO                Keep-Out Layer                          
+.GM1                Mechanical 1                            
+.GM2                Top Outline                             
+.GM3                Bottom Outline                          
+.GM4                Top 3D Body                             
+.GM5                Top Assembly                            
+.GM6                Mechanical 6                            
+.GM7                Top Courtyard                           
+.GM13               Mechanical 13                           
+.GM15               Mechanical 15                           
+.GM16               Top Component Center                    
+.GM20               Bottom Assembly                         
+.GM21               Bottom Courtyard                        
+.GM22               Mechanical 22                           
+.GM23               Bottom 3D Body                          
+.GM24               Bottom Component Center                 
+.GM                 Profile                                 
+.GBR1               Non-plated through-hole drill file      
+.GBR2               Plated through-hole drill file          
+.GBR3               Blind or buried via drill file for drill pairs
+.GBR4               Blind or buried via drill file for drill pairs
+.GBR5               Blind or buried via drill file for drill pairs
+.GBR6               Blind or buried via drill file for drill pairs
+.GD1                Drill Drawing                           
+.GD2                Drill Drawing                           
+.GD3                Drill Drawing                           
+.GD4                Drill Drawing                           
+.GD5                Drill Drawing                           
+.GG1                Drill Guide                             
+.GG2                Drill Guide                             
+.GG3                Drill Guide                             
+.GG4                Drill Guide                             
+.GG5                Drill Guide                             
+------------------------------------------------------------------------------------------
