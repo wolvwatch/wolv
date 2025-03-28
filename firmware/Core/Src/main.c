@@ -25,6 +25,7 @@
 #include "lcd.h"
 #include "gui.h"
 #include "max30102.h"
+#include "spo2.h"
 #include "stm32l4xx_hal.h"
 /* USER CODE END Includes */
 
@@ -56,6 +57,10 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
+uint32_t raw_hr[4000] = {0};
+uint32_t raw_spo2[4000] = {0};
+uint8_t max30102_head = 0;
+extern max_struct_t max30102_sensor;
 
 /* USER CODE END PV */
 
@@ -65,9 +70,9 @@ static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM4_Init(void);
-static void MX_LPUART1_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_LPUART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -108,11 +113,11 @@ int main(void)
   MX_TIM1_Init();
   MX_SPI1_Init();
   MX_TIM4_Init();
-  MX_LPUART1_UART_Init();
   MX_RTC_Init();
   MX_I2C1_Init();
+  MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  Paint_SetDisplayFunction(&screen_set_point);
+  /*Paint_SetDisplayFunction(&screen_set_point);
   Paint_NewImage(240, 240, 0, 0);
   screen_init(1);
   screen_clear(0x0);
@@ -121,14 +126,42 @@ int main(void)
   draw_img(55, 175, &steps, 0x344B, BLACK, 0.12);
   draw_string(90, 180, "6281 steps", &roboto, WHITE, BLACK, 0.25);
   uint8_t buf[5] = {0};
-  screen_render();
+  screen_render();*/
   max30102_init();
+  HAL_Delay(2000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    //dumping the first 25 sets of samples in the memory and shift the last 75 sets of samples to the top
+    for (uint16_t i = 100; i < 4000; i++)
+    {
+      raw_hr[i - 100] = raw_hr[i];
+      raw_spo2[i - 100] = raw_spo2[i];
+    }
+
+    uint16_t read_in = 0;
+    while (read_in != 100) {
+      uint8_t samps = max30102_read_data();
+      for (int i = 0; i < samps; i++) {
+        raw_hr[i] = max30102_sensor.red[max30102_sensor.tail];
+        raw_spo2[i] = max30102_sensor.IR[max30102_sensor.tail];
+        max30102_sensor.tail++;
+        max30102_sensor.tail %= 32;
+        read_in++;
+        if (read_in == 100) break;
+      }
+    }
+
+    int32_t spo2; //SPO2 value
+    int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
+    int32_t heartRate; //heart rate value
+    int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
+
+    maxim_heart_rate_and_oxygen_saturation(raw_spo2, 4000, raw_hr, &spo2, &validSPO2, &heartRate, &validHeartRate);
+    printf("hr: %d <%u> spo2: %d <%u>\n", heartRate, validHeartRate, spo2, validSPO2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -203,7 +236,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x30A175AB;
+  hi2c1.Init.Timing = 0x10B21F61;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -724,12 +757,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PD7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
   /*Configure GPIO pin : PB4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -737,10 +764,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

@@ -1,0 +1,214 @@
+*************************************************************
+FileName = Smart_Watch.PcbDoc
+ODB++ directory structure
+*************************************************************
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\profile
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\stephdr
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_2\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_2\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_3\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\dielectric_3\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_non-plated_bottom_layer-top_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_non-plated_bottom_layer-top_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_non-plated_bottom_layer-top_layer\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\keep-out_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\keep-out_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_plated_bottom_layer-top_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_plated_bottom_layer-top_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_plated_bottom_layer-top_layer\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_outline\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_outline\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_1-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_1-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_1-bottom_layer\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_outline\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_outline\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_3d_body\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_3d_body\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_6\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_6\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_assembly\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_assembly\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_component_center\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_component_center\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_2\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_2\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_2\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_top_layer-layer_1\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_assembly\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_assembly\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_courtyard\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_courtyard\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_paste\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_paste\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_component_center\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_component_center\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_layer_2-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_layer_2-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_2-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_2-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_blind_vias_layer_2-bottom_layer\tools
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_solder\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_solder\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\layer_2\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\layer_2\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_15\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_15\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_layer_2-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_layer_2-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-layer_2\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-layer_2\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-layer_2\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-layer_2\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_layer_1-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_layer_1-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_paste\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_paste\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_courtyard\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_courtyard\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_layer_1-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_layer_1-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-layer_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_drawing_top_layer-layer_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-layer_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\drill_guide_top_layer-layer_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_22\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_22\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_solder\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_solder\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_3d_body\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_3d_body\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_overlay\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_overlay\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_13\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\mechanical_13\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\layer_1\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\layer_1\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\bottom_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_overlay\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_overlay\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_layer\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\top_layer\attrlist
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\comp_+_bot\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\comp_+_bot\components
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\comp_+_top\features
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\layers\comp_+_top\components
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\steps\pcb\eda\data
+
+Generated File : C:\Users\Sandr\projects\smartwatch\Hardware\SmartWatch\Project Outputs for SmartWatch\ODB\odb\matrix\matrix
+

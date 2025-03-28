@@ -24,6 +24,8 @@
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
 #include "gui.h"
+#include "spo2.h"
+#include "max30102.h"
 #include "stm32l4xx_hal.h"
 /* USER CODE END Includes */
 
@@ -202,27 +204,19 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
-}
-
-/**
   * @brief This function handles RTC alarm interrupt through EXTI line 18.
   */
 void RTC_Alarm_IRQHandler(void)
 {
   /* USER CODE BEGIN RTC_Alarm_IRQn 0 */
-  draw_current_time(30, 110, &roboto, WHITE, BLACK, 0.5);
-  screen_render();
+  if (RTC->ISR & RTC_ISR_ALRAF) {
+
+  }
+
+  if (RTC->ISR & RTC_ISR_ALRBF) {
+  }
+  //draw_current_time(30, 110, &roboto, WHITE, BLACK, 0.5);
+  //screen_render();
   /* USER CODE END RTC_Alarm_IRQn 0 */
   HAL_RTC_AlarmIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_Alarm_IRQn 1 */
