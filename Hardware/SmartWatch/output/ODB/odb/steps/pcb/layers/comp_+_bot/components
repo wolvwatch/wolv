@@ -1,0 +1,157 @@
+UNITS=MM
+#
+#Component attribute names
+#
+@0 .comp_mount_type
+@1 .comp_height
+@2 .no_pop
+@3 .comp_ignore
+@4 .comp_variant_list
+
+#
+#Component attribute text strings
+#
+
+# CMP 0
+CMP 19 107.442 57.023 270 N R7 RC0603FR-0710KP ;0=1,1=1.8000
+PRP assembled? 'no'
+PRP Manufacturer 'YAGEO'
+PRP Manufacturer_Part_Number 'RC0603FR-0710KP'
+PRP Package_Size '0603'
+PRP Power_Rating '1/10W'
+PRP Resistance '10kOhm +/-1%'
+TOP 0 107.442 56.22299906 270 N 43 14 1
+TOP 1 107.442 57.82300094 270 N 11 2 2
+#
+# CMP 1
+CMP 18 104.7623 61.849 0 N R1 ERJP03F4700V ;0=1,1=0.0000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://industrial.panasonic.com/cdbs/www-data/pdf/RDO0000/AOA0000C331.pdf'
+PRP Mfr_Name 'Panasonic'
+PRP RefDes ''
+PRP Type ''
+TOP 0 105.5116 61.849 180 N 12 1 1
+TOP 1 104.013 61.849 180 N 7 1 2
+#
+# CMP 2
+CMP 17 100.457 56.134 270 N R12 CRCW12100000Z0EA ;0=1,1=0.0000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.vishay.com/docs/20035/dcrcwe3.pdf'
+PRP Mfr_Name 'Vishay'
+PRP RefDes ''
+PRP Type ''
+TOP 0 100.457 54.5846 270 N 52 13 1
+TOP 1 100.457 57.6834 270 N 2 0 2
+#
+# CMP 3
+CMP 17 105.029 56.261 270 N R10 CRCW12100000Z0EA ;0=1,1=0.0000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.vishay.com/docs/20035/dcrcwe3.pdf'
+PRP Mfr_Name 'Vishay'
+PRP RefDes ''
+PRP Type ''
+TOP 0 105.029 54.7116 270 N 52 12 1
+TOP 1 105.029 57.8104 270 N 11 1 2
+#
+# CMP 4
+CMP 18 104.775 60.071 180 N R6 ERJP03F4700V ;0=1,1=0.0000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.yageo.com/upload/media/product/products/datasheet/rchip/PYu-RC_Group_51_RoHS_L_12.pdf'
+PRP Power '1/16W'
+PRP Resistance '470R'
+PRP Size '0402'
+PRP Tolerance '1%'
+TOP 0 104.0257 60.071 0 N 5 1 1
+TOP 1 105.5243 60.071 0 N 6 1 2
+#
+# CMP 5
+CMP 13 99.451795 58.719847 270 N D3 BL-HKC36G-AV-TRB ;0=1,1=1.8000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.americanbrightled.com/pdffiles/led-components/smt/BL-HKC36G-AV-TRB.pdf'
+PRP Forward_Current '30mA'
+PRP Forward_Voltage '2V'
+TOP 0 100.203 61.01080254 0 N 5 0 1
+TOP 1 100.203 59.309 0 N 43 8 2
+#
+# CMP 6
+CMP 13 99.613847 63.743205 180 N D1 BL-HKC36G-AV-TRB ;0=1,1=1.8000
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.americanbrightled.com/pdffiles/led-components/smt/BL-HKC36G-AV-TRB.pdf'
+PRP Forward_Current '30mA'
+PRP Forward_Voltage '2V'
+TOP 0 101.90480254 62.992 90 N 7 0 1
+TOP 1 100.203 62.992 90 N 43 13 2
+#
+# CMP 7
+CMP 16 104.775 93.091 180 N L1 SRN8040-2R2Y ;0=1,1=1.8000
+PRP assembled? 'no'
+PRP DC_Resistance '13mOhms'
+PRP Dimensions '8x8x4 (mm)'
+PRP Inductance '2.2uH +/-30%'
+PRP Manufacturer 'Bourns Inc.'
+PRP Manufacturer_Part_Number 'SRN8040-2R2Y'
+PRP Saturation_Current '7.4A'
+TOP 0 101.97499798 93.091 0 N 9 0 1
+TOP 1 107.57500202 93.091 0 N 52 11 2
+#
+# CMP 8
+CMP 22 118.11 75.28599878 180 N U6 HC-05 ;0=1,1=0.0000
+PRP Check_prices 'https://www.snapeda.com/parts/HC-05/ITEAD/view-part/?ref=eda'
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://components101.com/sites/default/files/component_datasheet/HC06%20Bluetooth%20Module%20Datasheet.pdf'
+PRP ComponentLink2Description 'Datasheet2'
+PRP ComponentLink2URL 'https://dcc-ex.com/reference/hardware/bluetooth/hc-05-06.html#gsc.tab=0'
+PRP MF 'ITead Studio'
+PRP MP 'HC-05'
+PRP Package 'Module ITead Studio'
+PRP SnapEDA_Link 'https://www.snapeda.com/parts/HC-05/ITEAD/view-part/?ref=snap'
+PRP Value ''
+TOP 0 111.76 68.961 0 N 28 0 1
+TOP 1 111.76 70.46100208 0 N 30 0 2
+TOP 2 111.76 71.96099908 0 N 0 16 3
+TOP 3 111.76 73.46099862 0 N 0 17 4
+TOP 4 111.76 74.96099562 0 N 0 18 5
+TOP 5 111.76 76.4609977 0 N 0 19 6
+TOP 6 111.76 77.96099724 0 N 0 20 7
+TOP 7 111.76 79.46099932 0 N 0 21 8
+TOP 8 111.76 80.9610014 0 N 0 22 9
+TOP 9 111.76 82.4609984 0 N 0 23 10
+TOP 10 111.76 83.96099794 0 N 1 0 11
+TOP 11 111.76 85.46100002 0 N 3 2 12
+TOP 12 111.76 86.96099956 0 N 43 12 13
+TOP 13 112.86000034 88.4609991 0 N 0 1 14
+TOP 14 114.35999988 88.46099656 0 N 0 2 15
+TOP 15 115.85999942 88.4609991 0 N 0 3 16
+TOP 16 117.35999896 88.4609991 0 N 0 0 17
+TOP 17 118.86000104 88.4609991 0 N 0 4 18
+TOP 18 120.36000058 88.4609991 0 N 0 5 19
+TOP 19 121.86000012 88.4609991 0 N 0 6 20
+TOP 20 123.35999966 88.4609991 0 N 43 10 21
+TOP 21 124.46 86.96099956 0 N 43 11 22
+TOP 22 124.46 85.46100002 0 N 0 7 23
+TOP 23 124.46 83.96099794 0 N 0 8 24
+TOP 24 124.46 82.4609984 0 N 0 9 25
+TOP 25 124.46 80.9610014 0 N 0 10 26
+TOP 26 124.46 79.46099932 0 N 0 11 27
+TOP 27 124.45999746 77.96099978 0 N 0 12 28
+TOP 28 124.46 76.4609977 0 N 0 13 29
+TOP 29 124.45999746 74.96099816 0 N 0 14 30
+TOP 30 124.46 73.46099862 0 N 12 0 31
+TOP 31 124.46 71.96099908 0 N 6 0 32
+TOP 32 124.46 70.46100208 0 N 0 15 33
+TOP 33 124.46 68.961 0 N 11 0 34
+#
+# CMP 9
+CMP 0 95.82349898 75.97807766 270 N BT1 3024-2 ;0=1,1=6.3500
+PRP Availability 'Unavailable'
+PRP ComponentLink1Description 'Datasheet'
+PRP ComponentLink1URL 'https://www.keyelco.com/userAssets/file/M65p8.pdf'
+PRP MF ''
+PRP MP '3024-2'
+PRP Package 'None'
+PRP Price 'None'
+PRP Value ''
+TOP 0 95.82349898 75.97807766 270 N 43 9 N
+TOP 1 95.82349898 61.51307738 270 N 10 2 P1
+TOP 2 95.82349898 90.44307794 270 N 10 3 P2
+#
