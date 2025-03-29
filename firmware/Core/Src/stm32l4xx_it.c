@@ -22,10 +22,10 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd.h"
+#include "devices/lcd.h"
 #include "gui.h"
-#include "spo2.h"
-#include "max30102.h"
+#include "devices/spo2.h"
+#include "devices/max30102.h"
 #include "stm32l4xx_hal.h"
 #include "sense.h"
 /* USER CODE END Includes */

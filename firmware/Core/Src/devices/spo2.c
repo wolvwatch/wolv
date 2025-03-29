@@ -1,4 +1,4 @@
-#include "spo2.h"
+#include "../Inc/devices/spo2.h"
 
 // ---------------------------------------------------
 // Configuration
