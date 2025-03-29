@@ -27,6 +27,7 @@
 #include "spo2.h"
 #include "max30102.h"
 #include "stm32l4xx_hal.h"
+#include "sense.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +63,9 @@
 /* External variables --------------------------------------------------------*/
 extern RTC_HandleTypeDef hrtc;
 /* USER CODE BEGIN EV */
+extern sense_t sensor_data;
+extern gui_data_t gui_data;
+extern RTC_HandleTypeDef hrtc;
 
 /* USER CODE END EV */
 
@@ -204,19 +208,95 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line1 interrupt.
+  */
+void EXTI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+  if (gui_data.state == SET_TIME_HR) {
+    gui_data.set_time_hr++;
+  } else if (gui_data.state == SET_TIME_MIN) {
+    gui_data.set_time_min++;
+  } else if (gui_data.state == SET_TIME_SEC) {
+    gui_data.set_time_sec++;
+  } else if (gui_data.state == SET_TIME_AMPM) {
+    gui_data.set_time_AM = !gui_data.set_time_AM;
+  }
+
+  update_gui();
+
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+  if ((EXTI->PR1 & EXTI_PR1_PIF7) != 0) {
+    switch (gui_data.state) {
+      case HOME_DIGITAL: {
+        set_gui_state(SET_TIME_HR);
+        break;
+      }
+      case SET_TIME_HR: {
+        set_gui_state(SET_TIME_MIN);
+        break;
+      }
+      case SET_TIME_MIN: {
+        set_gui_state(SET_TIME_SEC);
+        break;
+      }
+      case SET_TIME_SEC: {
+        set_gui_state(SET_TIME_AMPM);
+        break;
+      }
+      case SET_TIME_AMPM: {
+        set_gui_state(HOME_DIGITAL);
+        RTC_TimeTypeDef time;
+        time.Hours = gui_data.set_time_hr;
+        time.Minutes = gui_data.set_time_min;
+        time.Seconds = gui_data.set_time_sec;
+        time.TimeFormat = gui_data.set_time_AM ? RTC_HOURFORMAT12_AM : RTC_HOURFORMAT12_PM;
+        HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+        break;
+      }
+      default: break;
+    }
+  } else {
+    if (gui_data.state == SET_TIME_HR) {
+      gui_data.set_time_hr--;
+    } else if (gui_data.state == SET_TIME_MIN) {
+      gui_data.set_time_min--;
+    } else if (gui_data.state == SET_TIME_SEC) {
+      gui_data.set_time_sec--;
+    } else if (gui_data.state == SET_TIME_AMPM) {
+      gui_data.set_time_AM = !gui_data.set_time_AM;
+    }
+  }
+
+  update_gui();
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
   * @brief This function handles RTC alarm interrupt through EXTI line 18.
   */
 void RTC_Alarm_IRQHandler(void)
 {
   /* USER CODE BEGIN RTC_Alarm_IRQn 0 */
-  if (RTC->ISR & RTC_ISR_ALRAF) {
-
-  }
-
-  if (RTC->ISR & RTC_ISR_ALRBF) {
-  }
-  //draw_current_time(30, 110, &roboto, WHITE, BLACK, 0.5);
-  //screen_render();
+  update_gui();
   /* USER CODE END RTC_Alarm_IRQn 0 */
   HAL_RTC_AlarmIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_Alarm_IRQn 1 */

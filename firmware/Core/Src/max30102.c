@@ -2,6 +2,7 @@
 #include "spo2.h"
 
 #include <stdio.h>
+#include "string.h"
 
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
 
@@ -165,14 +166,14 @@ void soft_reset() {
 void max30102_init() {
     soft_reset();
 
-    bit_mask(MAX30102_FIFOCONFIG, MAX30102_SAMPLEAVG_MASK, MAX30102_SAMPLEAVG_1);
+    bit_mask(MAX30102_FIFOCONFIG, MAX30102_SAMPLEAVG_MASK, MAX30102_SAMPLEAVG_8);
     bit_mask(MAX30102_FIFOCONFIG, MAX30102_ROLLOVER_MASK, MAX30102_ROLLOVER_ENABLE);
     bit_mask(MAX30102_MODECONFIG, MAX30102_MODE_MASK, MAX30102_MODE_MULTILED);
     bit_mask(MAX30102_PARTICLECONFIG, MAX30102_ADCRANGE_MASK, MAX30102_ADCRANGE_4096);
-    bit_mask(MAX30102_PARTICLECONFIG, MAX30102_SAMPLERATE_MASK, MAX30102_SAMPLERATE_400);
-    bit_mask(MAX30102_PARTICLECONFIG, MAX30102_PULSEWIDTH_MASK, MAX30102_PULSEWIDTH_118);
+    bit_mask(MAX30102_PARTICLECONFIG, MAX30102_SAMPLERATE_MASK, MAX30102_SAMPLERATE_200);
+    bit_mask(MAX30102_PARTICLECONFIG, MAX30102_PULSEWIDTH_MASK, MAX30102_PULSEWIDTH_411);
 
-    uint8_t power_lvl = 0x3F;
+    uint8_t power_lvl = 0x1F;
     write_byte(MAX30102_LED1_PULSEAMP, power_lvl);
     write_byte(MAX30102_LED2_PULSEAMP, power_lvl);
 
@@ -197,15 +198,40 @@ int max30102_read_data() {
     if (read_ptr != write_ptr) {
         new_samps = write_ptr - read_ptr;
         if (new_samps < 0) new_samps += 32;
-        uint8_t data = MAX30102_FIFODATA;
-        HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDRESS << 1, &data, 1, HAL_MAX_DELAY);
-        uint8_t buf[new_samps*6];
-        HAL_I2C_Master_Receive(&hi2c1, MAX30102_ADDRESS << 1, buf, new_samps*6, HAL_MAX_DELAY);
-        for (int i = 0; i < new_samps; i++) {
-            max30102_sensor.head++;
-            max30102_sensor.head %= 32;
-            max30102_sensor.red[max30102_sensor.head] = (buf[i*6] << 16 | buf[i*6 + 1] << 8 | buf[i*6 + 2]) & 0x3FFFF;
-            max30102_sensor.IR[max30102_sensor.head] = (buf[i*6 + 3] << 16 | buf[i*6 + 4] << 8 | buf[i*6 + 5]) & 0x3FFFF;
+        uint16_t bytes_left = new_samps * 6;
+
+        while (bytes_left > 0) {
+            uint16_t get = bytes_left;
+            if (get > 32) get = 32 - (32 % 6);
+            bytes_left -= get;
+
+            uint8_t data = MAX30102_FIFODATA;
+            HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDRESS << 1, &data, 1, HAL_MAX_DELAY);
+            uint8_t buf[new_samps*6];
+            HAL_I2C_Master_Receive(&hi2c1, MAX30102_ADDRESS << 1, buf, get, HAL_MAX_DELAY);
+
+            uint16_t i = 0;
+            while (get > 0) {
+                max30102_sensor.head++;
+                max30102_sensor.head %= 32;
+
+                uint32_t hr, spo2;
+                uint8_t temp[4];
+
+                temp[3] = 0; temp[2] = buf[i*6]; temp[1] = buf[i*6+1]; temp[0] = buf[i*6+2];
+                memcpy(&hr, temp, 4);
+                hr &= 0x3FFFF;
+
+                temp[3] = 0; temp[2] = buf[i*6+3]; temp[1] = buf[i*6+4]; temp[0] = buf[i*6+5];
+                memcpy(&spo2, temp, 4);
+                spo2 &= 0x3FFFF;
+
+                temp[3] = 0;
+                max30102_sensor.red[max30102_sensor.head] = hr;
+                max30102_sensor.IR[max30102_sensor.head] = spo2;
+                i++;
+                get -= 6;
+            }
         }
     }
 
