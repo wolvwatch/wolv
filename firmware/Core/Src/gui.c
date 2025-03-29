@@ -1,11 +1,11 @@
 #include "gui.h"
-#include "Debug.h"
+#include "debug.h"
 #include "bitmaps.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include "math.h"
-#include "lcd.h"
+#include "devices/lcd.h"
 #include "stm32l4xx_hal.h"
 #include "sense.h"
 
@@ -295,35 +295,31 @@ void draw_analog_hands() {
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BCD);
 
-    //double hour_angle = ((time.Hours % 12) * 30) * (3.141592 / 180);
-    while (1) {
-        for (uint16_t i = 0; i < 360*2; i++) {
-            double x_s = HOUR_HAND_LENGTH * cos(i*0.5 * 3.141592/180.0);
-            double y_s = HOUR_HAND_LENGTH * sin(i*0.5 * 3.141592/180.0);
+    uint32_t seconds = time.Seconds + time.Minutes*60 + time.Hours*3600;
 
-            double x_m = HOUR_HAND_LENGTH * cos(i*0.1 * 3.141592/180.0);
-            double y_m = HOUR_HAND_LENGTH * sin(i*0.1 * 3.141592/180.0);
+    double second_angle = (seconds % 3600*12 / 3600*12.0) * 2*3.141592;
+    double minute_angle = (seconds % 3600 / 3600.0) * 2*3.141592;
+    double hour_angle = (seconds % 60 / 60.0) * 2*3.141592;
 
-            double x_h = HOUR_HAND_LENGTH*0.66 * cos(i*0.01 * 3.141592/180.0);
-            double y_h = HOUR_HAND_LENGTH*0.66 * sin(i*0.01 * 3.141592/180.0);
+    double x_s = HOUR_HAND_LENGTH * cos(hour_angle);
+    double y_s = HOUR_HAND_LENGTH * sin(hour_angle);
 
-            draw_line(120, 120, 120 + x_s, 120 + y_s, BLUE);
-            draw_thick_line(120, 120, 120 + x_m, 120 + y_m, 2, WHITE);
-            draw_thick_line(120, 120, 120 + x_h, 120 + y_h, 2, 0xA534);
+    double x_m = HOUR_HAND_LENGTH * cos(minute_angle);
+    double y_m = HOUR_HAND_LENGTH * sin(minute_angle);
 
-            draw_circle(120, 120, 5, WHITE);
-            screen_render();
-            HAL_Delay(20);
-            draw_line(120, 120, 120 + x_s, 120 + y_s, BLACK);
-            draw_thick_line(120, 120, 120 + x_m, 120 + y_m, 2, BLACK);
-            draw_thick_line(120, 120, 120 + x_h, 120 + y_h, 2, BLACK);
-        }
-    }
+    double x_h = HOUR_HAND_LENGTH*0.66 * cos(second_angle);
+    double y_h = HOUR_HAND_LENGTH*0.66 * sin(second_angle);
+
+    screen_clear(BLACK);
+    for (uint16_t i = 0; i < 132; i++) screen_set_point(clockTickPoints[i][0], clockTickPoints[i][1], WHITE);
+    draw_line(120, 120, 120 + x_s, 120 + y_s, BLUE);
+    draw_thick_line(120, 120, 120 + x_m, 120 + y_m, 2, WHITE);
+    draw_thick_line(120, 120, 120 + x_h, 120 + y_h, 2, LIGHTGRAY);
+    draw_circle(120, 120, 5, WHITE);
 }
 
 void set_gui_state(gui_state_t state) {
     screen_clear(BLACK);
-
     switch (state) {
         case HOME_DIGITAL: {
             draw_img(55, 145, &heart, 0xF800, BLACK, 0.12);
@@ -333,8 +329,6 @@ void set_gui_state(gui_state_t state) {
         }
 
         case HOME_ANALOG: {
-            for (uint16_t i = 0; i < 132; i++) screen_set_point(clockTickPoints[i][0], clockTickPoints[i][1], WHITE);
-            draw_circle(120, 120, 5, WHITE);
             draw_analog_hands();
             screen_render();
             break;
@@ -400,6 +394,11 @@ void update_gui() {
             } else {
                 draw_string(90, 150, "---         ", &roboto, WHITE, BLACK, 0.25);
             }
+            break;
+        }
+
+        case HOME_ANALOG: {
+            draw_analog_hands();
             break;
         }
 

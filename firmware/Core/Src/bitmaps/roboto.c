@@ -1,21 +1,5 @@
-
-/*
- typedef struct {
-     const uint8_t *data;
-     uint16_t width;
-     uint16_t height;
-     uint8_t dataSize;
-     } bitmap_t;
- typedef struct {
-     int length;
-     const bitmap_t *chars;
-     } font_bitmap_t;
-*/
-
 #include <stdint.h>
 #include "bitmaps.h"
-
-
 
 static const uint8_t image_data_roboto_0x20[258] = {
     0x00, 0x00, 0x00, 

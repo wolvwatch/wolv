@@ -1,10 +1,8 @@
-#include "../Inc/max30102.h"
-#include "spo2.h"
-
+#include "devices/max30102.h"
+#include "devices/spo2.h"
 #include <stdio.h>
 #include "string.h"
-
-#include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
+#include "stm32l4xx_hal.h"
 
 extern I2C_HandleTypeDef hi2c1;
 #define MAX30102_ADDRESS 0x57
