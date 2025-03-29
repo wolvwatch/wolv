@@ -34,10 +34,6 @@
 #define BLUE 0x001F
 #define LIGHTGRAY 0xAD75
 
-#define IMAGE_BACKGROUND    WHITE
-#define FONT_FOREGROUND     BLACK
-#define FONT_BACKGROUND     WHITE
-
 typedef uint16_t color_t;
 
 typedef enum {
@@ -56,9 +52,15 @@ typedef struct {
 } gui_data_t;
 
 void set_gui_state(gui_state_t state);
+
 void draw_img(uint8_t x, uint8_t y, const bitmap_t *img, color_t foreground, color_t background, float scale);
-void draw_current_time(uint8_t start_x, uint8_t start_y, font_bitmap_t *font, color_t foreground, color_t background, float scale);
-void draw_string(uint8_t x, uint8_t y, char* str, font_bitmap_t *font, color_t foreground, color_t background, float scale);
+
+void draw_current_time(uint8_t start_x, uint8_t start_y, font_bitmap_t *font, color_t foreground, color_t background,
+                       float scale);
+
+void draw_string(uint8_t x, uint8_t y, char *str, font_bitmap_t *font, color_t foreground, color_t background,
+                 float scale);
+
 void draw_circle(uint8_t x, uint8_t y, uint8_t r, color_t foreground);
 
 void update_gui();

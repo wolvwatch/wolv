@@ -121,65 +121,65 @@ int main(void)
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-    gui_data.state = HOME_ANALOG;
-    screen_init(1);
-    screen_clear(0x0);
-    max30102_init();
-    set_gui_state(HOME_ANALOG);
+  gui_data.state = HOME_ANALOG;
+  screen_init(1);
+  screen_clear(0x0);
+  max30102_init();
+  set_gui_state(HOME_ANALOG);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-    int32_t spo2; //SPO2 value
-    int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
-    int32_t heartRate; //heart rate value
-    int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
+  int32_t spo2; //SPO2 value
+  int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
+  int32_t heartRate; //heart rate value
+  int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
 
-    uint16_t total_samps = 0;
-    while (total_samps < BUFFER_SIZE) {
-        uint16_t samps = max30102_read_data();
-        for (uint16_t j = 0; j < samps; j++) {
-            raw_hr[total_samps] = max30102_sensor.red[max30102_sensor.tail];
-            raw_spo2[total_samps] = max30102_sensor.IR[max30102_sensor.tail];
-            max30102_sensor.tail++;
-            max30102_sensor.tail %= 32;
-            total_samps++;
-            if (total_samps == BUFFER_SIZE) break;
-        }
+  uint16_t total_samps = 0;
+  while (total_samps < BUFFER_SIZE) {
+    uint16_t samps = max30102_read_data();
+    for (uint16_t j = 0; j < samps; j++) {
+      raw_hr[total_samps] = max30102_sensor.red[max30102_sensor.tail];
+      raw_spo2[total_samps] = max30102_sensor.IR[max30102_sensor.tail];
+      max30102_sensor.tail++;
+      max30102_sensor.tail %= 32;
+      total_samps++;
+      if (total_samps == BUFFER_SIZE) break;
+    }
+  }
+
+  max30102_sensor.tail = max30102_sensor.head;
+
+  maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
+                                         &validHeartRate);
+
+  while (1) {
+    uint16_t samps = max30102_read_data();
+    for (uint16_t j = 0; j < samps; j++) {
+      for (uint16_t i = 0; i < BUFFER_SIZE; i++) {
+        raw_hr[i - 1] = raw_hr[i];
+        raw_spo2[i - 1] = raw_spo2[i];
+      }
+      raw_hr[BUFFER_SIZE - 1] = max30102_sensor.red[max30102_sensor.tail];
+      raw_spo2[BUFFER_SIZE - 1] = max30102_sensor.IR[max30102_sensor.tail];
+      max30102_sensor.tail++;
+      max30102_sensor.tail %= 32;
     }
 
-    max30102_sensor.tail = max30102_sensor.head;
 
     maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
                                            &validHeartRate);
 
-    while (1) {
-        uint16_t samps = max30102_read_data();
-        for (uint16_t j = 0; j < samps; j++) {
-            for (uint16_t i = 0; i < BUFFER_SIZE; i++) {
-                raw_hr[i - 1] = raw_hr[i];
-                raw_spo2[i - 1] = raw_spo2[i];
-            }
-            raw_hr[BUFFER_SIZE - 1] = max30102_sensor.red[max30102_sensor.tail];
-            raw_spo2[BUFFER_SIZE - 1] = max30102_sensor.IR[max30102_sensor.tail];
-            max30102_sensor.tail++;
-            max30102_sensor.tail %= 32;
-        }
+    sensor_data.hr = heartRate;
+    sensor_data.val_hr = validHeartRate;
 
-
-        maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
-                                               &validHeartRate);
-
-        sensor_data.hr = heartRate;
-        sensor_data.val_hr = validHeartRate;
-
-        sensor_data.spo2 = spo2;
-        sensor_data.val_spo2 = validSPO2;
+    sensor_data.spo2 = spo2;
+    sensor_data.val_spo2 = validSPO2;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    }
+  }
   /* USER CODE END 3 */
 }
 
@@ -802,8 +802,8 @@ static void MX_GPIO_Init(void)
   #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 PUTCHAR_PROTOTYPE {
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *) &ch, 1, 0xFFFF);
-    return ch;
+  HAL_UART_Transmit(&hlpuart1, (uint8_t *) &ch, 1, 0xFFFF);
+  return ch;
 }
 
 /* USER CODE END 4 */
@@ -815,10 +815,10 @@ PUTCHAR_PROTOTYPE {
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-    __disable_irq();
-    while (1) {
-    }
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1) {
+  }
   /* USER CODE END Error_Handler_Debug */
 }
 

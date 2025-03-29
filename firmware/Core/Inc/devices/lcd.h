@@ -22,8 +22,11 @@
 #define LCD_1IN28_WIDTH 240
 
 void screen_init();
+
 void screen_clear(uint16_t Color);
+
 void screen_set_backlight(uint16_t Value);
+
 void screen_render();
 
 void screen_set_point(uint16_t x, uint16_t y, uint16_t color);

@@ -11,7 +11,9 @@ typedef struct {
 } max_struct_t;
 
 void max30102_init();
+
 int max30102_read_data();
+
 void max30102_clear_int();
 
 #endif //MAX30102_H

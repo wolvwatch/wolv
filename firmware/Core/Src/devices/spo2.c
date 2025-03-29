@@ -8,28 +8,28 @@
 // ---------------------------------------------------
 // Internal buffers/variables
 // ---------------------------------------------------
-static int32_t an_x[BUFFER_SIZE];  // Used for IR channel after DC removal & filtering
-static int32_t an_y[BUFFER_SIZE];  // Used for Red channel after DC removal & filtering
+static int32_t an_x[BUFFER_SIZE]; // Used for IR channel after DC removal & filtering
+static int32_t an_y[BUFFER_SIZE]; // Used for Red channel after DC removal & filtering
 
 // Rolling arrays to smooth the final HR and SpO2
 static int32_t hr_history[NUM_AVG_SAMPLES];
 static int32_t spo2_history[NUM_AVG_SAMPLES];
-static int     idx_history = 0;
+static int idx_history = 0;
 
 // Same 184-entry SpO2 lookup table from the Maxim code
 const uint8_t uch_spo2_table[184] = {
     95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 97, 98, 98, 98, 98, 98,
-    99, 99, 99, 99, 99, 99, 99, 99,100,100,100,100,100,100,100,100,
-   100,100,100,100,100,100,100,100,100,100,100,100, 99, 99, 99, 99,
-     99, 99, 99, 99, 98, 98, 98, 98, 98, 98, 97, 97, 97, 97, 96, 96,
-     96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93, 92, 92, 92, 91, 91,
-     90, 90, 89, 89, 89, 88, 88, 87, 87, 86, 86, 85, 85, 84, 84, 83,
-     82, 82, 81, 81, 80, 80, 79, 78, 78, 77, 76, 76, 75, 74, 74, 73,
-     72, 72, 71, 70, 69, 69, 68, 67, 66, 66, 65, 64, 63, 62, 62, 61,
-     60, 59, 58, 57, 56, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46,
-     45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 31, 30, 29,
-     28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10,
-      9,  7,  6,  5,  3,  2,  1
+    99, 99, 99, 99, 99, 99, 99, 99, 100, 100, 100, 100, 100, 100, 100, 100,
+    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 99, 99, 99, 99,
+    99, 99, 99, 99, 98, 98, 98, 98, 98, 98, 97, 97, 97, 97, 96, 96,
+    96, 96, 95, 95, 95, 94, 94, 94, 93, 93, 93, 92, 92, 92, 91, 91,
+    90, 90, 89, 89, 89, 88, 88, 87, 87, 86, 86, 85, 85, 84, 84, 83,
+    82, 82, 81, 81, 80, 80, 79, 78, 78, 77, 76, 76, 75, 74, 74, 73,
+    72, 72, 71, 70, 69, 69, 68, 67, 66, 66, 65, 64, 63, 62, 62, 61,
+    60, 59, 58, 57, 56, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46,
+    45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 31, 30, 29,
+    28, 27, 26, 25, 23, 22, 21, 20, 19, 17, 16, 15, 14, 12, 11, 10,
+    9, 7, 6, 5, 3, 2, 1
 };
 
 void maxim_peaks_above_min_height(
@@ -118,7 +118,7 @@ void maxim_remove_close_peaks(
 
     for (i = -1; i < *pn_npks; i++) {
         n_old_npks = *pn_npks;
-        *pn_npks   = i + 1;
+        *pn_npks = i + 1;
         for (j = i + 1; j < n_old_npks; j++) {
             n_dist = pn_locs[j] - ((i == -1) ? -1 : pn_locs[i]);
             if ((n_dist > n_min_distance) || (n_dist < -n_min_distance)) {
@@ -161,14 +161,13 @@ void maxim_find_peaks(
 // -----------------------------------------------------------------
 void maxim_heart_rate_and_oxygen_saturation(
     uint32_t *pun_ir_buffer,
-    int32_t   n_ir_buffer_length,
+    int32_t n_ir_buffer_length,
     uint32_t *pun_red_buffer,
-    int32_t  *pn_spo2,
-    int8_t   *pch_spo2_valid,
-    int32_t  *pn_heart_rate,
-    int8_t   *pch_hr_valid
-)
-{
+    int32_t *pn_spo2,
+    int8_t *pch_spo2_valid,
+    int32_t *pn_heart_rate,
+    int8_t *pch_hr_valid
+) {
     int32_t k, i;
 
     // ---------------------------------------------------------
@@ -177,18 +176,18 @@ void maxim_heart_rate_and_oxygen_saturation(
     uint32_t ir_sum = 0;
     uint32_t red_sum = 0;
     for (k = 0; k < n_ir_buffer_length; k++) {
-        ir_sum  += pun_ir_buffer[k];
+        ir_sum += pun_ir_buffer[k];
         red_sum += pun_red_buffer[k];
     }
-    uint32_t ir_mean  = ir_sum  / n_ir_buffer_length;
+    uint32_t ir_mean = ir_sum / n_ir_buffer_length;
     uint32_t red_mean = red_sum / n_ir_buffer_length;
 
     // ---------------------------------------------------------
     // 2) Subtract DC and invert IR; just subtract DC on Red
     // ---------------------------------------------------------
     for (k = 0; k < n_ir_buffer_length; k++) {
-        an_x[k] = -1 * ((int32_t)pun_ir_buffer[k] - (int32_t)ir_mean);   // IR channel
-        an_y[k] =      (int32_t)pun_red_buffer[k] - (int32_t)red_mean;  // Red channel
+        an_x[k] = -1 * ((int32_t) pun_ir_buffer[k] - (int32_t) ir_mean); // IR channel
+        an_y[k] = (int32_t) pun_red_buffer[k] - (int32_t) red_mean; // Red channel
     }
 
     // ---------------------------------------------------------
@@ -196,8 +195,8 @@ void maxim_heart_rate_and_oxygen_saturation(
     //    (You could do a second pass or an IIR filter here.)
     // ---------------------------------------------------------
     for (k = 0; k < (n_ir_buffer_length - MA4_SIZE); k++) {
-        an_x[k] = (an_x[k] + an_x[k+1] + an_x[k+2] + an_x[k+3]) / 4;
-        an_y[k] = (an_y[k] + an_y[k+1] + an_y[k+2] + an_y[k+3]) / 4;
+        an_x[k] = (an_x[k] + an_x[k + 1] + an_x[k + 2] + an_x[k + 3]) / 4;
+        an_y[k] = (an_y[k] + an_y[k + 1] + an_y[k + 2] + an_y[k + 3]) / 4;
     }
     // Fill leftover points with the last valid MA result
     for (; k < n_ir_buffer_length; k++) {
@@ -217,7 +216,7 @@ void maxim_heart_rate_and_oxygen_saturation(
     // Example: half the mean absolute amplitude
     int32_t n_th1 = mean_abs_x / 2;
     // Add some clamps to avoid extremes
-    if (n_th1 < 20)  n_th1 = 20;
+    if (n_th1 < 20) n_th1 = 20;
     if (n_th1 > 100) n_th1 = 100;
 
     // ---------------------------------------------------------
@@ -232,8 +231,8 @@ void maxim_heart_rate_and_oxygen_saturation(
         an_x,
         n_ir_buffer_length,
         n_th1,
-        4,      // min distance between peaks
-        15      // max # of peaks
+        4, // min distance between peaks
+        15 // max # of peaks
     );
 
     // ---------------------------------------------------------
@@ -245,7 +244,7 @@ void maxim_heart_rate_and_oxygen_saturation(
         int32_t interval = an_ir_valley_locs[i] - an_ir_valley_locs[i - 1];
         if (interval > 0) {
             // Convert to BPM
-            int32_t hr_temp = (int32_t)((FreqS * 60) / interval);
+            int32_t hr_temp = (int32_t) ((FreqS * 60) / interval);
             // Reject physiologically impossible intervals
             if (hr_temp >= 30 && hr_temp <= 220) {
                 interval_sum += interval;
@@ -256,11 +255,11 @@ void maxim_heart_rate_and_oxygen_saturation(
 
     if (valid_intervals > 0) {
         int32_t avg_interval = interval_sum / valid_intervals;
-        *pn_heart_rate = (int32_t)((FreqS * 60) / avg_interval);
-        *pch_hr_valid  = 1;
+        *pn_heart_rate = (int32_t) ((FreqS * 60) / avg_interval);
+        *pch_hr_valid = 1;
     } else {
         *pn_heart_rate = -999; // unable to calculate
-        *pch_hr_valid  = 0;
+        *pch_hr_valid = 0;
     }
 
     // ---------------------------------------------------------
@@ -294,29 +293,35 @@ void maxim_heart_rate_and_oxygen_saturation(
     if (n_npks >= 2) {
         // For each pair of valley locations, compute ratio
         for (i = 0; i < n_npks - 1; i++) {
-            if (an_ir_valley_locs[i+1] <= BUFFER_SIZE - 1) {
+            if (an_ir_valley_locs[i + 1] <= BUFFER_SIZE - 1) {
                 int32_t n_x_dc_max = -16777216, n_y_dc_max = -16777216;
-                int     n_x_dc_max_idx = 0,    n_y_dc_max_idx = 0;
+                int n_x_dc_max_idx = 0, n_y_dc_max_idx = 0;
                 int32_t j;
                 // find max within the segment
-                for (j = an_ir_valley_locs[i]; j < an_ir_valley_locs[i+1]; j++) {
-                    if (an_x[j] > n_x_dc_max) { n_x_dc_max = an_x[j]; n_x_dc_max_idx = j; }
-                    if (an_y[j] > n_y_dc_max) { n_y_dc_max = an_y[j]; n_y_dc_max_idx = j; }
+                for (j = an_ir_valley_locs[i]; j < an_ir_valley_locs[i + 1]; j++) {
+                    if (an_x[j] > n_x_dc_max) {
+                        n_x_dc_max = an_x[j];
+                        n_x_dc_max_idx = j;
+                    }
+                    if (an_y[j] > n_y_dc_max) {
+                        n_y_dc_max = an_y[j];
+                        n_y_dc_max_idx = j;
+                    }
                 }
                 // linear interpolation of AC components, same as original
-                int32_t n_y_ac = (an_y[an_ir_valley_locs[i+1]] - an_y[an_ir_valley_locs[i]])
+                int32_t n_y_ac = (an_y[an_ir_valley_locs[i + 1]] - an_y[an_ir_valley_locs[i]])
                                  * (n_y_dc_max_idx - an_ir_valley_locs[i]);
-                n_y_ac = an_y[an_ir_valley_locs[i]] + n_y_ac / (an_ir_valley_locs[i+1] - an_ir_valley_locs[i]);
+                n_y_ac = an_y[an_ir_valley_locs[i]] + n_y_ac / (an_ir_valley_locs[i + 1] - an_ir_valley_locs[i]);
                 n_y_ac = an_y[n_y_dc_max_idx] - n_y_ac;
 
-                int32_t n_x_ac = (an_x[an_ir_valley_locs[i+1]] - an_x[an_ir_valley_locs[i]])
+                int32_t n_x_ac = (an_x[an_ir_valley_locs[i + 1]] - an_x[an_ir_valley_locs[i]])
                                  * (n_x_dc_max_idx - an_ir_valley_locs[i]);
-                n_x_ac = an_x[an_ir_valley_locs[i]] + n_x_ac / (an_ir_valley_locs[i+1] - an_ir_valley_locs[i]);
+                n_x_ac = an_x[an_ir_valley_locs[i]] + n_x_ac / (an_ir_valley_locs[i + 1] - an_ir_valley_locs[i]);
                 n_x_ac = an_x[n_y_dc_max_idx] - n_x_ac;
 
                 // Ratio = ( n_y_ac * n_x_dc_max ) / ( n_x_ac * n_y_dc_max )
                 // Shift by >> 7 as in original code
-                int32_t n_nume  = (n_y_ac * n_x_dc_max) >> 7;
+                int32_t n_nume = (n_y_ac * n_x_dc_max) >> 7;
                 int32_t n_denom = (n_x_ac * n_y_dc_max) >> 7;
                 if (n_denom > 0 && n_nume != 0 && n_i_ratio_count < 5) {
                     an_ratio[n_i_ratio_count] = (n_nume * 100) / n_denom;
@@ -349,14 +354,14 @@ void maxim_heart_rate_and_oxygen_saturation(
     //    (Rolling average over last NUM_AVG_SAMPLES results)
     // ---------------------------------------------------------
     // Store the new raw results if they are > 0, else store 0
-    hr_history[idx_history]   = (*pn_heart_rate > 0) ? *pn_heart_rate : 0;
-    spo2_history[idx_history] = (*pn_spo2 > 0)       ? *pn_spo2       : 0;
+    hr_history[idx_history] = (*pn_heart_rate > 0) ? *pn_heart_rate : 0;
+    spo2_history[idx_history] = (*pn_spo2 > 0) ? *pn_spo2 : 0;
 
     idx_history = (idx_history + 1) % NUM_AVG_SAMPLES;
 
     // Compute average of the last valid readings
     int32_t sum_hr = 0, sum_spo2 = 0;
-    int     c_hr = 0, c_spo2 = 0;
+    int c_hr = 0, c_spo2 = 0;
     for (i = 0; i < NUM_AVG_SAMPLES; i++) {
         if (hr_history[i] > 0) {
             sum_hr += hr_history[i];
