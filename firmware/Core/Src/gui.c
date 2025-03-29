@@ -73,8 +73,7 @@ void draw_circle(uint8_t x, uint8_t y, uint8_t r, color_t foreground) {
     }
 }
 
-void draw_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, color_t foreground)
-{
+void draw_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, color_t foreground) {
     // Ensure from_x, y1, x2, y2 are within bounds if you want to be safe:
     // (Not mandatory—just to avoid out-of-range indexing)
     // Here we simply assume the user sends valid coordinates.
@@ -89,8 +88,7 @@ void draw_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, color
     int x = from_x;
     int y = from_y;
 
-    while (1)
-    {
+    while (1) {
         // Set the pixel if within bounds
         if (x >= 0 && x < 240 && y >= 0 && y < 240) screen_set_point(x, y, foreground);
 
@@ -104,17 +102,17 @@ void draw_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, color
 
         if (e2 >= dy) {
             err += dy;
-            x   += sx;
+            x += sx;
         }
         if (e2 <= dx) {
             err += dx;
-            y   += sy;
+            y += sy;
         }
     }
 }
 
-void draw_thick_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, uint8_t thickness, color_t foreground)
-{
+void draw_thick_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y, uint8_t thickness,
+                     color_t foreground) {
     // If thickness == 1, just do a normal line
     if (thickness <= 1) {
         draw_line(from_x, from_y, to_x, to_y, foreground);
@@ -124,13 +122,13 @@ void draw_thick_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y,
     // Calculate the "main" line length and the perpendicular direction.
     int dx = to_x - from_x;
     int dy = to_y - from_y;
-    float length = sqrtf((float)(dx * dx + dy * dy));
+    float length = sqrtf((float) (dx * dx + dy * dy));
 
     // Perpendicular direction (normalized)
     //   If the line is along (dx, dy),
     //   a perpendicular direction is (-dy, dx).
-    float perpX = -(float)dy / length;  // negative y-difference
-    float perpY =  (float)dx / length;  // positive x-difference
+    float perpX = -(float) dy / length; // negative y-difference
+    float perpY = (float) dx / length; // positive x-difference
 
     // Center the thickness around the main line. E.g., for thickness = 5,
     // offsets will be -2, -1, 0, 1, 2.
@@ -138,14 +136,14 @@ void draw_thick_line(uint8_t from_x, uint8_t from_y, uint8_t to_x, uint8_t to_y,
 
     for (int t = -half; t <= half; t++) {
         // Offset in the perpendicular direction by t
-        float offsetX = perpX * (float)t;
-        float offsetY = perpY * (float)t;
+        float offsetX = perpX * (float) t;
+        float offsetY = perpY * (float) t;
 
         // Round to the nearest integer offset
-        int intOffsetX1 = (int)lroundf(from_x + offsetX);
-        int intOffsetY1 = (int)lroundf(from_y + offsetY);
-        int intOffsetX2 = (int)lroundf(to_x + offsetX);
-        int intOffsetY2 = (int)lroundf(to_y + offsetY);
+        int intOffsetX1 = (int) lroundf(from_x + offsetX);
+        int intOffsetY1 = (int) lroundf(from_y + offsetY);
+        int intOffsetX2 = (int) lroundf(to_x + offsetX);
+        int intOffsetY2 = (int) lroundf(to_y + offsetY);
 
         // Draw a Bresenham line at this offset
         draw_line(intOffsetX1, intOffsetY1, intOffsetX2, intOffsetY2, foreground);
@@ -295,11 +293,11 @@ void draw_analog_hands() {
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BCD);
 
-    uint32_t seconds = time.Seconds + time.Minutes*60 + time.Hours*3600;
+    uint32_t seconds = time.Seconds + time.Minutes * 60 + time.Hours * 3600;
 
-    double second_angle = (seconds % 3600*12 / 3600*12.0) * 2*3.141592;
-    double minute_angle = (seconds % 3600 / 3600.0) * 2*3.141592;
-    double hour_angle = (seconds % 60 / 60.0) * 2*3.141592;
+    double second_angle = (seconds % 3600 * 12 / 3600 * 12.0) * 2 * 3.141592;
+    double minute_angle = (seconds % 3600 / 3600.0) * 2 * 3.141592;
+    double hour_angle = (seconds % 60 / 60.0) * 2 * 3.141592;
 
     double x_s = HOUR_HAND_LENGTH * cos(hour_angle);
     double y_s = HOUR_HAND_LENGTH * sin(hour_angle);
@@ -307,8 +305,8 @@ void draw_analog_hands() {
     double x_m = HOUR_HAND_LENGTH * cos(minute_angle);
     double y_m = HOUR_HAND_LENGTH * sin(minute_angle);
 
-    double x_h = HOUR_HAND_LENGTH*0.66 * cos(second_angle);
-    double y_h = HOUR_HAND_LENGTH*0.66 * sin(second_angle);
+    double x_h = HOUR_HAND_LENGTH * 0.66 * cos(second_angle);
+    double y_h = HOUR_HAND_LENGTH * 0.66 * sin(second_angle);
 
     screen_clear(BLACK);
     for (uint16_t i = 0; i < 132; i++) screen_set_point(clockTickPoints[i][0], clockTickPoints[i][1], WHITE);

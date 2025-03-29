@@ -30,7 +30,7 @@ uint16_t pixels[LCD_1IN28_HEIGHT][LCD_1IN28_WIDTH] = {};
 static void send_cmd(uint8_t reg) {
 	SET_DC_LOW;
 	SET_CS_LOW;
-	uint8_t buf[1] = { reg };
+	uint8_t buf[1] = {reg};
 	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
 	SET_CS_HIGH;
 }
@@ -38,7 +38,7 @@ static void send_cmd(uint8_t reg) {
 static void send_byte(uint8_t data) {
 	SET_DC_HIGH;
 	SET_CS_LOW;
-	uint8_t buf[1] = { data };
+	uint8_t buf[1] = {data};
 	HAL_SPI_Transmit(&hspi1, &buf[0], 1, 500);
 	SET_CS_HIGH;
 }
@@ -63,22 +63,22 @@ static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uin
 
 void screen_render() {
 	screen_set_windows(0, 0, 239, 239);
-    SET_DC_HIGH;
-    SET_CS_LOW;
+	SET_DC_HIGH;
+	SET_CS_LOW;
 	uint32_t bytes_remaining = 240 * 240 * 2;
 	uint32_t offset = 0;
 	while (bytes_remaining > 0) {
 		if (bytes_remaining > 65000) {
-			HAL_SPI_Transmit(&hspi1, (uint8_t*) pixels + offset, 65000, HAL_MAX_DELAY);
+			HAL_SPI_Transmit(&hspi1, (uint8_t *) pixels + offset, 65000, HAL_MAX_DELAY);
 			offset += 65000;
 			bytes_remaining -= 65000;
 		} else {
-			HAL_SPI_Transmit(&hspi1, (uint8_t*) pixels + offset, bytes_remaining, HAL_MAX_DELAY);
+			HAL_SPI_Transmit(&hspi1, (uint8_t *) pixels + offset, bytes_remaining, HAL_MAX_DELAY);
 			bytes_remaining = 0;
 		}
 	}
-    SET_DC_LOW;
-    SET_CS_HIGH;
+	SET_DC_LOW;
+	SET_CS_HIGH;
 }
 
 static void screen_reset(void) {
@@ -260,7 +260,7 @@ void screen_init() {
 }
 
 void screen_clear(uint16_t color) {
-    for (int i = 0; i < 240; i++) {
+	for (int i = 0; i < 240; i++) {
 		for (int j = 0; j < 240; j++) {
 			pixels[i][j] = color;
 		}
