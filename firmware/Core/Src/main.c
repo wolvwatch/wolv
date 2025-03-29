@@ -27,6 +27,7 @@
 #include "max30102.h"
 #include "spo2.h"
 #include "stm32l4xx_hal.h"
+#include "sense.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,10 +58,12 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
 
 /* USER CODE BEGIN PV */
-uint32_t raw_hr[4000] = {0};
-uint32_t raw_spo2[4000] = {0};
+uint32_t raw_hr[BUFFER_SIZE] = {0};
+uint32_t raw_spo2[BUFFER_SIZE] = {0};
 uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
+sense_t sensor_data = {};
+gui_data_t gui_data = {};
 
 /* USER CODE END PV */
 
@@ -117,55 +120,66 @@ int main(void)
   MX_I2C1_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  /*Paint_SetDisplayFunction(&screen_set_point);
-  Paint_NewImage(240, 240, 0, 0);
-  screen_init(1);
-  screen_clear(0x0);
-  draw_img(55, 145, &heart, 0xF800, BLACK, 0.12);
-  draw_string(90, 150, "64 bpm", &roboto, WHITE, BLACK, 0.25);
-  draw_img(55, 175, &steps, 0x344B, BLACK, 0.12);
-  draw_string(90, 180, "6281 steps", &roboto, WHITE, BLACK, 0.25);
-  uint8_t buf[5] = {0};
-  screen_render();*/
-  max30102_init();
-  HAL_Delay(2000);
+
+    gui_data.state = HOME_ANALOG;
+    screen_init(1);
+    screen_clear(0x0);
+    max30102_init();
+    set_gui_state(HOME_ANALOG);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    //dumping the first 25 sets of samples in the memory and shift the last 75 sets of samples to the top
-    for (uint16_t i = 100; i < 4000; i++)
-    {
-      raw_hr[i - 100] = raw_hr[i];
-      raw_spo2[i - 100] = raw_spo2[i];
-    }
-
-    uint16_t read_in = 0;
-    while (read_in != 100) {
-      uint8_t samps = max30102_read_data();
-      for (int i = 0; i < samps; i++) {
-        raw_hr[i] = max30102_sensor.red[max30102_sensor.tail];
-        raw_spo2[i] = max30102_sensor.IR[max30102_sensor.tail];
-        max30102_sensor.tail++;
-        max30102_sensor.tail %= 32;
-        read_in++;
-        if (read_in == 100) break;
-      }
-    }
-
     int32_t spo2; //SPO2 value
     int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
     int32_t heartRate; //heart rate value
     int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
 
-    maxim_heart_rate_and_oxygen_saturation(raw_spo2, 4000, raw_hr, &spo2, &validSPO2, &heartRate, &validHeartRate);
-    printf("hr: %d <%u> spo2: %d <%u>\n", heartRate, validHeartRate, spo2, validSPO2);
+    uint16_t total_samps = 0;
+    while (total_samps < BUFFER_SIZE) {
+        uint16_t samps = max30102_read_data();
+        for (uint16_t j = 0; j < samps; j++) {
+            raw_hr[total_samps] = max30102_sensor.red[max30102_sensor.tail];
+            raw_spo2[total_samps] = max30102_sensor.IR[max30102_sensor.tail];
+            max30102_sensor.tail++;
+            max30102_sensor.tail %= 32;
+            total_samps++;
+            if (total_samps == BUFFER_SIZE) break;
+        }
+    }
+
+    max30102_sensor.tail = max30102_sensor.head;
+
+    maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
+                                           &validHeartRate);
+
+    while (1) {
+        uint16_t samps = max30102_read_data();
+        for (uint16_t j = 0; j < samps; j++) {
+            for (uint16_t i = 0; i < BUFFER_SIZE; i++) {
+                raw_hr[i - 1] = raw_hr[i];
+                raw_spo2[i - 1] = raw_spo2[i];
+            }
+            raw_hr[BUFFER_SIZE - 1] = max30102_sensor.red[max30102_sensor.tail];
+            raw_spo2[BUFFER_SIZE - 1] = max30102_sensor.IR[max30102_sensor.tail];
+            max30102_sensor.tail++;
+            max30102_sensor.tail %= 32;
+        }
+
+
+        maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
+                                               &validHeartRate);
+
+        sensor_data.hr = heartRate;
+        sensor_data.val_hr = validHeartRate;
+
+        sensor_data.spo2 = spo2;
+        sensor_data.val_spo2 = validSPO2;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
@@ -387,7 +401,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
-  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_NONE;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_SS14_8;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
   sAlarm.Alarm = RTC_ALARM_A;
@@ -419,7 +433,7 @@ static void MX_SPI1_Init(void)
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_1LINE;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
@@ -585,8 +599,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   HAL_PWREx_EnableVddIO2();
 
   /*Configure GPIO pin Output Level */
@@ -617,12 +631,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PF7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF13_SAI1;
+  /*Configure GPIO pins : PF7 PF9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PC0 PC1 PC2 PC3 */
@@ -679,6 +691,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PG1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB12 PB13 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
@@ -765,6 +783,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
   /* USER CODE END MX_GPIO_Init_2 */
@@ -776,10 +801,9 @@ static void MX_GPIO_Init(void)
 #else
   #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
-PUTCHAR_PROTOTYPE
-{
-  HAL_UART_Transmit(&hlpuart1, (uint8_t *)&ch, 1, 0xFFFF);
-  return ch;
+PUTCHAR_PROTOTYPE {
+    HAL_UART_Transmit(&hlpuart1, (uint8_t *) &ch, 1, 0xFFFF);
+    return ch;
 }
 
 /* USER CODE END 4 */
@@ -791,11 +815,10 @@ PUTCHAR_PROTOTYPE
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1) {
+    }
   /* USER CODE END Error_Handler_Debug */
 }
 

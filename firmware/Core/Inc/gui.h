@@ -66,6 +66,7 @@
 #ifndef __GUI_PAINT_H
 #define __GUI_PAINT_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include "bitmaps.h"
 /**
@@ -257,7 +258,6 @@ typedef enum {
 #define YELLOW 0xE0FF
 #define YELLOWGREEN 0x669E
 
-
 #define IMAGE_BACKGROUND    WHITE
 #define FONT_FOREGROUND     BLACK
 #define FONT_BACKGROUND     WHITE
@@ -265,102 +265,26 @@ typedef enum {
 typedef uint16_t color_t;
 
 typedef enum {
-	DIGITAL,
-	ANALOG
-} clock_face_t;
+	HOME_DIGITAL,
+	HOME_ANALOG,
+	SET_TIME_HR,
+	SET_TIME_MIN,
+	SET_TIME_SEC,
+	SET_TIME_AMPM
+} gui_state_t;
 
 typedef struct {
-	clock_face_t face;
-	color_t bg_color;
-	color_t txt_color;
-	color_t accent_color;
-} gui_settings_t;
+	uint8_t set_time_hr, set_time_min, set_time_sec;
+	bool set_time_AM;
+	gui_state_t state;
+} gui_data_t;
 
-void set_gui_settings(gui_settings_t settings);
-void update_gui();
+void set_gui_state(gui_state_t state);
 void draw_img(uint8_t x, uint8_t y, const bitmap_t *img, color_t foreground, color_t background, float scale);
 void draw_current_time(uint8_t start_x, uint8_t start_y, font_bitmap_t *font, color_t foreground, color_t background, float scale);
 void draw_string(uint8_t x, uint8_t y, char* str, font_bitmap_t *font, color_t foreground, color_t background, float scale);
+void draw_circle(uint8_t x, uint8_t y, uint8_t r, color_t foreground);
 
-/**
- * The size of the point
- **/
-typedef enum {
-	DOT_PIXEL_1X1 = 1,		// 1 x 1
-	DOT_PIXEL_2X2, 		// 2 X 2
-	DOT_PIXEL_3X3,		// 3 X 3
-	DOT_PIXEL_4X4,		// 4 X 4
-	DOT_PIXEL_5X5, 		// 5 X 5
-	DOT_PIXEL_6X6, 		// 6 X 6
-	DOT_PIXEL_7X7, 		// 7 X 7
-	DOT_PIXEL_8X8, 		// 8 X 8
-} DOT_PIXEL;
-#define DOT_PIXEL_DFT  DOT_PIXEL_1X1  //Default dot pilex
-
-/**
- * Point size fill style
- **/
-typedef enum {
-	DOT_FILL_AROUND = 1,		// dot pixel 1 x 1
-	DOT_FILL_RIGHTUP, 		// dot pixel 2 X 2
-} DOT_STYLE;
-#define DOT_STYLE_DFT  DOT_FILL_AROUND  //Default dot pilex
-
-/**
- * Line style, solid or dashed
- **/
-typedef enum {
-	LINE_STYLE_SOLID = 0, LINE_STYLE_DOTTED,
-} LINE_STYLE;
-
-/**
- * Whether the graphic is filled
- **/
-typedef enum {
-	DRAW_FILL_EMPTY = 0, DRAW_FILL_FULL,
-} DRAW_FILL;
-
-/**
- * Custom structure of a time attribute
- **/
-typedef struct {
-	uint16_t Year;  //0000
-	uint8_t Month; //1 - 12
-	uint8_t Day;   //1 - 30
-	uint8_t Hour;  //0 - 23
-	uint8_t Min;   //0 - 59
-	uint8_t Sec;   //0 - 59
-} PAINT_TIME;
-extern PAINT_TIME sPaint_time;
-
-//init and Clear
-void Paint_NewImage(uint16_t Width, uint16_t Height, uint16_t Rotate,
-		uint16_t Color);
-void Paint_SelectImage(uint8_t *image);
-void Paint_SetClearFunction(void (*Clear)(uint16_t));
-void Paint_SetDisplayFunction(void (*Display)(uint16_t, uint16_t, uint16_t));
-void Paint_SetRotate(uint16_t Rotate);
-void Paint_SetMirroring(uint8_t mirror);
-void Paint_SetPixel(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color);
-
-void Paint_Clear(uint16_t Color);
-void Paint_ClearWindows(uint16_t Xstart, uint16_t Ystart, uint16_t Xend,
-		uint16_t Yend, uint16_t Color);
-
-//Drawing
-void Paint_DrawPoint(uint16_t Xpoint, uint16_t Ypoint, uint16_t Color,
-		DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay);
-void Paint_DrawLine(uint16_t Xstart, uint16_t Ystart, uint16_t Xend,
-		uint16_t Yend, uint16_t Color, DOT_PIXEL Line_width,
-		LINE_STYLE Line_Style);
-void Paint_DrawRectangle(uint16_t Xstart, uint16_t Ystart, uint16_t Xend,
-		uint16_t Yend, uint16_t Color, DOT_PIXEL Line_width, DRAW_FILL Filled);
-void Paint_DrawCircle(uint16_t X_Center, uint16_t Y_Center, uint16_t Radius,
-		uint16_t Color, DOT_PIXEL Line_width, DRAW_FILL Draw_Fill);
-
-//pic
-void Paint_DrawImage(const unsigned char *image, uint16_t Startx,
-		uint16_t Starty, uint16_t Endx, uint16_t Endy);
-
+void update_gui();
 #endif
 

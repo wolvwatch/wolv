@@ -84,6 +84,8 @@ static void update_delta(uint16_t min_x, uint16_t min_y, uint16_t max_x, uint16_
 	if (!delta_modified || min_y < dt_y_min) dt_y_min = min_y;
 	if (!delta_modified || max_y > dt_y_max) dt_y_max = max_y;
 	delta_modified = 1;
+
+	dt_y_min = 0; dt_x_min = 0; dt_x_max = 239; dt_y_max = 239;
 }
 
 void screen_render() {
@@ -382,7 +384,7 @@ void screen_clear(uint16_t color) {
 }
 
 void screen_set_point(uint16_t x, uint16_t y, uint16_t color) {
-	pixels[y][x] = (color << 8) | (color >> 8);
+	pixels[y][x] = (color & 0xFF) << 8 | (color & 0xFF00) >> 8;
 	update_delta(x, y, x, y);
 }
 
