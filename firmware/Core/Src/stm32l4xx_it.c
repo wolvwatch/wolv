@@ -22,12 +22,9 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "devices/lcd.h"
-#include "gui.h"
-#include "devices/spo2.h"
-#include "devices/max30102.h"
 #include "stm32l4xx_hal.h"
 #include "sense.h"
+#include "lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,11 +58,12 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern UART_HandleTypeDef hlpuart1;
 extern RTC_HandleTypeDef hrtc;
 /* USER CODE BEGIN EV */
 extern sense_t sensor_data;
-extern gui_data_t gui_data;
 extern RTC_HandleTypeDef hrtc;
+extern lv_subject_t hours, minutes, seconds;
 
 /* USER CODE END EV */
 
@@ -191,6 +189,8 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+  HAL_SYSTICK_IRQHandler();
+  lv_tick_inc(1);
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
@@ -207,100 +207,39 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line1 interrupt.
-  */
-void EXTI1_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
-  if (gui_data.state == SET_TIME_HR) {
-    gui_data.set_time_hr++;
-  } else if (gui_data.state == SET_TIME_MIN) {
-    gui_data.set_time_min++;
-  } else if (gui_data.state == SET_TIME_SEC) {
-    gui_data.set_time_sec++;
-  } else if (gui_data.state == SET_TIME_AMPM) {
-    gui_data.set_time_AM = !gui_data.set_time_AM;
-  }
-
-  update_gui();
-
-  /* USER CODE END EXTI1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
-  /* USER CODE BEGIN EXTI1_IRQn 1 */
-
-  /* USER CODE END EXTI1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-  if ((EXTI->PR1 & EXTI_PR1_PIF7) != 0) {
-    switch (gui_data.state) {
-      case HOME_DIGITAL: {
-        set_gui_state(SET_TIME_HR);
-        break;
-      }
-      case SET_TIME_HR: {
-        set_gui_state(SET_TIME_MIN);
-        break;
-      }
-      case SET_TIME_MIN: {
-        set_gui_state(SET_TIME_SEC);
-        break;
-      }
-      case SET_TIME_SEC: {
-        set_gui_state(SET_TIME_AMPM);
-        break;
-      }
-      case SET_TIME_AMPM: {
-        set_gui_state(HOME_DIGITAL);
-        RTC_TimeTypeDef time;
-        time.Hours = gui_data.set_time_hr;
-        time.Minutes = gui_data.set_time_min;
-        time.Seconds = gui_data.set_time_sec;
-        time.TimeFormat = gui_data.set_time_AM ? RTC_HOURFORMAT12_AM : RTC_HOURFORMAT12_PM;
-        HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
-        break;
-      }
-      default: break;
-    }
-  } else {
-    if (gui_data.state == SET_TIME_HR) {
-      gui_data.set_time_hr--;
-    } else if (gui_data.state == SET_TIME_MIN) {
-      gui_data.set_time_min--;
-    } else if (gui_data.state == SET_TIME_SEC) {
-      gui_data.set_time_sec--;
-    } else if (gui_data.state == SET_TIME_AMPM) {
-      gui_data.set_time_AM = !gui_data.set_time_AM;
-    }
-  }
-
-  update_gui();
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
-}
-
-/**
   * @brief This function handles RTC alarm interrupt through EXTI line 18.
   */
 void RTC_Alarm_IRQHandler(void)
 {
   /* USER CODE BEGIN RTC_Alarm_IRQn 0 */
-  update_gui();
+  RTC_TimeTypeDef time;
+  RTC_DateTypeDef date;
+
+  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
+
+  lv_subject_set_int(&hours, time.Hours);
+  lv_subject_set_int(&minutes, time.Minutes);
+  lv_subject_set_int(&seconds, time.Seconds);
+
   /* USER CODE END RTC_Alarm_IRQn 0 */
   HAL_RTC_AlarmIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_Alarm_IRQn 1 */
 
   /* USER CODE END RTC_Alarm_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LPUART1 global interrupt.
+  */
+void LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN LPUART1_IRQn 0 */
+  /* USER CODE END LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&hlpuart1);
+  /* USER CODE BEGIN LPUART1_IRQn 1 */
+
+  /* USER CODE END LPUART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
