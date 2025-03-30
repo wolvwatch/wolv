@@ -191,11 +191,10 @@ int main(void)
     maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
                                            &validHeartRate);
 
-    sensor_data.hr = heartRate;
-    sensor_data.val_hr = validHeartRate;
-
-    sensor_data.spo2 = spo2;
-    sensor_data.val_spo2 = validSPO2;
+    lv_subject_set_int(&gui_data.hr, heartRate);
+    lv_subject_set_int(&gui_data.hr_val, validHeartRate);
+    lv_subject_set_int(&gui_data.spo2, spo2);
+    lv_subject_set_int(&gui_data.spo2_val, validSPO2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

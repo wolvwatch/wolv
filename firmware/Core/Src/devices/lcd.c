@@ -364,6 +364,11 @@ void screen_init() {
 	lv_image_set_src(ht, &heart);
 	lv_image_set_scale(ht, 100);
 	lv_obj_align_to(ht, d, LV_ALIGN_BOTTOM_MID, 0, 55);
+
+	lv_obj_t *st_val = lv_label_create(lv_screen_active());
+	lv_label_bind_text(st_val, &gui_data.hr, "%u");
+	lv_obj_align_to(st_val, ht, LV_ALIGN_BOTTOM_MID, 0, -4);
+	lv_obj_set_style_text_font(st_val, &lv_font_montserrat_12, LV_PART_MAIN);
 }
 
 void screen_clear(uint16_t color) {
