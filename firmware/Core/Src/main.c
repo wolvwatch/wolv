@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "gui.h"
 #include "sense.h"
 #include "stdio.h"
 #include "stm32l4xx_hal.h"
@@ -69,10 +70,12 @@ uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
 sense_t sensor_data = {};
 uint8_t rx_buffer[1];
+
 lv_display_t *display;
 lv_indev_t *input;
 lv_group_t *group;
-lv_subject_t hours, minutes, seconds;
+
+gui_data_t gui_data;
 
 /* USER CODE END PV */
 
@@ -138,9 +141,7 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_DMA2D_Init();
   /* USER CODE BEGIN 2 */
-  lv_subject_init_int(&hours, 0);
-  lv_subject_init_int(&minutes, 0);
-  lv_subject_init_int(&seconds, 0);
+  init_gui_data(&gui_data);
   max30102_init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   screen_init();
