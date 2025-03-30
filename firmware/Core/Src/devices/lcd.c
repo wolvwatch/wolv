@@ -17,6 +17,8 @@
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "gui.h"
 #include "lvgl.h"
 
 #define SET_RST_HIGH HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_SET)
@@ -33,6 +35,7 @@ extern lv_group_t *group;
 extern uint8_t rx_buffer[1];
 extern lv_subject_t hours, minutes, seconds;
 static uint8_t pixels[LCD_1IN28_HEIGHT * LCD_1IN28_WIDTH * 2] = {};
+extern gui_data_t gui_data;
 
 static void send_cmd(uint8_t reg) {
 	SET_DC_LOW;
@@ -310,11 +313,11 @@ void screen_init() {
 	lv_indev_set_group(input, group);
 
 	lv_obj_t *h = lv_label_create(lv_screen_active());
-	lv_label_bind_text(h, &hours, "%d");
+	lv_label_bind_text(h, &gui_data.ctime_h, "%02d");
 	lv_obj_set_pos(h, 22, 90);
 	lv_obj_set_style_text_font(h, &ultra_90, LV_PART_MAIN);
 	lv_obj_t *m = lv_label_create(lv_screen_active());
-	lv_label_set_text(m, "38");
+	lv_label_bind_text(m, &gui_data.ctime_m, "%02d");
 	lv_obj_set_style_text_font(m, &ultra_40, LV_PART_MAIN);
 	lv_obj_align_to(m, h, LV_ALIGN_TOP_RIGHT, 60, 0);
 	lv_obj_t *d = lv_label_create(lv_screen_active());
@@ -337,6 +340,13 @@ void screen_init() {
 	lv_obj_set_style_arc_width(s, 4, LV_PART_INDICATOR);
 	lv_obj_set_style_arc_width(s, 4, LV_PART_MAIN);
 	lv_obj_set_style_arc_color(s, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+
+	lv_obj_t *sc = lv_label_create(lv_screen_active());
+	lv_obj_set_style_text_font(sc, &lv_font_montserrat_12, LV_PART_MAIN);
+	lv_label_bind_text(sc, &gui_data.ctime_s, "%02d");
+	lv_obj_set_style_text_color(sc, lv_color_hex(0xAA5555), LV_PART_MAIN);
+	lv_obj_align_to(sc, m, LV_ALIGN_OUT_RIGHT_BOTTOM, 3, 0);
+
 
 	lv_obj_t *st = lv_label_create(lv_screen_active());
 	lv_obj_set_style_text_font(st, &lv_font_montserrat_14, LV_PART_MAIN);

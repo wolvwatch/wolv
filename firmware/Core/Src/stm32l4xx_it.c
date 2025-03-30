@@ -22,6 +22,7 @@
 #include "stm32l4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "gui.h"
 #include "stm32l4xx_hal.h"
 #include "sense.h"
 #include "lvgl.h"
@@ -63,7 +64,7 @@ extern RTC_HandleTypeDef hrtc;
 /* USER CODE BEGIN EV */
 extern sense_t sensor_data;
 extern RTC_HandleTypeDef hrtc;
-extern lv_subject_t hours, minutes, seconds;
+extern gui_data_t gui_data;
 
 /* USER CODE END EV */
 
@@ -218,9 +219,11 @@ void RTC_Alarm_IRQHandler(void)
   HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
   HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
 
-  lv_subject_set_int(&hours, time.Hours);
-  lv_subject_set_int(&minutes, time.Minutes);
-  lv_subject_set_int(&seconds, time.Seconds);
+  lv_subject_set_int(&gui_data.ctime_h, time.Hours);
+  lv_subject_set_int(&gui_data.ctime_m, time.Minutes);
+  lv_subject_set_int(&gui_data.ctime_s, time.Seconds);
+
+  lv_timer_handler();
 
   /* USER CODE END RTC_Alarm_IRQn 0 */
   HAL_RTC_AlarmIRQHandler(&hrtc);
