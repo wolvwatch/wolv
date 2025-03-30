@@ -21,13 +21,16 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sense.h"
 #include "stdio.h"
+#include "stm32l4xx_hal.h"
 #include "devices/lcd.h"
-#include "gui.h"
 #include "devices/max30102.h"
 #include "devices/spo2.h"
-#include "stm32l4xx_hal.h"
-#include "sense.h"
+#include "lvgl.h"
+#include "indev/lv_indev.h"
+#include "indev/lv_indev_private.h"
+#include "lvgl/src/draw/dma2d/lv_draw_dma2d.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +49,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+DMA2D_HandleTypeDef hdma2d;
+
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef hlpuart1;
@@ -63,7 +68,11 @@ uint32_t raw_spo2[BUFFER_SIZE] = {0};
 uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
 sense_t sensor_data = {};
-gui_data_t gui_data = {};
+uint8_t rx_buffer[1];
+lv_display_t *display;
+lv_indev_t *input;
+lv_group_t *group;
+lv_subject_t hours, minutes, seconds;
 
 /* USER CODE END PV */
 
@@ -76,12 +85,20 @@ static void MX_TIM4_Init(void);
 static void MX_RTC_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_LPUART1_UART_Init(void);
+static void MX_DMA2D_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == LPUART1) {
+    lv_indev_read(input);
+    HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+  }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -119,13 +136,15 @@ int main(void)
   MX_RTC_Init();
   MX_I2C1_Init();
   MX_LPUART1_UART_Init();
+  MX_DMA2D_Init();
   /* USER CODE BEGIN 2 */
-
-  gui_data.state = HOME_ANALOG;
-  screen_init(1);
-  screen_clear(0x0);
+  lv_subject_init_int(&hours, 0);
+  lv_subject_init_int(&minutes, 0);
+  lv_subject_init_int(&seconds, 0);
   max30102_init();
-  set_gui_state(HOME_ANALOG);
+  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+  screen_init();
+  lv_draw_dma2d_init();
 
   /* USER CODE END 2 */
 
@@ -232,6 +251,47 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief DMA2D Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_DMA2D_Init(void)
+{
+
+  /* USER CODE BEGIN DMA2D_Init 0 */
+
+  /* USER CODE END DMA2D_Init 0 */
+
+  /* USER CODE BEGIN DMA2D_Init 1 */
+
+  /* USER CODE END DMA2D_Init 1 */
+  hdma2d.Instance = DMA2D;
+  hdma2d.Init.Mode = DMA2D_M2M;
+  hdma2d.Init.ColorMode = DMA2D_OUTPUT_RGB565;
+  hdma2d.Init.OutputOffset = 0;
+  hdma2d.Init.BytesSwap = DMA2D_BYTES_SWAP;
+  hdma2d.Init.LineOffsetMode = DMA2D_LOM_PIXELS;
+  hdma2d.LayerCfg[1].InputOffset = 0;
+  hdma2d.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB565;
+  hdma2d.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d.LayerCfg[1].InputAlpha = 0;
+  hdma2d.LayerCfg[1].AlphaInverted = DMA2D_REGULAR_ALPHA;
+  hdma2d.LayerCfg[1].RedBlueSwap = DMA2D_RB_REGULAR;
+  if (HAL_DMA2D_Init(&hdma2d) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DMA2D_ConfigLayer(&hdma2d, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN DMA2D_Init 2 */
+
+  /* USER CODE END DMA2D_Init 2 */
+
 }
 
 /**
@@ -782,13 +842,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

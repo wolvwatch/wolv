@@ -12,10 +12,12 @@
  *
  ******************************************************************************/
 #include "devices/lcd.h"
+#include <math.h>
 #include "stm32l4xx_hal.h"
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "lvgl.h"
 
 #define SET_RST_HIGH HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_SET)
 #define SET_RST_LOW HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_RESET)
@@ -25,7 +27,12 @@
 #define SET_DC_LOW HAL_GPIO_WritePin(SCRN_DC_GPIO_Port, SCRN_DC_Pin, GPIO_PIN_RESET)
 
 extern SPI_HandleTypeDef hspi1;
-uint16_t pixels[LCD_1IN28_HEIGHT][LCD_1IN28_WIDTH] = {};
+extern lv_display_t *display;
+extern lv_indev_t *input;
+extern lv_group_t *group;
+extern uint8_t rx_buffer[1];
+extern lv_subject_t hours, minutes, seconds;
+static uint8_t pixels[LCD_1IN28_HEIGHT * LCD_1IN28_WIDTH * 2] = {};
 
 static void send_cmd(uint8_t reg) {
 	SET_DC_LOW;
@@ -61,7 +68,9 @@ static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uin
 	send_cmd(0X2C);
 }
 
-void screen_render() {
+void screen_render(lv_display_t *display, const lv_area_t *area, uint8_t *px_map) {
+	lv_draw_sw_rgb565_swap(pixels, LCD_1IN28_WIDTH * LCD_1IN28_HEIGHT);
+
 	screen_set_windows(0, 0, 239, 239);
 	SET_DC_HIGH;
 	SET_CS_LOW;
@@ -79,6 +88,8 @@ void screen_render() {
 	}
 	SET_DC_LOW;
 	SET_CS_HIGH;
+
+	lv_display_flush_ready(display);
 }
 
 static void screen_reset(void) {
@@ -104,7 +115,7 @@ static void LCD_1IN28_InitReg(void) {
 	send_byte(0x20);
 
 	send_cmd(0x36);
-	send_byte(0x08); //Set as vertical screen
+	send_byte(0x18); //Set as vertical screen
 
 	send_cmd(0x3A);
 	send_byte(0x05);
@@ -251,22 +262,104 @@ static void LCD_1IN28_InitReg(void) {
 	send_byte(0b01100001);
 }
 
+void button_read(lv_indev_t *indev, lv_indev_data_t *data) {
+	switch (*rx_buffer) {
+		case 0: {
+			data->key = LV_KEY_LEFT;
+			break;
+		}
+		case 1: {
+			data->key = LV_KEY_ENTER;
+			break;
+		}
+		case 2: {
+			data->key = LV_KEY_RIGHT;
+			break;
+		}
+	}
+
+	data->state = LV_INDEV_STATE_PR;
+}
+
 void screen_init() {
 	SET_DC_HIGH;
 	SET_CS_HIGH;
 	SET_RST_HIGH;
 	screen_reset();
 	LCD_1IN28_InitReg();
+
+	LV_FONT_DECLARE(ultra_90);
+	LV_FONT_DECLARE(ultra_40);
+
+	lv_init();
+	display = lv_display_create(LCD_1IN28_WIDTH, LCD_1IN28_HEIGHT);
+	lv_display_set_flush_cb(display, screen_render);
+	lv_display_set_buffers(display, pixels, NULL, sizeof(pixels), LV_DISPLAY_RENDER_MODE_FULL);
+
+	lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x0), LV_PART_MAIN);
+	lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff), LV_PART_MAIN);
+	lv_obj_remove_flag(lv_screen_active(), LV_OBJ_FLAG_SCROLLABLE);
+
+	input = lv_indev_create();
+	lv_indev_set_type(input, LV_INDEV_TYPE_KEYPAD);
+	lv_indev_set_read_cb(input, button_read);
+	lv_indev_set_mode(input, LV_INDEV_MODE_EVENT);
+
+	group = lv_group_create();
+	lv_group_set_default(group);
+	lv_indev_set_group(input, group);
+
+	lv_obj_t *h = lv_label_create(lv_screen_active());
+	lv_label_bind_text(h, &hours, "%d");
+	lv_obj_set_pos(h, 22, 90);
+	lv_obj_set_style_text_font(h, &ultra_90, LV_PART_MAIN);
+	lv_obj_t *m = lv_label_create(lv_screen_active());
+	lv_label_set_text(m, "38");
+	lv_obj_set_style_text_font(m, &ultra_40, LV_PART_MAIN);
+	lv_obj_align_to(m, h, LV_ALIGN_TOP_RIGHT, 60, 0);
+	lv_obj_t *d = lv_label_create(lv_screen_active());
+	lv_label_set_text(d, "SAT 29");
+	lv_obj_set_style_text_font(d, &lv_font_montserrat_14, LV_PART_MAIN);
+	lv_obj_set_style_text_color(d, lv_color_hex(0xAAAAAA), LV_PART_MAIN);
+	lv_obj_align_to(d, m, LV_ALIGN_BOTTOM_MID, 0, 20);
+
+	lv_obj_t *s = lv_arc_create(lv_screen_active());
+	lv_arc_set_rotation(s, 270);
+	lv_arc_set_bg_angles(s, 0, 360);
+	lv_arc_set_bg_end_angle(s, 360);
+	lv_obj_remove_style(s, NULL, LV_PART_KNOB);
+	lv_obj_remove_flag(s, LV_OBJ_FLAG_CLICKABLE);
+	lv_obj_set_size(s, 65, 65);
+	lv_obj_center(s);
+	lv_arc_set_value(s, 60);
+	lv_obj_set_align(s, LV_ALIGN_BOTTOM_MID);
+	lv_obj_set_pos(s, 0, -5);
+	lv_obj_set_style_arc_width(s, 4, LV_PART_INDICATOR);
+	lv_obj_set_style_arc_width(s, 4, LV_PART_MAIN);
+	lv_obj_set_style_arc_color(s, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+
+	lv_obj_t *st = lv_label_create(lv_screen_active());
+	lv_obj_set_style_text_font(st, &lv_font_montserrat_14, LV_PART_MAIN);
+	lv_label_set_text(st, "6,281");
+	lv_obj_align_to(st, s, LV_ALIGN_CENTER, 0, 9);
+
+	LV_IMAGE_DECLARE(steps);
+	lv_obj_t *feet = lv_image_create(lv_screen_active());
+	lv_image_set_src(feet, &steps);
+	lv_image_set_scale(feet, 100);
+	lv_obj_align_to(feet, s, LV_ALIGN_CENTER, 0, -11);
+
+	LV_IMAGE_DECLARE(heart);
+	lv_obj_t *ht = lv_image_create(lv_screen_active());
+	lv_image_set_src(ht, &heart);
+	lv_image_set_scale(ht, 100);
+	lv_obj_align_to(ht, d, LV_ALIGN_BOTTOM_MID, 0, 55);
 }
 
 void screen_clear(uint16_t color) {
-	for (int i = 0; i < 240; i++) {
-		for (int j = 0; j < 240; j++) {
-			pixels[i][j] = color;
-		}
-	}
+	return;
 }
 
 void screen_set_point(uint16_t x, uint16_t y, uint16_t color) {
-	pixels[x][y] = (color & 0xFF) << 8 | (color & 0xFF00) >> 8;
+	return;
 }
