@@ -27,11 +27,11 @@ extern SPI_HandleTypeDef hspi1;
 // For convenience, chip-select helpers:
 static inline void ADXL362_Select(void)
 {
-    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_RESET);
 }
 static inline void ADXL362_Unselect(void)
 {
-    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
 }
 
 /**
@@ -91,6 +91,7 @@ void ADXL362_SoftReset(void)
   */
 void ADXL362_Init(void)
 {
+    ADXL362_Unselect();
     // 1) Soft reset
     ADXL362_SoftReset();
 

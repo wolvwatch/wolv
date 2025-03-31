@@ -1,5 +1,5 @@
 /*
- * bluetooth.h
+* bluetooth.h
  *
  *  Created on: Mar 22, 2025
  *      Author: ryankaelle
@@ -18,7 +18,6 @@ extern uint8_t rxData;
 
 extern volatile char rxBuffer[RX_BUFFER_SIZE];
 extern volatile uint16_t rxIndex;
-
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
