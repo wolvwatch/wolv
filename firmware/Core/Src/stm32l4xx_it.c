@@ -62,6 +62,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef hlpuart1;
+extern UART_HandleTypeDef huart3;
 extern RTC_HandleTypeDef hrtc;
 /* USER CODE BEGIN EV */
 extern sense_t sensor_data;
@@ -208,6 +209,20 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32l4xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_IRQn 0 */
+
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
+  /* USER CODE END USART3_IRQn 1 */
+}
 
 /**
   * @brief This function handles RTC alarm interrupt through EXTI line 18.
