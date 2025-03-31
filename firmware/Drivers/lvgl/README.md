@@ -67,8 +67,8 @@ some support during the development of your next GUI project.
 - Texts are rendered with UTF-8 encoding supporting CJK, Thai, Hindi, Arabic, Persian writing systems.
 - Word wrapping, kerning, text scrolling, sub-pixel rendering, Pinyin-IME Chinese input, Emojis in texts.
 - Rendering engine supporting animations, anti-aliasing, opacity, smooth scrolling, shadows, image transformation, etc-
-Supports Mouse, Touchpad, Keypad, Keyboard, External buttons,
-Encoder [Input devices](https://docs.lvgl.io/master/details/main-modules/indev.html).
+  Supports Mouse, Touchpad, Keypad, Keyboard, External buttons,
+  Encoder [Input devices](https://docs.lvgl.io/master/details/main-modules/indev.html).
 - [Multiple display](https://docs.lvgl.io/master/details/main-modules/display/overview.html#how-many-displays-can-lvgl-use)
   support.
 
