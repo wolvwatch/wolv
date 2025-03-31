@@ -8,119 +8,135 @@
 
 #include "main.h"
 #include <stdio.h>
+#include "stm32l4xx_hal.h"
 
 // For example, define the chip select pin:
-#define ACCEL_CS_GPIO_Port   GPIOB
-#define ACCEL_CS_Pin         GPIO_PIN_5
+#define CS_ACC_GPIO_Port   GPIOD
+#define CS_ACC_Pin         GPIO_PIN_1
 
 extern SPI_HandleTypeDef hspi1;
 
-// Transmit a single byte over SPI, ignoring response
-void ADXL362_SPI_WriteByte(uint8_t byte)
+
+#define ADXL362_REG_SOFT_RESET    0x1F
+#define ADXL362_REG_FILTER_CTL    0x2C
+#define ADXL362_REG_POWER_CTL     0x2D
+
+#define ADXL362_CMD_WRITE_REG     0x0A
+#define ADXL362_CMD_READ_REG      0x0B
+
+// For convenience, chip-select helpers:
+static inline void ADXL362_Select(void)
 {
-    HAL_SPI_Transmit(&hspi1, &byte, 1, HAL_MAX_DELAY);
+    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_RESET);
+}
+static inline void ADXL362_Unselect(void)
+{
+    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_SET);
 }
 
-// Read a single byte from SPI
-uint8_t ADXL362_SPI_ReadByte(void)
+/**
+  * @brief  Send a single-byte write to an ADXL362 register.
+  * @param  regAddr: 8-bit register address
+  * @param  data:    byte to write
+  */
+void ADXL362_WriteReg(uint8_t regAddr, uint8_t data)
 {
-    uint8_t rxByte = 0;
-    HAL_SPI_Receive(&hspi1, &rxByte, 1, HAL_MAX_DELAY);
-    return rxByte;
+    uint8_t txBuf[3];
+    txBuf[0] = ADXL362_CMD_WRITE_REG; // 0x0A
+    txBuf[1] = regAddr;
+    txBuf[2] = data;
+
+    ADXL362_Select();
+    HAL_SPI_Transmit(&hspi1, txBuf, 3, HAL_MAX_DELAY);
+    ADXL362_Unselect();
 }
 
-// Write one register on the ADXL362
-// command 0x0A = WRITE REGISTER
-//  byte0 = 0x0A
-//  byte1 = regAddress
-//  byte2 = value
-void ADXL362_WriteRegister(uint8_t regAddress, uint8_t value)
+/**
+  * @brief  Read a single byte from an ADXL362 register.
+  * @param  regAddr: 8-bit register address
+  * @return The register's byte value
+  */
+uint8_t ADXL362_ReadReg(uint8_t regAddr)
 {
-    // CS low
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_RESET);
+    uint8_t txBuf[2];
+    uint8_t rxBuf[1];
 
-    // Send write command
-    uint8_t cmd[3];
-    cmd[0] = 0x0A;        // ADXL362 "Write register" command
-    cmd[1] = regAddress;  // which register
-    cmd[2] = value;       // data to write
-    HAL_SPI_Transmit(&hspi1, cmd, 3, HAL_MAX_DELAY);
+    txBuf[0] = ADXL362_CMD_READ_REG;  // 0x0B
+    txBuf[1] = regAddr;
 
-    // CS high
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_SET);
+    ADXL362_Select();
+    // Send [READ_CMD, RegisterAddress]
+    HAL_SPI_Transmit(&hspi1, txBuf, 2, HAL_MAX_DELAY);
+    // Now read back one byte
+    HAL_SPI_Receive(&hspi1, rxBuf, 1, HAL_MAX_DELAY);
+    ADXL362_Unselect();
+
+    return rxBuf[0];
 }
 
-// Read one register on the ADXL362
-// command 0x0B = READ REGISTER
-//  byte0 = 0x0B
-//  byte1 = regAddress
-uint8_t ADXL362_ReadRegister(uint8_t regAddress)
+/**
+  * @brief  Perform a soft reset of the ADXL362 and wait for it.
+  */
+void ADXL362_SoftReset(void)
 {
-    uint8_t value;
-    // CS low
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_RESET);
-
-    // Send read command + address
-    uint8_t cmd[2];
-    cmd[0] = 0x0B;
-    cmd[1] = regAddress;
-    HAL_SPI_Transmit(&hspi1, cmd, 2, HAL_MAX_DELAY);
-
-    // Read returned byte
-    HAL_SPI_Receive(&hspi1, &value, 1, HAL_MAX_DELAY);
-
-    // CS high
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_SET);
-    return value;
-}
-
-void ADXL362_Init(void)
-{
-    // 1) Soft reset (write 0x52 to SOFT_RESET register at 0x1F)
-    ADXL362_WriteRegister(0x1F, 0x52);
-    HAL_Delay(10); // small delay after reset
-
-    // 2) Example: set range = +/- 2g, ODR = 100 Hz
-    // FILTER_CTL (0x2C) defaults to 0x13 => +/-2g, 1/2 bandwidth, ODR=100 Hz
-    // but we can explicitly write if you want:
-    // ADXL362_WriteRegister(0x2C, 0x13);
-
-    // 3) Put device into measurement mode
-    // POWER_CTL (0x2D):
-    // Bits [2:0] = 0b010 => Measurement Mode
-    // For normal noise mode, ensure LOW_NOISE bits are 0:
-    // [6:5] = 0 => normal. So final = 0x02
-    ADXL362_WriteRegister(0x2D, 0x02);
-
+    // Per datasheet, write 0x52 to SOFT_RESET (0x1F)
+    ADXL362_WriteReg(ADXL362_REG_SOFT_RESET, 0x52);
+    // Wait ~10 ms for the device to reset
     HAL_Delay(10);
 }
 
-
-void ADXL362_ReadXYZ(int16_t *x, int16_t *y, int16_t *z)
+/**
+  * @brief  Initialize ADXL362 for ±2g range, 100Hz ODR, measurement mode.
+  *         Adjust to your preferences as needed.
+  */
+void ADXL362_Init(void)
 {
-    uint8_t cmd[2];
-    uint8_t rawData[6];
+    // 1) Soft reset
+    ADXL362_SoftReset();
 
-    // CS low
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_RESET);
+    // 2) FILTER_CTL (0x2C):
+    //    Bits: [7:6] = range (00 => ±2g),
+    //          [3]   = HALF_BW=1 => bandwidth is ODR/4, or 0 => ODR/2,
+    //          [2:0] = ODR (011 => 100 Hz)
+    //    So 0x13 => Range=±2g, HALF_BW=0, ODR=100Hz.
+    //    Or 0x12 => Range=±2g, HALF_BW=1, ODR=100Hz
+    ADXL362_WriteReg(ADXL362_REG_FILTER_CTL, 0x13);
 
-    // Send read command and start address
-    cmd[0] = 0x0B;    // READ REGISTER command
-    cmd[1] = 0x0E;    // starting at XDATA_L
-    HAL_SPI_Transmit(&hspi1, cmd, 2, HAL_MAX_DELAY);
+    // 3) POWER_CTL (0x2D):
+    //    Bits: [6:5] = low noise mode (00 => normal, 01 => low noise, etc.)
+    //          [2]   = wake-up mode
+    //          [1:0] = measurement mode (10 => measure)
+    //    0x02 => normal noise, measurement mode
+    //    (0b00000010)
+    ADXL362_WriteReg(ADXL362_REG_POWER_CTL, 0x02);
+}
 
-    // Read 6 bytes (X_L, X_H, Y_L, Y_H, Z_L, Z_H)
-    HAL_SPI_Receive(&hspi1, rawData, 6, HAL_MAX_DELAY);
+/**
+  * @brief  Read the 3-axis (12-bit) acceleration from ADXL362.
+  * @param  xRaw, yRaw, zRaw: pointers to int16_t that receive the measurements
+  */
+void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw)
+{
+    // The 12-bit data registers:
+    // XDATA_L = 0x0E, XDATA_H = 0x0F
+    // YDATA_L = 0x10, YDATA_H = 0x11
+    // ZDATA_L = 0x12, ZDATA_H = 0x13
+    // Read all 6 bytes in burst mode:
+    uint8_t txBuf[2];
+    uint8_t rxBuf[6];
 
-    // CS high
-    HAL_GPIO_WritePin(ACCEL_CS_GPIO_Port, ACCEL_CS_Pin, GPIO_PIN_SET);
+    txBuf[0] = ADXL362_CMD_READ_REG;  // 0x0B
+    txBuf[1] = 0x0E;                  // Start at XDATA_L
 
-    // Combine bytes
-    // Each axis is 12-bit, sign-extended in a 16-bit container
-    *x = (int16_t)((rawData[1] << 8) | rawData[0]);
-    *y = (int16_t)((rawData[3] << 8) | rawData[2]);
-    *z = (int16_t)((rawData[5] << 8) | rawData[4]);
+    ADXL362_Select();
+    // Transmit the read command + start address
+    HAL_SPI_Transmit(&hspi1, txBuf, 2, HAL_MAX_DELAY);
+    // Now read 6 bytes
+    HAL_SPI_Receive(&hspi1, rxBuf, 6, HAL_MAX_DELAY);
+    ADXL362_Unselect();
 
-    // Now each is a signed value in LSBs. If ±2g range, 1 LSB = 1 mg
-    // That means acceleration in mg = (*x), or in g = (*x) / 1000.0f
+    // Reassemble each axis (little-endian)
+    *xRaw = (int16_t)((rxBuf[1] << 8) | rxBuf[0]);
+    *yRaw = (int16_t)((rxBuf[3] << 8) | rxBuf[2]);
+    *zRaw = (int16_t)((rxBuf[5] << 8) | rxBuf[4]);
 }

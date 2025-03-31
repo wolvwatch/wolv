@@ -1,29 +1,40 @@
-/*
- * accel.h
- *
- *  Created on: Mar 22, 2025
- *      Author: ryankaelle
- */
+/**
+  ******************************************************************************
+  * @file    accel.h
+  * @brief   Header file for ADXL362 accelerometer driver (accel.c)
+  ******************************************************************************
+  * @attention
+  *
+  * (c) 2025 Your Company or Name
+  *
+  ******************************************************************************
+  */
+#ifndef __ACCEL_H
+#define __ACCEL_H
 
-#ifndef INC_ACCEL_H_
-#define INC_ACCEL_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "main.h"
 #include <stdint.h>
-
-// Chip Select definitions for the ADXL362
-#define ACCEL_CS_GPIO_Port   GPIOA
-#define ACCEL_CS_Pin         GPIO_PIN_4
-
-// External SPI handle (defined elsewhere, e.g., in main.c)
-extern SPI_HandleTypeDef hspi1;
-
-// Function prototypes
-void ADXL362_SPI_WriteByte(uint8_t byte);
-uint8_t ADXL362_SPI_ReadByte(void);
-void ADXL362_WriteRegister(uint8_t regAddress, uint8_t value);
-uint8_t ADXL362_ReadRegister(uint8_t regAddress);
+void ADXL362_Select(void);
+/* Initialize the ADXL362 for ±2g, 100 Hz ODR, normal noise mode */
 void ADXL362_Init(void);
-void ADXL362_ReadXYZ(int16_t *x, int16_t *y, int16_t *z);
 
-#endif /* INC_ACCEL_H_ */
+/* Write a single byte to the given ADXL362 register address */
+void ADXL362_WriteReg(uint8_t regAddr, uint8_t data);
+
+/* Read a single byte from the given ADXL362 register address */
+uint8_t ADXL362_ReadReg(uint8_t regAddr);
+
+/* Perform a soft-reset of the ADXL362 (write 0x52 to register 0x1F) */
+void ADXL362_SoftReset(void);
+
+/* Read the raw 12-bit X/Y/Z acceleration data into xRaw, yRaw, zRaw */
+void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __ACCEL_H */
