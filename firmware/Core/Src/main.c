@@ -97,8 +97,8 @@ static void MX_DMA2D_Init(void);
 /* USER CODE BEGIN 0 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == LPUART1) {
-    lv_indev_read(input);
     HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+    lv_indev_read(input);
   }
 }
 
@@ -141,11 +141,13 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_DMA2D_Init();
   /* USER CODE BEGIN 2 */
-  init_gui_data(&gui_data);
   max30102_init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   screen_init();
+  init_gui();
   lv_draw_dma2d_init();
+  load_screen(SCREEN_watchface_digital_0);
+
 
   /* USER CODE END 2 */
 
@@ -461,7 +463,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
-  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_SS14_8;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_SS14_1;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
   sAlarm.Alarm = RTC_ALARM_A;

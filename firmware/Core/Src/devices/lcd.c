@@ -291,9 +291,6 @@ void screen_init() {
 	screen_reset();
 	LCD_1IN28_InitReg();
 
-	LV_FONT_DECLARE(ultra_90);
-	LV_FONT_DECLARE(ultra_40);
-
 	lv_init();
 	display = lv_display_create(LCD_1IN28_WIDTH, LCD_1IN28_HEIGHT);
 	lv_display_set_flush_cb(display, screen_render);
@@ -311,64 +308,6 @@ void screen_init() {
 	group = lv_group_create();
 	lv_group_set_default(group);
 	lv_indev_set_group(input, group);
-
-	lv_obj_t *h = lv_label_create(lv_screen_active());
-	lv_label_bind_text(h, &gui_data.ctime_h, "%02d");
-	lv_obj_set_pos(h, 22, 90);
-	lv_obj_set_style_text_font(h, &ultra_90, LV_PART_MAIN);
-	lv_obj_t *m = lv_label_create(lv_screen_active());
-	lv_label_bind_text(m, &gui_data.ctime_m, "%02d");
-	lv_obj_set_style_text_font(m, &ultra_40, LV_PART_MAIN);
-	lv_obj_align_to(m, h, LV_ALIGN_TOP_RIGHT, 60, 0);
-	lv_obj_t *d = lv_label_create(lv_screen_active());
-	lv_label_set_text(d, "SAT 29");
-	lv_obj_set_style_text_font(d, &lv_font_montserrat_14, LV_PART_MAIN);
-	lv_obj_set_style_text_color(d, lv_color_hex(0xAAAAAA), LV_PART_MAIN);
-	lv_obj_align_to(d, m, LV_ALIGN_BOTTOM_MID, 0, 20);
-
-	lv_obj_t *s = lv_arc_create(lv_screen_active());
-	lv_arc_set_rotation(s, 270);
-	lv_arc_set_bg_angles(s, 0, 360);
-	lv_arc_set_bg_end_angle(s, 360);
-	lv_obj_remove_style(s, NULL, LV_PART_KNOB);
-	lv_obj_remove_flag(s, LV_OBJ_FLAG_CLICKABLE);
-	lv_obj_set_size(s, 65, 65);
-	lv_obj_center(s);
-	lv_arc_set_value(s, 60);
-	lv_obj_set_align(s, LV_ALIGN_BOTTOM_MID);
-	lv_obj_set_pos(s, 0, -5);
-	lv_obj_set_style_arc_width(s, 4, LV_PART_INDICATOR);
-	lv_obj_set_style_arc_width(s, 4, LV_PART_MAIN);
-	lv_obj_set_style_arc_color(s, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
-
-	lv_obj_t *sc = lv_label_create(lv_screen_active());
-	lv_obj_set_style_text_font(sc, &lv_font_montserrat_12, LV_PART_MAIN);
-	lv_label_bind_text(sc, &gui_data.ctime_s, "%02d");
-	lv_obj_set_style_text_color(sc, lv_color_hex(0xAA5555), LV_PART_MAIN);
-	lv_obj_align_to(sc, m, LV_ALIGN_OUT_RIGHT_BOTTOM, 3, 0);
-
-
-	lv_obj_t *st = lv_label_create(lv_screen_active());
-	lv_obj_set_style_text_font(st, &lv_font_montserrat_14, LV_PART_MAIN);
-	lv_label_set_text(st, "6,281");
-	lv_obj_align_to(st, s, LV_ALIGN_CENTER, 0, 9);
-
-	LV_IMAGE_DECLARE(steps);
-	lv_obj_t *feet = lv_image_create(lv_screen_active());
-	lv_image_set_src(feet, &steps);
-	lv_image_set_scale(feet, 100);
-	lv_obj_align_to(feet, s, LV_ALIGN_CENTER, 0, -11);
-
-	LV_IMAGE_DECLARE(heart);
-	lv_obj_t *ht = lv_image_create(lv_screen_active());
-	lv_image_set_src(ht, &heart);
-	lv_image_set_scale(ht, 100);
-	lv_obj_align_to(ht, d, LV_ALIGN_BOTTOM_MID, 0, 55);
-
-	lv_obj_t *st_val = lv_label_create(lv_screen_active());
-	lv_label_bind_text(st_val, &gui_data.hr, "%u");
-	lv_obj_align_to(st_val, ht, LV_ALIGN_BOTTOM_MID, 0, -4);
-	lv_obj_set_style_text_font(st_val, &lv_font_montserrat_12, LV_PART_MAIN);
 }
 
 void screen_clear(uint16_t color) {
