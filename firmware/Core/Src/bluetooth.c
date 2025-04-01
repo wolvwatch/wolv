@@ -8,10 +8,14 @@
 #include "stm32l4xx_hal.h"
 #include <stdio.h>
 #include "lvgl.h"
+#include "main.h"
+#include "parseCommands.h"
+
 extern uint8_t rx_buffer[1];
 extern uint8_t rxData;
 extern lv_indev_t *input;
 extern UART_HandleTypeDef hlpuart1;
+extern RTC_HandleTypeDef hrtc;
 
 #define RX_BUFFER_SIZE 256
 volatile char rxBuffer[RX_BUFFER_SIZE];
@@ -25,9 +29,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         if (rxData == '\n' || rxIndex >= RX_BUFFER_SIZE - 1){
             rxBuffer[rxIndex] = '\0';
             printf("Received string: %s", rxBuffer);
+
+            parseBluetoothCommand(rxBuffer);
             rxIndex = 0;
         }
-
         HAL_UART_Receive_IT(huart, &rxData, 1);
     }
 
