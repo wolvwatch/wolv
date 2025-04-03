@@ -29,7 +29,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         if (rxData == '\n' || rxIndex >= RX_BUFFER_SIZE - 1){
             rxBuffer[rxIndex] = '\0';
             printf("Received string: %s", rxBuffer);
-
             parseBluetoothCommand(rxBuffer);
             rxIndex = 0;
         }
