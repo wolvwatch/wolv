@@ -179,7 +179,6 @@ int main(void)
   while (1) {
     int16_t x, y, z;
     ADXL362_ReadXYZ(&x, &y, &z);
-    //printf("%d %d %d\n", x, y, z);
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
 
     uint16_t samps = max30102_read_data();

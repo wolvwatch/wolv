@@ -115,7 +115,7 @@ void parseBluetoothCommand(const char *cmd)
 
         // Convert to lv_color_t
         lv_color_t newColor = lv_color_hex(colorVal);
-        lv_style_set_bg_color(&main_style, newColor);
+        //lv_style_set_bg_color(&main_style, newColor);
     }
 
     // CMD:3 Toggle Notifications
