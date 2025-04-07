@@ -71,6 +71,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/smartwatch.elf.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c.obj"
   "CMakeFiles/smartwatch.elf.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c.obj.d"
   "smartwatch.elf"
+  "smartwatch.elf.manifest"
   "smartwatch.elf.pdb"
 )
 

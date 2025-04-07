@@ -29,4 +29,6 @@ void screen_set_backlight(uint16_t Value);
 
 void screen_render();
 
+void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color);
+
 #endif
