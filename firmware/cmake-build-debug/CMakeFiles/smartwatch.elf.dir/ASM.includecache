@@ -6,5 +6,5 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Sandr/projects/smartwatch/firmware/Core/Startup/startup_stm32l433rctx.s
+/Users/ryankaelle/CLionProjects/code_working_prior_rasterize/firmware/Core/Startup/startup_stm32l433rctx.s
 

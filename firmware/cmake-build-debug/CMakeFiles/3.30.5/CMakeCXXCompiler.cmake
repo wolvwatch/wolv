@@ -1,7 +1,7 @@
-set(CMAKE_CXX_COMPILER "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-g++.exe")
+set(CMAKE_CXX_COMPILER "/opt/homebrew/bin/arm-none-eabi-g++")
 set(CMAKE_CXX_COMPILER_ARG1 "")
 set(CMAKE_CXX_COMPILER_ID "GNU")
-set(CMAKE_CXX_COMPILER_VERSION "14.2.1")
+set(CMAKE_CXX_COMPILER_VERSION "14.2.0")
 set(CMAKE_CXX_COMPILER_VERSION_INTERNAL "")
 set(CMAKE_CXX_COMPILER_WRAPPER "")
 set(CMAKE_CXX_STANDARD_COMPUTED_DEFAULT "17")
@@ -25,10 +25,10 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 set(CMAKE_AR "arm-none-eabi-ar")
-set(CMAKE_CXX_COMPILER_AR "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-gcc-ar.exe")
-set(CMAKE_RANLIB "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-ranlib.exe")
-set(CMAKE_CXX_COMPILER_RANLIB "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-gcc-ranlib.exe")
-set(CMAKE_LINKER "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-ld.exe")
+set(CMAKE_CXX_COMPILER_AR "/opt/homebrew/bin/arm-none-eabi-gcc-ar")
+set(CMAKE_RANLIB "/opt/homebrew/bin/arm-none-eabi-ranlib")
+set(CMAKE_CXX_COMPILER_RANLIB "/opt/homebrew/bin/arm-none-eabi-gcc-ranlib")
+set(CMAKE_LINKER "/opt/homebrew/bin/arm-none-eabi-ld")
 set(CMAKE_LINKER_LINK "")
 set(CMAKE_LINKER_LLD "")
 set(CMAKE_CXX_COMPILER_LINKER "NOTFOUND")
@@ -36,7 +36,7 @@ set(CMAKE_CXX_COMPILER_LINKER_ID "")
 set(CMAKE_CXX_COMPILER_LINKER_VERSION )
 set(CMAKE_CXX_COMPILER_LINKER_FRONTEND_VARIANT )
 set(CMAKE_MT "")
-set(CMAKE_TAPI "CMAKE_TAPI-NOTFOUND")
+set(CMAKE_TAPI "/Users/ryankaelle/opt/anaconda3/bin/tapi")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
 set(CMAKE_CXX_COMPILER_LOADED 1)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
@@ -87,7 +87,7 @@ endif()
 
 
 
-set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/arm-none-eabi/include/c++/14.2.1;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/arm-none-eabi/include/c++/14.2.1/arm-none-eabi;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/arm-none-eabi/include/c++/14.2.1/backward;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/lib/gcc/arm-none-eabi/14.2.1/include;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/lib/gcc/arm-none-eabi/14.2.1/include-fixed;C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/arm-none-eabi/include")
+set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "/opt/homebrew/Cellar/arm-none-eabi-gcc/14.2.0/lib/gcc/arm-none-eabi/14.2.0/include;/opt/homebrew/Cellar/arm-none-eabi-gcc/14.2.0/lib/gcc/arm-none-eabi/14.2.0/include-fixed")
 set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
@@ -95,11 +95,11 @@ set(CMAKE_CXX_COMPILER_CLANG_RESOURCE_DIR "")
 
 set(CMAKE_CXX_COMPILER_IMPORT_STD "")
 ### Imported target for C++23 standard library
-set(CMAKE_CXX23_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: MinGW Makefiles")
+set(CMAKE_CXX23_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: Unix Makefiles")
 
 
 ### Imported target for C++26 standard library
-set(CMAKE_CXX26_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: MinGW Makefiles")
+set(CMAKE_CXX26_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: Unix Makefiles")
 
 
 

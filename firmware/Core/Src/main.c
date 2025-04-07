@@ -24,8 +24,9 @@
 #include "sense.h"
 #include "stdio.h"
 #include "stm32l4xx_hal.h"
-#include "../Inc/lcd.h"
+#include "lcd.h"
 #include "max30102.h"
+#include "rasterizer.h"
 #include "spo2.h"
 #include "accel.h"
 /* USER CODE END Includes */
@@ -142,6 +143,10 @@ int main(void)
   int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
   int32_t heartRate; //heart rate value
   int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
+    font_init(16);
+
+  draw_text(10, 40, "Hello, STM32!", 0xFFFF);
+  
 
   /*uint16_t total_samps = 0;
   while (total_samps < BUFFER_SIZE) {

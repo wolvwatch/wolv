@@ -1,10 +1,10 @@
 CMakeFiles/smartwatch.elf.dir/Core/Src/spo2.c.obj: \
- C:\Users\Sandr\projects\smartwatch\firmware\Core\Src\spo2.c \
- C:/Users/Sandr/projects/smartwatch/firmware/Core/Inc/spo2.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/lib/gcc/arm-none-eabi/14.2.1/include/stdint.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/stdint.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/machine/_default_types.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/sys/features.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/_newlib_version.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/sys/_intsup.h \
- C:/PROGRA~2/ARMGNU~1/14EFD8~1.2RE/arm-none-eabi/include/sys/_stdint.h
+ /Users/ryankaelle/CLionProjects/code_working_prior_rasterize/firmware/Core/Src/spo2.c \
+ /Users/ryankaelle/CLionProjects/code_working_prior_rasterize/firmware/Core/Src/../Inc/spo2.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/lib/gcc/arm-none-eabi/14.2.1/include/stdint.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/stdint.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/machine/_default_types.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/features.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/_newlib_version.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_intsup.h \
+ /Applications/ArmGNUToolchain/14.2.rel1/arm-none-eabi/arm-none-eabi/include/sys/_stdint.h
