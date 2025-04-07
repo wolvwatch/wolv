@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "lcd.h"
+
+#define SET_PIXEL(x, y, color) screen_set_pixel(x, y, color);
 
 /**
  * @brief Defines the color type (16-bit).
