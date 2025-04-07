@@ -1,3 +1,4 @@
+#define STB_TRUETYPE_IMPLEMENTATION
 #include "rasterizer.h"
 #include "Montserrat-Regular.h"
 #include <math.h>
@@ -6,21 +7,7 @@
 
 
 static stbtt_fontinfo g_font;
-static float g_scale;  // the scale factor for font
-
-
-static void set_pixel(uint16_t x, uint16_t y, color_t color) {
-    // check if coordinates are within screen bounds
-    if (x >= LCD_1IN28_WIDTH || y >= LCD_1IN28_HEIGHT) return;
-
-    // calculate the position in the pixel buffer
-    uint32_t pos = (y * LCD_1IN28_WIDTH + x) * 2;
-
-    // Write color value to the pixel buffer (16-bit format)
-    extern uint8_t pixels[];
-    pixels[pos] = color >> 8;
-    pixels[pos + 1] = color & 0xFF;
-}
+static float g_scale;
 
 void font_init(int font_pixel_height) {
     // stb_truetype
@@ -67,7 +54,7 @@ void draw_char(int x, int y, char c, color_t color) {
 
             // Simple threshold approach:
             if (alpha > 128) {
-                set_pixel(draw_x + col, draw_y + row, color);
+                SET_PIXEL(draw_x + col, draw_y + row, color);
             }
         }
     }
@@ -117,7 +104,7 @@ static void draw_horizontal_line(uint16_t x0, uint16_t x1, uint16_t y, color_t c
     }
     
     for (uint16_t x = x0; x <= x1; x++) {
-        set_pixel(x, y, color);
+        SET_PIXEL(x, y, color);
     }
 }
 
@@ -134,13 +121,13 @@ void draw_line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, color_t color
     while (1) {
         // Draw the main pixel
         if (stroke == 1) {
-            set_pixel(x0, y0, color);
+            SET_PIXEL(x0, y0, color);
         } else {
             for (int16_t i = -stroke_offset; i <= stroke_offset; i++) {
                 if (dx > dy) {
-                    set_pixel(x0, y0 + i, color);
+                    SET_PIXEL(x0, y0 + i, color);
                 } else {
-                    set_pixel(x0 + i, y0, color);
+                    SET_PIXEL(x0 + i, y0, color);
                 }
             }
         }
@@ -187,8 +174,8 @@ void draw_arc(uint16_t start_angle, uint16_t end_angle, uint16_t x, uint16_t y,
                     if (py != 0) draw_horizontal_line(x, x + px, y - py, color); \
                 } else { \
                     for (uint16_t s = 0; s < stroke; s++) { \
-                        set_pixel(x + px, y + py + s, color); \
-                        set_pixel(x + px, y + py - s, color); \
+                        SET_PIXEL(x + px, y + py + s, color); \
+                        SET_PIXEL(x + px, y + py - s, color); \
                     } \
                 } \
             } \
