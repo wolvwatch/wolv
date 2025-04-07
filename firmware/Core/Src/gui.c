@@ -32,6 +32,7 @@ void init_gui() {
     lv_subject_init_int(&gui_data.spo2_val, 0);
 
     INIT_SCREEN(watchface_digital_0);
+    INIT_SCREEN(watchface_analog_0);
     INIT_SCREEN(settings);
 }
 
