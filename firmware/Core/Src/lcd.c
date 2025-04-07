@@ -253,3 +253,28 @@ void screen_init() {
 	screen_reset();
 	LCD_1IN28_InitReg();
 }
+
+void setPixel(uint8_t *frameBuffer, int width, int x, int y, uint16_t color) {
+	int pixelIndex = y * width + x;
+	int bitIndex = pixelIndex * 3;
+	int byteIndex = bitIndex / 8;
+	int bitOffset = bitIndex % 8;
+
+	if (bitOffset <= 5) {
+		uint8_t mask = 0x07 << bitOffset;
+		frameBuffer[byteIndex] = (frameBuffer[byteIndex] & ~mask) | ((color & 0x07) << bitOffset);
+	}
+	else {
+		int bitsInFirstByte = 8 - bitOffset;
+		int bitsInSecondByte = 3 - bitsInFirstByte;
+
+		uint8_t mask1 = ((1 << bitsInFirstByte) - 1) << bitOffset;
+		frameBuffer[byteIndex] = (frameBuffer[byteIndex] & ~mask1) | (((color & 0x07) << bitOffset) & mask1);
+		uint8_t mask2 = (1 << bitsInSecondByte) - 1;
+		frameBuffer[byteIndex + 1] = (frameBuffer[byteIndex + 1] & ~mask2) | ((color & 0x07) >> bitsInFirstByte);
+	}
+}
+
+void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color) {
+	setPixel(pixels, 240, x, y, color);
+}
