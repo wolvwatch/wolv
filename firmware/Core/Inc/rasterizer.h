@@ -7,6 +7,11 @@
 
 #define SET_PIXEL(x, y, color) screen_set_pixel(x, y, color);
 
+typedef struct {
+    uint16_t bitmap_index;
+    uint16_t adv_w, box_w, box_h, ofs_x, ofs_y;
+} font_t;
+
 /**
  * @brief Defines the color type (16-bit).
  */
