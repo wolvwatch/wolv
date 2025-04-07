@@ -23,11 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-
-#include "gui.h"
 #include "stm32l4xx_hal.h"
 #include "sense.h"
-#include "lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,13 +58,10 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart3;
-extern RTC_HandleTypeDef hrtc;
 /* USER CODE BEGIN EV */
 extern sense_t sensor_data;
 extern RTC_HandleTypeDef hrtc;
-extern gui_data_t gui_data;
 
 /* USER CODE END EV */
 
@@ -194,7 +188,6 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
   HAL_SYSTICK_IRQHandler();
-  lv_tick_inc(1);
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
@@ -222,44 +215,6 @@ void USART3_IRQHandler(void)
   /* USER CODE BEGIN USART3_IRQn 1 */
 
   /* USER CODE END USART3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles RTC alarm interrupt through EXTI line 18.
-  */
-void RTC_Alarm_IRQHandler(void)
-{
-  /* USER CODE BEGIN RTC_Alarm_IRQn 0 */
-  RTC_TimeTypeDef time;
-  RTC_DateTypeDef date;
-
-  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
-  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-
-  lv_subject_set_int(&gui_data.ctime_h, time.Hours);
-  lv_subject_set_int(&gui_data.ctime_m, time.Minutes);
-  lv_subject_set_int(&gui_data.ctime_s, time.Seconds);
-
-  lv_timer_handler();
-
-  /* USER CODE END RTC_Alarm_IRQn 0 */
-  HAL_RTC_AlarmIRQHandler(&hrtc);
-  /* USER CODE BEGIN RTC_Alarm_IRQn 1 */
-
-  /* USER CODE END RTC_Alarm_IRQn 1 */
-}
-
-/**
-  * @brief This function handles LPUART1 global interrupt.
-  */
-void LPUART1_IRQHandler(void)
-{
-  /* USER CODE BEGIN LPUART1_IRQn 0 */
-  /* USER CODE END LPUART1_IRQn 0 */
-  HAL_UART_IRQHandler(&hlpuart1);
-  /* USER CODE BEGIN LPUART1_IRQn 1 */
-
-  /* USER CODE END LPUART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

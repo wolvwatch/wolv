@@ -59,26 +59,52 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BTN1_Pin GPIO_PIN_13
+#define BTN1_GPIO_Port GPIOC
+#define BTN2_Pin GPIO_PIN_14
+#define BTN2_GPIO_Port GPIOC
+#define BTN3_Pin GPIO_PIN_15
+#define BTN3_GPIO_Port GPIOC
+#define Misc1_Pin GPIO_PIN_0
+#define Misc1_GPIO_Port GPIOC
+#define Misc2_Pin GPIO_PIN_1
+#define Misc2_GPIO_Port GPIOC
+#define Misc3_Pin GPIO_PIN_2
+#define Misc3_GPIO_Port GPIOC
 #define TIM2_CH1_Haptic_Pin GPIO_PIN_0
 #define TIM2_CH1_Haptic_GPIO_Port GPIOA
-#define SCRN_DC_Pin GPIO_PIN_5
+#define CS_MEM_Pin GPIO_PIN_2
+#define CS_MEM_GPIO_Port GPIOA
+#define BT_STATE_Pin GPIO_PIN_4
+#define BT_STATE_GPIO_Port GPIOA
+#define BT_EN_Pin GPIO_PIN_5
+#define BT_EN_GPIO_Port GPIOA
+#define WP_MEM_Pin GPIO_PIN_0
+#define WP_MEM_GPIO_Port GPIOB
+#define H_RST_MEM_Pin GPIO_PIN_1
+#define H_RST_MEM_GPIO_Port GPIOB
+#define EXTI15_HR_INT1_Pin GPIO_PIN_15
+#define EXTI15_HR_INT1_GPIO_Port GPIOB
+#define TIM1_CH1_BL_Screen_Pin GPIO_PIN_8
+#define TIM1_CH1_BL_Screen_GPIO_Port GPIOA
+#define SCRN_RST_Pin GPIO_PIN_9
+#define SCRN_RST_GPIO_Port GPIOA
+#define SCRN_DC_Pin GPIO_PIN_10
 #define SCRN_DC_GPIO_Port GPIOA
-#define SCRN_RST_Pin GPIO_PIN_15
-#define SCRN_RST_GPIO_Port GPIOB
-#define SCRN_CS_Pin GPIO_PIN_6
-#define SCRN_CS_GPIO_Port GPIOC
-#define RST_Screen_Pin GPIO_PIN_9
-#define RST_Screen_GPIO_Port GPIOA
-#define DC_Screen_Pin GPIO_PIN_10
-#define DC_Screen_GPIO_Port GPIOA
-#define CS_S_Pin GPIO_PIN_11
-#define CS_S_GPIO_Port GPIOA
+#define SCRN_CS_Pin GPIO_PIN_11
+#define SCRN_CS_GPIO_Port GPIOA
 #define Flashing_SWDIO_Pin GPIO_PIN_13
 #define Flashing_SWDIO_GPIO_Port GPIOA
 #define Flashing_SWCLK_Pin GPIO_PIN_14
 #define Flashing_SWCLK_GPIO_Port GPIOA
-#define ACC_Shutdown_Pin GPIO_PIN_2
-#define ACC_Shutdown_GPIO_Port GPIOD
+#define CS_ACC_Pin GPIO_PIN_4
+#define CS_ACC_GPIO_Port GPIOB
+#define EXTI15_ACC_INT2_Pin GPIO_PIN_5
+#define EXTI15_ACC_INT2_GPIO_Port GPIOB
+#define EXTI6_ACC_INT1_Pin GPIO_PIN_6
+#define EXTI6_ACC_INT1_GPIO_Port GPIOB
+#define ACC_3_3V_Pin GPIO_PIN_7
+#define ACC_3_3V_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
