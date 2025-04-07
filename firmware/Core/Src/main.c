@@ -146,7 +146,7 @@ int main(void)
   lv_draw_dma2d_init();
   ADXL362_Init();
   
-  load_screen(SCREEN_watchface_digital_0);
+  load_screen(SCREEN_watchface_analog_0);
 
 
   /* USER CODE END 2 */
@@ -179,7 +179,7 @@ int main(void)
   while (1) {
     int16_t x, y, z;
     ADXL362_ReadXYZ(&x, &y, &z);
-    HAL_UART_Receive_IT(&huart3, &rxData, 1);
+    //HAL_UART_Receive_IT(&huart3, &rxData, 1);
 
     uint16_t samps = max30102_read_data();
     for (uint16_t j = 0; j < samps; j++) {

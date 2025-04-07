@@ -15,6 +15,7 @@ typedef struct {
 
 typedef enum {
   SCREEN_watchface_digital_0,
+  SCREEN_watchface_analog_0,
   SCREEN_settings,
   SCREEN_COUNT
 } screen_t;
