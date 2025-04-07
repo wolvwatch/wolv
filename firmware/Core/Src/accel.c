@@ -11,8 +11,6 @@
 #include "stm32l4xx_hal.h"
 
 // For example, define the chip select pin:
-#define CS_ACC_GPIO_Port   GPIOD
-#define CS_ACC_Pin         GPIO_PIN_1
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -27,11 +25,11 @@ extern SPI_HandleTypeDef hspi1;
 // For convenience, chip-select helpers:
 static inline void ADXL362_Select(void)
 {
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_RESET);
 }
 static inline void ADXL362_Unselect(void)
 {
-    HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
+   // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
 }
 
 /**

@@ -45,7 +45,7 @@
 /*#define HAL_CRYP_MODULE_ENABLED   */
 /*#define HAL_DAC_MODULE_ENABLED   */
 /*#define HAL_DCMI_MODULE_ENABLED   */
-#define HAL_DMA2D_MODULE_ENABLED
+/*#define HAL_DMA2D_MODULE_ENABLED   */
 /*#define HAL_DFSDM_MODULE_ENABLED   */
 /*#define HAL_DSI_MODULE_ENABLED   */
 /*#define HAL_FIREWALL_MODULE_ENABLED   */
@@ -111,7 +111,7 @@
   *        This value is the default MSI range value after Reset.
   */
 #if !defined  (MSI_VALUE)
-  #define MSI_VALUE    ((uint32_t)48000000U) /*!< Value of the Internal oscillator in Hz*/
+  #define MSI_VALUE    ((uint32_t)4000000U) /*!< Value of the Internal oscillator in Hz*/
 #endif /* MSI_VALUE */
 /**
   * @brief Internal High Speed oscillator (HSI) value.
@@ -170,7 +170,7 @@
   *        frequency.
   */
 #if !defined  (EXTERNAL_SAI2_CLOCK_VALUE)
-  #define EXTERNAL_SAI2_CLOCK_VALUE    2097000U /*!< Value of the SAI2 External clock source in Hz*/
+  #define EXTERNAL_SAI2_CLOCK_VALUE    48000U /*!< Value of the SAI2 External clock source in Hz*/
 #endif /* EXTERNAL_SAI2_CLOCK_VALUE */
 
 /* Tip: To avoid modifying this file each time you need to use different HSE,
@@ -182,7 +182,7 @@
   */
 
 #define  VDD_VALUE					  3300U /*!< Value of VDD in mv */
-#define  TICK_INT_PRIORITY            0U    /*!< tick interrupt priority */
+#define  TICK_INT_PRIORITY            15U    /*!< tick interrupt priority */
 #define  USE_RTOS                     0U
 #define  PREFETCH_ENABLE              0U
 #define  INSTRUCTION_CACHE_ENABLE     1U
