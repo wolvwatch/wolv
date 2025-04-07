@@ -19,12 +19,3 @@ Status\ Report.txt
 Release/
 Debug/
 .launch
-
-# Jetbrains
-cmake-build-debug
-.cproject
-.mxproject
-.project
-CMakeLists.txt
-CMakeLists_template.txt
-.idea
