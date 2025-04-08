@@ -63,14 +63,63 @@ static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uin
 	send_cmd(0X2C);
 }
 
+uint8_t getPixel(const uint8_t *frameBuffer, int width, int x, int y) {
+// Calculate the overall pixel index in row-major order.
+int pixelIndex = y * width + x;
+// Each pixel occupies 3 bits.
+int bitIndex = pixelIndex * 3;
+// Determine which byte holds the first bit.
+int byteIndex = bitIndex / 8;
+// Determine the bit offset within that byte.
+int bitOffset = bitIndex % 8;
+
+// Case 1: The 3 bits for this pixel are all contained in the same byte.
+if (bitOffset <= 5) {
+return (frameBuffer[byteIndex] >> bitOffset) & 0x07;
+}
+// Case 2: The 3 bits span across two consecutive bytes.
+else {
+// How many bits are in the first byte.
+int bitsInFirstByte = 8 - bitOffset;  // will be 1 or 2 bits.
+// The remaining bits are in the next byte.
+int bitsInSecondByte = 3 - bitsInFirstByte;
+
+// Extract the lower part from the first byte.
+uint8_t part1 = frameBuffer[byteIndex] >> bitOffset;
+// Extract the remaining bits from the next byte.
+uint8_t part2 = frameBuffer[byteIndex + 1] & ((1 << bitsInSecondByte) - 1);
+// Combine the two parts and mask to 3 bits.
+return ((part2 << bitsInFirstByte) | part1) & 0x07;
+}
+}
+
+uint16_t rgb111_to_rgb565(uint8_t color) {
+// Extract each 1-bit color component.
+uint8_t r = (color >> 2) & 0x01;  // Red is the most significant bit.
+uint8_t g = (color >> 1) & 0x01;  // Green is the middle bit.
+uint8_t b = color & 0x01;         // Blue is the least significant bit.
+
+// Map the 1-bit value to the full scale of the RGB565 channel:
+// For red and blue (5 bits): 0 -> 0, 1 -> 31 (0x1F)
+// For green (6 bits): 0 -> 0, 1 -> 63 (0x3F)
+uint16_t r565 = r ? 0x1F : 0;
+uint16_t g565 = g ? 0x3F : 0;
+uint16_t b565 = b ? 0x1F : 0;
+
+// Combine into a single 16-bit RGB565 value.
+// RGB565 format: bits 15-11: red, bits 10-5: green, bits 4-0: blue.
+return (r565 << 11) | (g565 << 5) | b565;
+}
+
 void screen_render() {
 	screen_set_windows(0, 0, 239, 239);
 	SET_DC_HIGH;
 	SET_CS_LOW;
-	uint32_t bytes_remaining = 240 * 240 * 2;
-	uint8_t offset = 0xFF;
-	for (int i = 0; i < 240*240*2; i++) {
-		HAL_SPI_Transmit(&hspi3, &offset, 1, HAL_MAX_DELAY);
+	for (uint16_t j = 0; j < 240; j++) {
+		for (uint16_t i = 0; i < 240; i++) {
+			uint16_t pixel = rgb111_to_rgb565(getPixel(pixels, 240, i, j));
+			HAL_SPI_Transmit(&hspi3, (uint8_t*)&pixel, 2, HAL_MAX_DELAY);
+		}
 	}
 	SET_DC_LOW;
 	SET_CS_HIGH;
