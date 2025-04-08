@@ -1,9 +1,9 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "lcd.h"         // For screen_init(), screen_set_pixel(), etc.
 #include "rasterizer.h"  // For the definition of font_t
 #include <stdint.h>
+#include "lcd.h"
 
 #ifdef __cplusplus
 extern "C" {

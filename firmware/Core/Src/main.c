@@ -30,7 +30,16 @@
 #include "spo2.h"
 #include "accel.h"
 #include "display.h"
-
+#include "math.h"
+#include "rasterizer.h"
+#include "bluetooth.h"
+#define RED 0x100
+#define BLACK 0x000
+#define GREEN 0x010
+#define BLUE 0x001
+#define YELLOW 0x011
+#define CYAN 0x101
+#define MAGENTA 0x110
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,7 +79,7 @@ extern max_struct_t max30102_sensor;
 sense_t sensor_data = {};
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
-uint8_t rxIndex = 0;
+//uint16_t rxIndex = 0;
 
 /* USER CODE END PV */
 
@@ -147,12 +156,27 @@ int main(void)
   int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
   //font_init(16);
   screen_init();
-  screen_clear(0x0000);
-  display_time_text(10, 10, "12:12", 0xFFFF);
-  display_main_text(10, 60, "HELLO, WOLV", 0xFFFF);
+  // display_time_text(20, 20, "12:34", 0xFFFF);
+  // display_time_text(20, 90, "56:79", 0xFFFF);
+  //display_time_text(20, 160, "9:87", 0xFFFF);
+  //display_time_text(20, 140, "9:87", 0xFFFF);
 
-  //draw_text(10, 40, "Hello, STM32!", 0xFFFF);
-  
+  // display_main_text(20, 60, "a b c d e f g", 0xFFFF);
+  // display_main_text(20, 90, "h i j k l m n", 0xFFFF);
+  // display_main_text(20, 120, "o p q r s t u v", 0xFFFF);
+  // display_main_text(20, 140, "w x y z", 0xFFFF);
+  // display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
+  //
+  display_main_text(20, 60, "ABCDEFG", 0xFFFF);
+  display_main_text(20, 90, "HIJKLMN", 0xFFFF);
+  display_main_text(20, 120, "OPQRSTUV", 0xFFFF);
+  display_main_text(20, 140, "WXYZ", 0xFFFF);
+  display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
+
+  screen_render();
+
+
+
 
   /*uint16_t total_samps = 0;
   while (total_samps < BUFFER_SIZE) {
@@ -176,6 +200,8 @@ int main(void)
     int16_t x, y, z;
     ADXL362_ReadXYZ(&x, &y, &z);
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
+
+
 
     /*uint16_t samps = max30102_read_data();
     for (uint16_t j = 0; j < samps; j++) {
@@ -228,14 +254,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_MSI;
-  RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 40;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
-  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
-  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_11;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -245,12 +265,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -272,7 +292,7 @@ static void MX_I2C2_Init(void)
 
   /* USER CODE END I2C2_Init 1 */
   hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x10D19CE4;
+  hi2c2.Init.Timing = 0x10805D88;
   hi2c2.Init.OwnAddress1 = 0;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -517,7 +537,7 @@ static void MX_SPI3_Init(void)
   hspi3.Instance = SPI3;
   hspi3.Init.Mode = SPI_MODE_MASTER;
   hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi3.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;

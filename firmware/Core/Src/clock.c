@@ -1,12 +1,11 @@
 #include "rasterizer.h"
 #include "stdint.h"
+#include "clock.h"
 
 /*-----------------
  *    BITMAPS
  *----------------*/
-
-/*Store the image of the glyphs*/
-static const uint8_t glyph_bitmap[] = {
+const uint8_t clock_font_bitmap[] = {
     /* U+0030 "0" */
     0x0, 0x7, 0xfe, 0x0, 0x0, 0x3, 0xff, 0xfc,
     0x0, 0x0, 0xff, 0xff, 0xf0, 0x0, 0x1f, 0xff,
@@ -231,8 +230,7 @@ static const uint8_t glyph_bitmap[] = {
     0xff, 0xff, 0xff, 0xff, 0x7f, 0xe7, 0xfe, 0x3f,
     0xc0, 0xf0
 };
-
-static const font_t glyph_dsc[] = {
+const font_t clock_font_dsc[] = {
     {.bitmap_index = 0, .adv_w = 0, .box_w = 0, .box_h = 0, .ofs_x = 0, .ofs_y = 0} /* id = 0 reserved */,
     {.bitmap_index = 0, .adv_w = 614, .box_w = 36, .box_h = 38, .ofs_x = 1, .ofs_y = -1},
     {.bitmap_index = 171, .adv_w = 393, .box_w = 23, .box_h = 36, .ofs_x = 1, .ofs_y = 0},
