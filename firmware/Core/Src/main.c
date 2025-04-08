@@ -26,9 +26,11 @@
 #include "stm32l4xx_hal.h"
 #include "lcd.h"
 #include "max30102.h"
-#include "rasterizer.h"
+#include "font.h"
 #include "spo2.h"
 #include "accel.h"
+#include "display.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -143,9 +145,13 @@ int main(void)
   int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
   int32_t heartRate; //heart rate value
   int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
-    font_init(16);
+  //font_init(16);
+  screen_init();
+  screen_clear(0x0000);
+  display_time_text(10, 10, "12:12", 0xFFFF);
+  display_main_text(10, 60, "HELLO, WOLV", 0xFFFF);
 
-  draw_text(10, 40, "Hello, STM32!", 0xFFFF);
+  //draw_text(10, 40, "Hello, STM32!", 0xFFFF);
   
 
   /*uint16_t total_samps = 0;
