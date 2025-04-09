@@ -93,9 +93,12 @@ uint8_t getPixel(const uint8_t *frameBuffer, int width, int x, int y) {
 
 uint16_t rgb111_to_rgb565(uint8_t color) {
 	// Extract each 1-bit color component.
+	//green is left
+	//red is middle
+	//blue is right
 	uint8_t r = (color >> 2) & 0x01; // Red is the most significant bit.
 	uint8_t g = (color >> 1) & 0x01; // Green is the middle bit.
-	uint8_t b = color & 0x01; // Blue is the least significant bit.
+	uint8_t b = (color >> 0) & 0x01; // Blue is the least significant bit.
 
 	// Map the 1-bit value to the full scale of the RGB565 channel:
 	// For red and blue (5 bits): 0 -> 0, 1 -> 31 (0x1F)

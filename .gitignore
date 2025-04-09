@@ -14,7 +14,7 @@ CMakePresets.json
 .mxproject
 .osx.project
 .project
-
+firmware/Drivers/
 # Various Altium files
 *.PrjPCBStructure
 *.SchDocPreview
