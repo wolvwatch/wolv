@@ -4,7 +4,7 @@
  *  Created on: Mar 22, 2025
  *      Author: ryankaelle
  */
-#include "../../Inc/drivers/bluetooth.h"
+#include "drivers/bluetooth.h"
 #include "stm32l4xx_hal.h"
 #include <stdio.h>
 extern uint8_t rxData;

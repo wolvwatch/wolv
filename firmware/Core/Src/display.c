@@ -1,5 +1,4 @@
 #include "drivers/lcd.h"
-#include "ux/rasterizer.h"
 #include "ux/display.h"
 #include "ux/font.h"
 #include <stdint.h>

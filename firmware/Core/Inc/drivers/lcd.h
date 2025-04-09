@@ -15,8 +15,6 @@
 #define __LCD_1IN28_H
 
 #include <stdint.h>
-#include <stdlib.h>		//itoa()
-#include <stdio.h>
 
 #define LCD_1IN28_HEIGHT 240
 #define LCD_1IN28_WIDTH 240
