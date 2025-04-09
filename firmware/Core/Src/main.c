@@ -21,13 +21,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sense.h"
 #include "stm32l4xx_hal.h"
 #include "drivers/lcd.h"
 #include "drivers/max30102.h"
 #include "drivers/adxl362.h"
 #include "ux/display.h"
 #include "drivers/bluetooth.h"
+#include "sense/biometrics.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,14 +60,10 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-//uint32_t raw_hr[BUFFER_SIZE] = {0};
-//uint32_t raw_spo2[BUFFER_SIZE] = {0};
 uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
-sense_t sensor_data = {};
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
-//uint16_t rxIndex = 0;
 
 /* USER CODE END PV */
 
@@ -88,6 +84,16 @@ static void MX_RTC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void watch_init() {
+  screen_init();
+  max30102_init();
+  ADXL362_Init();
+  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+}
+
+void watch_tick() {
+  update_biometrics();
+}
 /* USER CODE END 0 */
 
 /**
@@ -128,101 +134,13 @@ int main(void)
   MX_SPI3_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-  max30102_init();
-  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
-  screen_init();
-  ADXL362_Init();
-
-
+  watch_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int32_t spo2; //SPO2 value
-  int8_t validSPO2; //indicator to show if the SPO2 calculation is valid
-  int32_t heartRate; //heart rate value
-  int8_t validHeartRate; //indicator to show if the heart rate calculation is valid
-  //font_init(16);
-  screen_init();
-  // display_time_text(20, 20, "12:34", 0xFFFF);
-  // display_time_text(20, 90, "56:79", 0xFFFF);
-  //display_time_text(20, 160, "9:87", 0xFFFF);
-  display_time_text(10, 50, "12:34", 0xFFFF);
-  screen_render();
-
-  // display_main_text(20, 60, "a b c d e f g", 0xFFFF);
-  // display_main_text(20, 90, "h i j k l m n", 0xFFFF);
-  // display_main_text(20, 120, "o p q r s t u v", 0xFFFF);
-  // display_main_text(20, 140, "w x y z", 0xFFFF);
-  // display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
-  //
-  //
-  // uint16_t cx = 120;
-  // uint16_t cy = 120;
-  // uint16_t radius = 90;
-  //
-  // // 1) Draw outer circle of the clock (just a stroke, not filled)
-  // draw_arc(0, 359, cx, cy, radius, /*color=*/0b010, /*fill=*/true, /*stroke=*/3);
-  // screen_render();
-
-  //
-  //
-  // display_main_text(20, 60, "I am", 0xFF);
-  // display_main_text(20, 90, "going to", 0xFFFF);
-  // draw_line(20, 90, 120, 90, /*color=*/0x07, /*stroke=*/1);
-  // display_main_text(20, 120, "blow up", 0xFFFF);
-  // draw_line(20, 120, 120, 120, /*color=*/0x07, /*stroke=*/1);
-  // display_main_text(20, 150, "the whitehouse.", 0xFFFF);
-  // draw_line(20, 150, 120, 150, /*color=*/0b110, /*stroke=*/4);
-  // draw_line(20, 180, 200, 180, /*color=*/0x07, /*stroke=*/1);
-  screen_render();
-
-
-  /*uint16_t total_samps = 0;
-  while (total_samps < BUFFER_SIZE) {
-    uint16_t samps = max30102_read_data();
-    for (uint16_t j = 0; j < samps; j++) {
-      raw_hr[total_samps] = max30102_sensor.red[max30102_sensor.tail];
-      raw_spo2[total_samps] = max30102_sensor.IR[max30102_sensor.tail];
-      max30102_sensor.tail++;
-      max30102_sensor.tail %= 32;
-      total_samps++;
-      if (total_samps == BUFFER_SIZE) break;
-    }
-  }
-
-  max30102_sensor.tail = max30102_sensor.head;
-
-  maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
-                                         &validHeartRate);
-*/
   while (1) {
-    int16_t x, y, z;
-    ADXL362_ReadXYZ(&x, &y, &z);
-    HAL_UART_Receive_IT(&huart3, &rxData, 1);
-
-
-    /*uint16_t samps = max30102_read_data();
-    for (uint16_t j = 0; j < samps; j++) {
-      for (uint16_t i = 0; i < BUFFER_SIZE; i++) {
-        raw_hr[i - 1] = raw_hr[i];
-        raw_spo2[i - 1] = raw_spo2[i];
-      }
-      raw_hr[BUFFER_SIZE - 1] = max30102_sensor.red[max30102_sensor.tail];
-      raw_spo2[BUFFER_SIZE - 1] = max30102_sensor.IR[max30102_sensor.tail];
-      max30102_sensor.tail++;
-      max30102_sensor.tail %= 32;
-    }
-
-
-    maxim_heart_rate_and_oxygen_saturation(raw_spo2, BUFFER_SIZE, raw_hr, &spo2, &validSPO2, &heartRate,
-                                           &validHeartRate);
-
-    lv_subject_set_int(&gui_data.hr, heartRate);
-    lv_subject_set_int(&gui_data.hr_val, validHeartRate);
-    lv_subject_set_int(&gui_data.spo2, spo2);
-    lv_subject_set_int(&gui_data.spo2_val, validSPO2);*/
-
+    watch_tick();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

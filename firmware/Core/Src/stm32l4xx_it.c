@@ -24,7 +24,6 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "stm32l4xx_hal.h"
-#include "sense.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,7 +59,6 @@
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
-extern sense_t sensor_data;
 extern RTC_HandleTypeDef hrtc;
 
 /* USER CODE END EV */

@@ -1,5 +1,4 @@
 #include "../Inc/drivers/max30102.h"
-#include "spo2.h"
 #include <stdio.h>
 #include "string.h"
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
