@@ -25,3 +25,7 @@ cmake-build-debug
 .idea
 cmake-build-debug.zip
 CMakePresets.json
+.cproject
+.mxproject
+.osx.project
+.project
