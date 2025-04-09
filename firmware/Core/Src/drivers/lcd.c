@@ -324,3 +324,7 @@ void setPixel(uint8_t *frameBuffer, int width, int x, int y, uint16_t color) {
 void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color) {
 	setPixel(pixels, 240, x, y, color);
 }
+
+void set_brightness(uint8_t brightness) {
+	TIM1->CCR1 = brightness * 65535/100;
+}

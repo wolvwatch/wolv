@@ -29,6 +29,7 @@
 #include "drivers/bluetooth.h"
 #include "sense/biometrics.h"
 #include "displays/analog.h"
+#include "displays/screen.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,6 +66,7 @@ uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
+display_t disp;
 
 /* USER CODE END PV */
 
@@ -90,10 +92,21 @@ void watch_init() {
   max30102_init();
   ADXL362_Init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+
+  disp.active_screen = WATCHFACE_DIGITAL;
+  disp.brightness = 80;
+  disp.metric = false;
+  disp.on = true;
+
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
 void watch_tick() {
   update_biometrics();
+  //add_biometric_callback(&update_biometric_display);
+  if (disp.on) {
+    screen_render();
+  }
 }
 /* USER CODE END 0 */
 
@@ -509,7 +522,7 @@ static void MX_TIM1_Init(void)
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
