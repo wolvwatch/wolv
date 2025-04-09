@@ -158,7 +158,8 @@ int main(void)
   // display_time_text(20, 20, "12:34", 0xFFFF);
   // display_time_text(20, 90, "56:79", 0xFFFF);
   //display_time_text(20, 160, "9:87", 0xFFFF);
-  //display_time_text(20, 140, "9:87", 0xFFFF);
+  display_time_text(10, 50, "12:34", 0xFFFF);
+  screen_render();
 
   // display_main_text(20, 60, "a b c d e f g", 0xFFFF);
   // display_main_text(20, 90, "h i j k l m n", 0xFFFF);
@@ -166,25 +167,25 @@ int main(void)
   // display_main_text(20, 140, "w x y z", 0xFFFF);
   // display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
   //
+  //
+  // uint16_t cx = 120;
+  // uint16_t cy = 120;
+  // uint16_t radius = 90;
+  //
+  // // 1) Draw outer circle of the clock (just a stroke, not filled)
+  // draw_arc(0, 359, cx, cy, radius, /*color=*/0b010, /*fill=*/true, /*stroke=*/3);
+  // screen_render();
 
-  uint16_t cx = 120;
-  uint16_t cy = 120;
-  uint16_t radius = 90;
-
-  // 1) Draw outer circle of the clock (just a stroke, not filled)
-  draw_arc(0, 359, cx, cy, radius, /*color=*/0b010, /*fill=*/true, /*stroke=*/3);
-  screen_render();
-
-
-
-  display_main_text(20, 60, "I am", 0xFF);
-  display_main_text(20, 90, "going to", 0xFFFF);
-  draw_line(20, 90, 120, 90, /*color=*/0x07, /*stroke=*/1);
-  display_main_text(20, 120, "blow up", 0xFFFF);
-  draw_line(20, 120, 120, 120, /*color=*/0x07, /*stroke=*/1);
-  display_main_text(20, 150, "the whitehouse.", 0xFFFF);
-  draw_line(20, 150, 120, 150, /*color=*/0b110, /*stroke=*/4);
-  draw_line(20, 180, 200, 180, /*color=*/0x07, /*stroke=*/1);
+  //
+  //
+  // display_main_text(20, 60, "I am", 0xFF);
+  // display_main_text(20, 90, "going to", 0xFFFF);
+  // draw_line(20, 90, 120, 90, /*color=*/0x07, /*stroke=*/1);
+  // display_main_text(20, 120, "blow up", 0xFFFF);
+  // draw_line(20, 120, 120, 120, /*color=*/0x07, /*stroke=*/1);
+  // display_main_text(20, 150, "the whitehouse.", 0xFFFF);
+  // draw_line(20, 150, 120, 150, /*color=*/0b110, /*stroke=*/4);
+  // draw_line(20, 180, 200, 180, /*color=*/0x07, /*stroke=*/1);
   screen_render();
 
 
