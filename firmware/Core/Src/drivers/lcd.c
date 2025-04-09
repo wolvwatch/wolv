@@ -15,8 +15,6 @@
 #include <math.h>
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
 #include "../Inc/main.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 #define SET_RST_HIGH HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_SET)
 #define SET_RST_LOW HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_RESET)

@@ -6,8 +6,6 @@
  */
 
 
-#include "main.h"
-#include <stdio.h>
 #include "stm32l4xx_hal.h"
 
 // For example, define the chip select pin:

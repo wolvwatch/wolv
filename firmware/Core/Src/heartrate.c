@@ -30,7 +30,7 @@
 *
 */
 
-#include "../Inc/heartrate.h"
+#include "heartrate.h"
 
 int16_t IR_AC_Max = 20;
 int16_t IR_AC_Min = -20;
