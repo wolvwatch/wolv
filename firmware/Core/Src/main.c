@@ -26,7 +26,6 @@
 #include "stm32l4xx_hal.h"
 #include "lcd.h"
 #include "max30102.h"
-#include "font.h"
 #include "spo2.h"
 #include "accel.h"
 #include "display.h"
@@ -167,12 +166,25 @@ int main(void)
   // display_main_text(20, 140, "w x y z", 0xFFFF);
   // display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
   //
-  display_main_text(20, 60, "ABCDEFG", 0xFFFF);
-  display_main_text(20, 90, "HIJKLMN", 0xFFFF);
-  display_main_text(20, 120, "OPQRSTUV", 0xFFFF);
-  display_main_text(20, 140, "WXYZ", 0xFFFF);
-  display_main_text(20, 170, "BBBBBBBBBBBBBBBBBB", 0xFFFF);
 
+  uint16_t cx = 120;
+  uint16_t cy = 120;
+  uint16_t radius = 90;
+
+  // 1) Draw outer circle of the clock (just a stroke, not filled)
+  draw_arc(0, 359, cx, cy, radius, /*color=*/0b010, /*fill=*/true, /*stroke=*/3);
+  screen_render();
+
+
+
+  display_main_text(20, 60, "I am", 0xFF);
+  display_main_text(20, 90, "going to", 0xFFFF);
+  draw_line(20, 90, 120, 90, /*color=*/0x07, /*stroke=*/1);
+  display_main_text(20, 120, "blow up", 0xFFFF);
+  draw_line(20, 120, 120, 120, /*color=*/0x07, /*stroke=*/1);
+  display_main_text(20, 150, "the whitehouse.", 0xFFFF);
+  draw_line(20, 150, 120, 150, /*color=*/0b110, /*stroke=*/4);
+  draw_line(20, 180, 200, 180, /*color=*/0x07, /*stroke=*/1);
   screen_render();
 
 
