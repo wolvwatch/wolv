@@ -22,24 +22,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "sense.h"
-#include "stdio.h"
 #include "stm32l4xx_hal.h"
-#include "../Inc/drivers/lcd.h"
-#include "../Inc/drivers/max30102.h"
-#include "spo2.h"
+#include "drivers/lcd.h"
+#include "drivers/max30102.h"
 #include "drivers/adxl362.h"
-#include "../Inc/ux/display.h"
-#include "math.h"
-#include "../Inc/ux/rasterizer.h"
-#include "../Inc/drivers/bluetooth.h"
-
-#define RED 0x100
-#define BLACK 0x000
-#define GREEN 0x010
-#define BLUE 0x001
-#define YELLOW 0x011
-#define CYAN 0x101
-#define MAGENTA 0x110
+#include "ux/display.h"
+#include "drivers/bluetooth.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
