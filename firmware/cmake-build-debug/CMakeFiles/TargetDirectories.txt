@@ -1,3 +1,0 @@
-C:/Users/Sandro/projects/smartwatch/firmware/cmake-build-debug/CMakeFiles/smartwatch.elf.dir
-C:/Users/Sandro/projects/smartwatch/firmware/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Sandro/projects/smartwatch/firmware/cmake-build-debug/CMakeFiles/rebuild_cache.dir
