@@ -28,6 +28,7 @@
 #include "ux/display.h"
 #include "drivers/bluetooth.h"
 #include "sense/biometrics.h"
+#include "displays/analog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -135,12 +136,19 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   watch_init();
+  draw_watch_face();
+  draw_hour_markers();
+  draw_watch_hands(12, 34, 56);
+  draw_center_dot();
+  screen_render();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
     watch_tick();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
