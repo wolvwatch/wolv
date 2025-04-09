@@ -1,7 +1,7 @@
 #include "rasterizer.h"
 #include <math.h>
 #include <stdlib.h>
-#include "lcd.h"
+#include "drivers/lcd.h"
 
 /**
  * A very simple helper that sets a pixel while checking bounds, if desired.
