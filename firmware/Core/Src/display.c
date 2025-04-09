@@ -1,8 +1,7 @@
 #include "drivers/lcd.h"
-#include "rasterizer.h"
-#include "display.h"
-#include "font_montserrat.h"
-#include "font_ultra.h"
+#include "ux/rasterizer.h"
+#include "ux/display.h"
+#include "ux/font.h"
 #include <stdint.h>
 #include <string.h>
 

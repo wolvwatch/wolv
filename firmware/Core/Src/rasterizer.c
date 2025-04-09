@@ -1,4 +1,4 @@
-#include "rasterizer.h"
+#include "../Inc/ux/rasterizer.h"
 #include <math.h>
 #include <stdlib.h>
 #include "drivers/lcd.h"

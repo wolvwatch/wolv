@@ -28,9 +28,9 @@
 #include "../Inc/drivers/max30102.h"
 #include "spo2.h"
 #include "drivers/adxl362.h"
-#include "display.h"
+#include "../Inc/ux/display.h"
 #include "math.h"
-#include "rasterizer.h"
+#include "../Inc/ux/rasterizer.h"
 #include "../Inc/drivers/bluetooth.h"
 
 #define RED 0x100
