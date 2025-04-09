@@ -24,14 +24,15 @@
 #include "sense.h"
 #include "stdio.h"
 #include "stm32l4xx_hal.h"
-#include "lcd.h"
-#include "max30102.h"
+#include "../Inc/drivers/lcd.h"
+#include "../Inc/drivers/max30102.h"
 #include "spo2.h"
 #include "accel.h"
 #include "display.h"
 #include "math.h"
 #include "rasterizer.h"
 #include "bluetooth.h"
+
 #define RED 0x100
 #define BLACK 0x000
 #define GREEN 0x010

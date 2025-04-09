@@ -3,7 +3,7 @@
 
 #include "rasterizer.h"  // For the definition of font_t
 #include <stdint.h>
-#include "lcd.h"
+#include "drivers/lcd.h"
 #include "Montserrat.h"
 
 #ifdef __cplusplus
