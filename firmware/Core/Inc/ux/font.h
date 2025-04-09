@@ -1,9 +1,7 @@
-#ifndef MONTSERRAT_H
-#define MONTSERRAT_H
+#ifndef FONT_H
+#define FONT_H
 
 #include <stdint.h>
-#include <stdbool.h>
-
 
 typedef struct {
     const uint8_t *data;  // Pointer to bitmap data
@@ -23,5 +21,6 @@ typedef struct {
 } tFont;
 
 extern const tFont montserrat_reg;
+extern const tFont ultra;
 
-#endif // MONTSERRAT_H
+#endif // FONT_H

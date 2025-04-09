@@ -1,10 +1,10 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "rasterizer.h"  // For the definition of font_t
+#include "rasterizer.h"
 #include <stdint.h>
-#include "drivers/lcd.h"
-#include "font_montserrat.h"
+#include "../drivers/lcd.h"
+#include "font.h"
 
 #ifdef __cplusplus
 extern "C" {
