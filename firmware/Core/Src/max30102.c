@@ -1,4 +1,4 @@
-#include "../Inc/max30102.h"
+#include "../Inc/drivers/max30102.h"
 #include "spo2.h"
 #include <stdio.h>
 #include "string.h"
