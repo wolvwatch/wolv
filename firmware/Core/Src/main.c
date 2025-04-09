@@ -30,6 +30,8 @@
 #include "sense/biometrics.h"
 #include "displays/analog.h"
 #include "displays/screen.h"
+#include "displays/digital.h"
+#include "ux/rasterizer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,11 +101,13 @@ void watch_init() {
   disp.on = true;
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  set_brightness(disp.brightness);
 }
 
 void watch_tick() {
   update_biometrics();
   //add_biometric_callback(&update_biometric_display);
+  add_biometric_callback(&digital_draw_biometrics);
   if (disp.on) {
     screen_render();
   }
@@ -149,10 +153,7 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   watch_init();
-  draw_watch_face();
-  draw_hour_markers();
-  draw_watch_hands(12, 34, 56);
-  draw_center_dot();
+  draw_text("Test!", 120, 120, &montserrat_reg, 0b101, 1, true);
   screen_render();
 
   /* USER CODE END 2 */
