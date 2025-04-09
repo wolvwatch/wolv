@@ -19,3 +19,7 @@ Status\ Report.txt
 Release/
 Debug/
 .launch
+
+firmware/cmake-build-debug/
+firmware/cmake-build-debug/CMakeFiles/smartwatch.elf.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c.obj.d
+/firmware/cmake-build-debug
