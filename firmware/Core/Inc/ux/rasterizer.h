@@ -16,6 +16,14 @@ typedef struct {
 
 typedef uint16_t color_t;
 
+#define RED 0x100
+#define BLACK 0x000
+#define GREEN 0x010
+#define BLUE 0x001
+#define YELLOW 0x011
+#define CYAN 0x101
+#define MAGENTA 0x110
+
 void draw_line(uint16_t x0, uint16_t y0,
                uint16_t x1, uint16_t y1,
                color_t color,
