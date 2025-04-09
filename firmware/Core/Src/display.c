@@ -1,8 +1,8 @@
-#include "lcd.h"
+#include "drivers/lcd.h"
 #include "rasterizer.h"
 #include "display.h"
-#include "Montserrat.h"
-#include "ultra.h"
+#include "font_montserrat.h"
+#include "font_ultra.h"
 #include <stdint.h>
 #include <string.h>
 
