@@ -13,12 +13,10 @@ extern uint8_t rxData;
 volatile char rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxIndex = 0;
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART3)
-    {
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART3) {
         rxBuffer[rxIndex++] = rxData;
-        if (rxData == '\n' || rxIndex >= RX_BUFFER_SIZE - 1){
+        if (rxData == '\n' || rxIndex >= RX_BUFFER_SIZE - 1) {
             rxBuffer[rxIndex] = '\0';
             printf("Received string: %s", rxBuffer);
             rxIndex = 0;

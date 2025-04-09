@@ -6,10 +6,8 @@
 #include <string.h>
 
 
-
 extern const tFont montserrat_reg;
 extern const tFont ultra;
-
 
 
 static int get_glyph_index(char c) {
@@ -20,15 +18,15 @@ static int get_glyph_index(char c) {
 
 static int get_ultra_index(const tFont *font, char c) {
     for (int i = 0; i < font->length; ++i) {
-        if (font->chars[i].code == (unsigned char)c)
+        if (font->chars[i].code == (unsigned char) c)
             return i;
     }
-    return -1;  // character not found
+    return -1; // character not found
 }
 
 void draw_montserrat_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
     int index = get_glyph_index(c);
-    if (index < 0) return;  // Character not supported.
+    if (index < 0) return; // Character not supported.
 
     // Access the glyph via the font.
     const tChar *glyph = &montserrat_reg.chars[index];
@@ -36,7 +34,7 @@ void draw_montserrat_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
 
     // Draw the glyph using the bitmap data stored in 'img'.
     // For a 1-bit-per-pixel (monochrome) image, this might involve:
-    int width  = img->width;
+    int width = img->width;
     int height = img->height;
     int bytes_per_row = (width + 7) / 8;
     const uint8_t *bitmap = img->data;
@@ -51,7 +49,7 @@ void draw_montserrat_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
                 if (pixel_x >= 0 && pixel_x < LCD_1IN28_WIDTH &&
                     pixel_y >= 0 && pixel_y < LCD_1IN28_HEIGHT) {
                     screen_set_pixel(pixel_x, pixel_y, color);
-                    }
+                }
             }
         }
     }
@@ -59,7 +57,7 @@ void draw_montserrat_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
 
 void draw_ultra_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
     int index = get_ultra_index(&ultra, c);
-    if (index < 0) return;  // Character not supported.
+    if (index < 0) return; // Character not supported.
 
     // Access the glyph via the font.
     const tChar *glyph = &ultra.chars[index];
@@ -67,7 +65,7 @@ void draw_ultra_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
 
     // Draw the glyph using the bitmap data stored in 'img'.
     // For a 1-bit-per-pixel (monochrome) image, this might involve:
-    int width  = img->width;
+    int width = img->width;
     int height = img->height;
     int bytes_per_row = (width + 7) / 8;
     const uint8_t *bitmap = img->data;
@@ -82,7 +80,7 @@ void draw_ultra_glyph(uint16_t x, uint16_t y, char c, uint16_t color) {
                 if (pixel_x >= 0 && pixel_x < LCD_1IN28_WIDTH &&
                     pixel_y >= 0 && pixel_y < LCD_1IN28_HEIGHT) {
                     screen_set_pixel(pixel_x, pixel_y, color);
-                    }
+                }
             }
         }
     }
@@ -93,7 +91,7 @@ void draw_montserrat_text(uint16_t x, uint16_t y, const char *text, uint16_t col
     while (*text) {
         char c = *text++;
         if (c == '\n') {
-            y += 38;  // Adjust for line spacing (or use the glyph height)
+            y += 38; // Adjust for line spacing (or use the glyph height)
             x = orig_x;
             continue;
         }
@@ -113,12 +111,12 @@ void draw_ultra_text(uint16_t x, uint16_t y, const char *text, uint16_t color) {
     while (*text) {
         char c = *text++;
         if (c == '\n') {
-            y += 116;  // Adjust for line spacing (or use the glyph height)
+            y += 116; // Adjust for line spacing (or use the glyph height)
             x = orig_x;
             continue;
         }
         draw_ultra_glyph(x, y, c, color);
-        int glyph_index = get_ultra_index(&ultra,c);
+        int glyph_index = get_ultra_index(&ultra, c);
         if (glyph_index >= 0) {
             int advance = ultra.chars[glyph_index].image->width;
             x += advance;
@@ -128,28 +126,23 @@ void draw_ultra_text(uint16_t x, uint16_t y, const char *text, uint16_t color) {
     }
 }
 
-void display_main_text(uint16_t x, uint16_t y, const char *text, uint16_t color)
-{
+void display_main_text(uint16_t x, uint16_t y, const char *text, uint16_t color) {
     draw_montserrat_text(x, y, text, color);
 }
 
-void display_time_text(uint16_t x, uint16_t y, const char *time_str, uint16_t color)
-{
+void display_time_text(uint16_t x, uint16_t y, const char *time_str, uint16_t color) {
     draw_ultra_text(x, y, time_str, color);
 }
 
-void display_bluetooth_icon(uint16_t x, uint16_t y, uint16_t color)
-{
-  // need to do bluetooth icon
+void display_bluetooth_icon(uint16_t x, uint16_t y, uint16_t color) {
+    // need to do bluetooth icon
 }
 
-void display_heartrate_icon(uint16_t x, uint16_t y, uint16_t color)
-{
+void display_heartrate_icon(uint16_t x, uint16_t y, uint16_t color) {
     // need to do step icon
 }
 
-void display_steps_text(uint16_t x, uint16_t y, const char *steps_str, uint16_t color)
-{
-  // need to find step count
+void display_steps_text(uint16_t x, uint16_t y, const char *steps_str, uint16_t color) {
+    // need to find step count
     display_main_text(x, y, steps_str, color);
 }

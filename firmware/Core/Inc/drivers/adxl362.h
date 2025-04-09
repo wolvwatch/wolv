@@ -4,6 +4,7 @@
 #include "stdint.h"
 
 void ADXL362_Select(void);
+
 /* Initialize the ADXL362 for ±2g, 100 Hz ODR, normal noise mode */
 void ADXL362_Init(void);
 
@@ -17,6 +18,6 @@ uint8_t ADXL362_ReadReg(uint8_t regAddr);
 void ADXL362_SoftReset(void);
 
 /* Read the raw 12-bit X/Y/Z acceleration data into xRaw, yRaw, zRaw */
-void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw);
+void ADXL362_ReadXYZ(int16_t *xRaw, int16_t *yRaw, int16_t *zRaw);
 
 #endif /* __ACCEL_H */

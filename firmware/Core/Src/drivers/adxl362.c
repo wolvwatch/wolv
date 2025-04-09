@@ -23,13 +23,12 @@ extern SPI_HandleTypeDef hspi1;
 #define ADXL362_CMD_READ_REG      0x0B
 
 // For convenience, chip-select helpers:
-static inline void ADXL362_Select(void)
-{
+static inline void ADXL362_Select(void) {
     //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_RESET);
 }
-static inline void ADXL362_Unselect(void)
-{
-   // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
+
+static inline void ADXL362_Unselect(void) {
+    // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
 }
 
 /**
@@ -37,8 +36,7 @@ static inline void ADXL362_Unselect(void)
   * @param  regAddr: 8-bit register address
   * @param  data:    byte to write
   */
-void ADXL362_WriteReg(uint8_t regAddr, uint8_t data)
-{
+void ADXL362_WriteReg(uint8_t regAddr, uint8_t data) {
     uint8_t txBuf[3];
     txBuf[0] = ADXL362_CMD_WRITE_REG; // 0x0A
     txBuf[1] = regAddr;
@@ -54,12 +52,11 @@ void ADXL362_WriteReg(uint8_t regAddr, uint8_t data)
   * @param  regAddr: 8-bit register address
   * @return The register's byte value
   */
-uint8_t ADXL362_ReadReg(uint8_t regAddr)
-{
+uint8_t ADXL362_ReadReg(uint8_t regAddr) {
     uint8_t txBuf[2];
     uint8_t rxBuf[1];
 
-    txBuf[0] = ADXL362_CMD_READ_REG;  // 0x0B
+    txBuf[0] = ADXL362_CMD_READ_REG; // 0x0B
     txBuf[1] = regAddr;
 
     ADXL362_Select();
@@ -75,8 +72,7 @@ uint8_t ADXL362_ReadReg(uint8_t regAddr)
 /**
   * @brief  Perform a soft reset of the ADXL362 and wait for it.
   */
-void ADXL362_SoftReset(void)
-{
+void ADXL362_SoftReset(void) {
     // Per datasheet, write 0x52 to SOFT_RESET (0x1F)
     ADXL362_WriteReg(ADXL362_REG_SOFT_RESET, 0x52);
     // Wait ~10 ms for the device to reset
@@ -87,8 +83,7 @@ void ADXL362_SoftReset(void)
   * @brief  Initialize ADXL362 for ±2g range, 100Hz ODR, measurement mode.
   *         Adjust to your preferences as needed.
   */
-void ADXL362_Init(void)
-{
+void ADXL362_Init(void) {
     ADXL362_Unselect();
     // 1) Soft reset
     ADXL362_SoftReset();
@@ -114,8 +109,7 @@ void ADXL362_Init(void)
   * @brief  Read the 3-axis (12-bit) acceleration from ADXL362.
   * @param  xRaw, yRaw, zRaw: pointers to int16_t that receive the measurements
   */
-void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw)
-{
+void ADXL362_ReadXYZ(int16_t *xRaw, int16_t *yRaw, int16_t *zRaw) {
     // The 12-bit data registers:
     // XDATA_L = 0x0E, XDATA_H = 0x0F
     // YDATA_L = 0x10, YDATA_H = 0x11
@@ -124,8 +118,8 @@ void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw)
     uint8_t txBuf[2];
     uint8_t rxBuf[6];
 
-    txBuf[0] = ADXL362_CMD_READ_REG;  // 0x0B
-    txBuf[1] = 0x0E;                  // Start at XDATA_L
+    txBuf[0] = ADXL362_CMD_READ_REG; // 0x0B
+    txBuf[1] = 0x0E; // Start at XDATA_L
 
     ADXL362_Select();
     // Transmit the read command + start address
@@ -135,7 +129,7 @@ void ADXL362_ReadXYZ(int16_t* xRaw, int16_t* yRaw, int16_t* zRaw)
     ADXL362_Unselect();
 
     // Reassemble each axis (little-endian)
-    *xRaw = (int16_t)((rxBuf[1] << 8) | rxBuf[0]);
-    *yRaw = (int16_t)((rxBuf[3] << 8) | rxBuf[2]);
-    *zRaw = (int16_t)((rxBuf[5] << 8) | rxBuf[4]);
+    *xRaw = (int16_t) ((rxBuf[1] << 8) | rxBuf[0]);
+    *yRaw = (int16_t) ((rxBuf[3] << 8) | rxBuf[2]);
+    *zRaw = (int16_t) ((rxBuf[5] << 8) | rxBuf[4]);
 }
