@@ -85,3 +85,15 @@ void draw_arc(uint16_t startAngle,
         yPrev = yArc;
     }
 }
+
+void draw_rectangle(uint16_t start_x, uint16_t start_y,
+                           uint16_t width, uint16_t height,
+                           color_t color) {
+    for (uint16_t y = start_y; y < start_y + height; y++) {
+        for (uint16_t x = start_x; x < start_x + width; x++) {
+            if (x < LCD_1IN28_WIDTH && y < LCD_1IN28_HEIGHT) {
+                screen_set_pixel(x, y, color);
+            }
+        }
+    }
+}

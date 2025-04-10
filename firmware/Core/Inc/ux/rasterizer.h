@@ -38,4 +38,9 @@ void draw_arc(uint16_t startAngle,
               bool fill,
               uint16_t stroke);
 
+void draw_rectangle(uint16_t start_x, uint16_t start_y,
+    uint16_t width, uint16_t height, color_t color);
+
+
+
 #endif // RASTERIZER_H

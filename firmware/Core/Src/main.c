@@ -30,6 +30,7 @@
 #include "sense/biometrics.h"
 #include "displays/analog.h"
 #include "displays/screen.h"
+#include "displays/notification.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,8 +67,7 @@ uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
-display_t disp;
-
+display_t disp = {};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,9 +102,11 @@ void watch_init() {
 }
 
 void watch_tick() {
+
   update_biometrics();
-  //add_biometric_callback(&update_biometric_display);
+  //add_biometric_callback(&draw_biometric_data);
   if (disp.on) {
+    set_brightness(disp.brightness);
     screen_render();
   }
 }
@@ -148,11 +150,15 @@ int main(void)
   MX_SPI3_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
+  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   watch_init();
   draw_watch_face();
   draw_hour_markers();
   draw_watch_hands(12, 34, 56);
   draw_center_dot();
+  screen_render();
+  HAL_Delay(5000);
+  display_notification("wolv!");
   screen_render();
 
   /* USER CODE END 2 */
@@ -161,6 +167,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1) {
     watch_tick();
+    HAL_UART_Receive_IT(&huart3, &rxData, 1);
 
     /* USER CODE END WHILE */
 
@@ -522,7 +529,7 @@ static void MX_TIM1_Init(void)
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();

@@ -70,7 +70,7 @@ void analog_update(uint8_t hours, uint8_t minutes, uint8_t seconds) {
 void draw_watch_face(void) {
     // Draw a full circle outline using draw_arc.
     // Note: Using 0 to 359 degrees and a stroke width of 3.
-    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, 0b001, false, 240);
+    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, 0b111, false, 2);
 }
 
 // Draws hour markers (12 markers) around the watch's circumference.

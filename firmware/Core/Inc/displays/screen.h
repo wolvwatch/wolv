@@ -13,6 +13,9 @@ typedef struct {
   uint8_t brightness;
   bool on;
   bool metric;
+  bool show_heart;
+  bool show_steps;
+  bool show_spo2;
 } display_t;
 
 #endif //SCREEN_H
