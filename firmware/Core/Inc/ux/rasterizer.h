@@ -24,6 +24,33 @@ typedef uint16_t color_t;
 #define CYAN 0x101
 #define MAGENTA 0x110
 
+typedef struct {
+    const uint8_t *data; // Pointer to bitmap data
+    uint16_t width; // Glyph (image) width in pixels
+    uint16_t height; // Glyph (image) height in pixels
+    uint8_t dataSize; // Usually 8 (bits per element)
+} tImage;
+
+typedef struct {
+    long int code; // Unicode value of the character (for example, 'A' is 65)
+    const tImage *image; // Pointer to the image data structure
+} tChar;
+
+typedef struct {
+    int length; // Number of characters in the font
+    const tChar *chars; // Array of tChar entries
+} tFont;
+
+extern const tFont montserrat_reg;
+extern const tFont ultra;
+
+extern const tFont montserrat_reg;
+extern const tFont ultra;
+
+void draw_char(const tChar *c, uint8_t x, uint8_t y, color_t color, float scale);
+
+void draw_text(const char *text, uint8_t x, uint8_t y, const tFont *font, color_t color, float scale, bool center);
+
 void draw_line(uint16_t x0, uint16_t y0,
                uint16_t x1, uint16_t y1,
                color_t color,
@@ -38,9 +65,8 @@ void draw_arc(uint16_t startAngle,
               bool fill,
               uint16_t stroke);
 
+
 void draw_rectangle(uint16_t start_x, uint16_t start_y,
     uint16_t width, uint16_t height, color_t color);
-
-
 
 #endif // RASTERIZER_H

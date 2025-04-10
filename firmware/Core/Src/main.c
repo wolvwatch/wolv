@@ -31,6 +31,8 @@
 #include "displays/analog.h"
 #include "displays/screen.h"
 #include "displays/notification.h"
+#include "ux/rasterizer.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -152,10 +154,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   watch_init();
-  draw_watch_face();
-  draw_hour_markers();
-  draw_watch_hands(12, 34, 56);
-  draw_center_dot();
+  set_brightness(100);
+  draw_text("test!", 120, 120, &montserrat_reg, 0b111, 0.5, true);
   screen_render();
   HAL_Delay(5000);
   display_notification("wolv!");

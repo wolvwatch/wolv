@@ -2,7 +2,6 @@
 #include "ux/rasterizer.h"
 #include "drivers/lcd.h"
 #include "ux/display.h"
-#include "ux/font.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
