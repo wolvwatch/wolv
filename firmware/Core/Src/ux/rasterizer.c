@@ -130,6 +130,6 @@ void draw_text(const char *text, uint8_t x, uint8_t y, const tFont *font, color_
     for (int i = 0; i < strlen(text); i++) {
         const tChar *c = &font->chars[get_char_index(text+i, font)];
         draw_char(c, x + offset, y, color, scale);
-        offset += c->image->width;
+        offset += c->image->width*scale;
     }
 }
