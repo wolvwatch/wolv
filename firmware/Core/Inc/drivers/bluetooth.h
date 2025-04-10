@@ -18,8 +18,24 @@ extern uint8_t rxData;
 
 extern volatile char rxBuffer[RX_BUFFER_SIZE];
 extern volatile uint16_t rxIndex;
-
+extern UART_HandleTypeDef huart3;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
+void parseBluetoothCommand(char *cmd);
+
+// commands left to change:
+/*
+ * batt
+ * face
+ * app:list,launch,close
+ * set:timezone,hr_interval
+ * sens: hr, spo2, accel
+ * time: get, set, date
+ * notif: call icon
+ *
+ */
+
+
 
 #endif /* INC_BLUETOOTH_H_ */
