@@ -29,8 +29,10 @@
 #include "drivers/bluetooth.h"
 #include "sense/biometrics.h"
 #include "displays/analog.h"
+#include "displays/digital.h"
 #include "displays/screen.h"
 #include "displays/notification.h"
+#include "displays/data.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,7 +69,7 @@ uint8_t max30102_head = 0;
 extern max_struct_t max30102_sensor;
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
-display_t disp = {};
+// display_t disp = {};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,27 +89,59 @@ static void MX_RTC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+app_data_t g_app_data = {
+  .display = {
+    .active_screen = WATCHFACE_DIGITAL,
+    .brightness    = 80,
+    .on            = true,
+    .metric        = false,
+    .show_heart    = true,
+    .show_steps    = true,
+    .show_spo2     = true,
+},
+  .settings = {
+    .brightness = 80,
+    .metric     = false,
+},
+  .biometrics = {
+    .heart_rate = 0,
+    .steps      = 0,
+    .spo2       = 0,
+},
+  .timeVal = {
+    .month = 4,
+    .day = 11,
+    .year = 2025,
+    .hour = 12,
+    .minute = 34,
+    .second = 56,
+  }
+};
+
 void watch_init() {
   screen_init();
   max30102_init();
   ADXL362_Init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
 
-  disp.active_screen = WATCHFACE_DIGITAL;
-  disp.brightness = 80;
-  disp.metric = false;
-  disp.on = true;
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
 void watch_tick() {
-
   update_biometrics();
   //add_biometric_callback(&draw_biometric_data);
-  if (disp.on) {
-    set_brightness(disp.brightness);
-    screen_render();
+  switch (g_app_data.display.active_screen) {
+    case WATCHFACE_DIGITAL:
+      watchface_digital_draw();
+    break;
+    case WATCHFACE_ANALOG:
+      watchface_analog_draw();
+    break;
+    default:
+      watchface_digital_draw();
+    break;
   }
 }
 /* USER CODE END 0 */
@@ -152,11 +186,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   watch_init();
-  draw_watch_face();
-  draw_hour_markers();
-  draw_watch_hands(12, 34, 56);
-  draw_center_dot();
-  screen_render();
   HAL_Delay(5000);
   display_notification("wolv!");
   screen_render();
@@ -168,6 +197,8 @@ int main(void)
   while (1) {
     watch_tick();
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
+
+
 
     /* USER CODE END WHILE */
 
