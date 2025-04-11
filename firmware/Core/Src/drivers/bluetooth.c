@@ -7,6 +7,7 @@
 #include "drivers/bluetooth.h"
 #include "stm32l4xx_hal.h"
 #include "displays/screen.h"
+#include "displays/data.h"
 #include "displays/notification.h"
 #include "ux/display.h"
 #include <stdio.h>
@@ -18,7 +19,8 @@ extern uint8_t rxData;
 #define RX_BUFFER_SIZE 256
 volatile char rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxIndex = 0;
-extern display_t disp;
+extern app_data_t g_app_data;
+
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -85,21 +87,22 @@ void parseBluetoothCommand(char *cmd) {
         if (strcmp(command, "BRIGHT") == 0) {
             if (parameter) {
                 int bright = atoi(parameter);
-                disp.brightness = bright;
+
+                g_app_data.settings.brightness = bright;
             } else {
                 printf("Error: BRIGHT command missing parameter\r\n");
             }
         } else if (strcmp(command, "FACE") == 0) {
             if (parameter) {
                 int active = atoi(parameter);
-                disp.active_screen = active;
+                g_app_data.display.active_screen = active;
             } else {
                 printf("Error: FACE command missing parameter\r\n");
             }
         } else if (strcmp(command, "ON") == 0) {
-            disp.on = true;
+            g_app_data.display.active_screen = 1;
         } else if (strcmp(command, "OFF") == 0) {
-            disp.on = false;
+            g_app_data.display.active_screen = 0;
         } else {
             printf("Unknown SCR command: %s\r\n", command);
         }
@@ -131,9 +134,9 @@ void parseBluetoothCommand(char *cmd) {
         } else if (strcmp(command, "UNITS") == 0) {
             if (parameter) {
                 if (strcmp(parameter, "METRIC") == 0) {
-                    disp.metric = true;
+                    g_app_data.settings.metric = true;
                 } else if (strcmp(parameter, "IMPERIAL") == 0) {
-                    disp.metric = false;
+                    g_app_data.settings.metric = true;
                 } else {
                     printf("Error: Unknown UNITS parameter: %s\r\n", parameter);
                 }
@@ -164,11 +167,27 @@ void parseBluetoothCommand(char *cmd) {
     }
     else if (strcmp(module, "TIME") == 0) {
         if (strcmp(command, "GET") == 0) {
+            char timeStr[16];
+            char dateStr[16];
+
+            snprintf(timeStr, sizeof(timeStr), "%02d:%02d:%02d",
+                     g_app_data.timeVal.hour,
+                     g_app_data.timeVal.minute,
+                     g_app_data.timeVal.second);
+
+            snprintf(dateStr, sizeof(dateStr), "%02d/%02d/%04d",
+                     g_app_data.timeVal.day,
+                     g_app_data.timeVal.month,
+                     g_app_data.timeVal.year);
+            HAL_UART_Transmit(&huart3, (uint8_t*)timeStr, strlen(timeStr),1000);
             // send current time back over UART
         } else if (strcmp(command, "SET") == 0) {
             if (parameter) {
                 int hour, minute, second;
                 if (sscanf(parameter, "%d:%d:%d", &hour, &minute, &second) == 3) {
+                    g_app_data.timeVal.hour = hour;
+                    g_app_data.timeVal.minute = minute;
+                    g_app_data.timeVal.second = second;
                     // set time on watch
                 } else {
                     printf("Error: Invalid time format\r\n");
@@ -180,6 +199,9 @@ void parseBluetoothCommand(char *cmd) {
             if (parameter) {
                 int year, month, day;
                 if (sscanf(parameter, "%d-%d-%d", &year, &month, &day) == 3) {
+                     g_app_data.timeVal.day = day;
+                     g_app_data.timeVal.month = month;
+                     g_app_data.timeVal.year = year;
                     // set date on watch
                 } else {
                     // Handle parsing error
