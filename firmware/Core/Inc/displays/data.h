@@ -13,9 +13,9 @@ typedef struct {
 } settings_t;
 
 typedef struct {
-    float heart_rate;
+    uint16_t heart_rate;
     uint16_t steps;
-    float spo2;
+    uint8_t spo2;
 } biometrics_t;
 
 typedef struct {
