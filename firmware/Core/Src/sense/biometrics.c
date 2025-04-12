@@ -4,13 +4,12 @@
 
 #include "drivers/max30102.h"
 #include "sense/filter.h"
+#include "displays/data.h"
 
 #define HR_WINDOW 750
 
-biometric_callback_func_t *callbacks;
-uint16_t callbacks_size = 0;
-
 extern max_struct_t max30102_sensor;
+extern app_data_t g_app_data;
 
 void update_biometrics() {
     BWBandPass *filter = create_bw_band_pass_filter(4, 25, 0.5, 3);
@@ -30,21 +29,9 @@ void update_biometrics() {
         peaks += PeakDetector_Process(&detector, hr_reading);
 
         if (count == HR_WINDOW) {
-            float bpm = peaks * (HR_WINDOW / 1500.0);
-            for (uint16_t j = 0; j < callbacks_size; j++) callbacks[j]((uint16_t) bpm, 0);
+            g_app_data.biometrics.heart_rate = peaks * (HR_WINDOW / 1500.0);
             peaks = 0;
             count = 0;
         }
     }
-}
-
-void add_biometric_callback(biometric_callback_func_t func) {
-    if (callbacks_size++ == 0) {
-        callbacks = malloc(sizeof(biometric_callback_func_t));
-        callbacks[0] = func;
-        return;
-    }
-
-    callbacks = realloc(callbacks, ++callbacks_size * sizeof(biometric_callback_func_t));
-    callbacks[callbacks_size - 1] = func;
 }
