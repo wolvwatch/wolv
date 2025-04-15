@@ -138,3 +138,7 @@ void update_steps(const uint16_t x, const uint16_t y, const uint16_t z) {
         max_min_sample_count = 0;
     }
 }
+
+void update_raise_to_wake(const uint16_t x, const uint16_t y, const uint16_t z) {
+// TODO implement
+}
