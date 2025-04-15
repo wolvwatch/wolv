@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+/**
+ * NOTE: this algorithm was implemented using the "Step Counting Using the ADXL367" resource from Analog Devices.
+ * https://www.analog.com/en/resources/app-notes/an-2554.html
+ */
 #define SENSITIVITY 400.0
 #define INIT_OFFSET_VALUE 4000
 
