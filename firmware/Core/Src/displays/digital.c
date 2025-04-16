@@ -11,6 +11,8 @@ extern app_data_t g_app_data;
 void watchface_digital_draw(void) {
     char timeStr[16];
     char dateStr[16];
+    char hrStr[16];
+    char stepsStr[16];
 
     snprintf(timeStr, sizeof(timeStr), "%02d:%02d:%02d",
              g_app_data.timeVal.hour,
@@ -22,8 +24,13 @@ void watchface_digital_draw(void) {
              g_app_data.timeVal.month,
              g_app_data.timeVal.year);
 
+    snprintf(hrStr, sizeof(hrStr), "%d BPM", (int)g_app_data.biometrics.heart_rate);
+    snprintf(stepsStr, sizeof(stepsStr), "%d steps", g_app_data.biometrics.steps);
+
     draw_text(timeStr, 30, 40, &ultra, COLOR_WHITE, 1.0, false);
     draw_text(dateStr, 30, 120, &montserrat_reg, COLOR_WHITE, 1.0, false);
+    draw_text(hrStr, 30, 160, &montserrat_reg, COLOR_RED, 1.0, false);
+    draw_text(stepsStr, 30, 190, &montserrat_reg, COLOR_WHITE, 1.0, false);
 
     // additional stuff needs to be added here like BT
 

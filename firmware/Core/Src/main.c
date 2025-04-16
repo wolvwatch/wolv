@@ -33,6 +33,7 @@
 #include "displays/screen.h"
 #include "displays/notification.h"
 #include "displays/data.h"
+#include "displays/splashscreen.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -188,6 +189,8 @@ int main(void)
   watch_init();
   HAL_Delay(5000);
   display_notification("wolv!");
+  screen_render();
+  splashscreen_draw();
   screen_render();
 
   /* USER CODE END 2 */

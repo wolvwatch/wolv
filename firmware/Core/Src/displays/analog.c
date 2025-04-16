@@ -3,6 +3,7 @@
 #include "drivers/lcd.h"
 #include "ux/display.h"
 #include "displays/data.h"
+#include "ux/bitmaps.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -16,11 +17,25 @@
 
 extern app_data_t g_app_data;
 
+void draw_biometric_data(uint8_t heart_rate, uint8_t spo2) {
+    char hr_str[10];
+    char steps_str[10];
+    
+    // Draw heart rate at bottom left
+    snprintf(hr_str, sizeof(hr_str), "%d BPM", heart_rate);
+    draw_text(hr_str, 30, 180, &montserrat_reg, COLOR_RED, 1.0, false);
+    
+    // Draw steps at bottom right
+    snprintf(steps_str, sizeof(steps_str), "%d", g_app_data.biometrics.steps);
+    draw_text(steps_str, 180, 180, &montserrat_reg, COLOR_WHITE, 1.0, false);
+}
+
 void watchface_analog_draw(void) {
     draw_watch_face();
     draw_hour_markers();
     draw_watch_hands(g_app_data.timeVal.hour, g_app_data.timeVal.minute, g_app_data.timeVal.second);
     draw_center_dot();
+    draw_biometric_data(g_app_data.biometrics.heart_rate, g_app_data.biometrics.spo2);
     screen_render();
 }
 
@@ -28,7 +43,7 @@ void watchface_analog_draw(void) {
 
 // Draws the outer circle of the watch face.
 void draw_watch_face(void) {
-    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, 0b111, false, 2);
+    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_BLACK, false, 1);
 }
 
 void draw_hour_markers(void) {
@@ -42,7 +57,7 @@ void draw_hour_markers(void) {
         int x_inner = CENTER_X + (int)((WATCH_RADIUS - 10) * cosf(rad) + 0.5f);
         int y_inner = CENTER_Y + (int)((WATCH_RADIUS - 10) * sinf(rad) + 0.5f);
 
-        draw_line(x_inner, y_inner, x_outer, y_outer, COLOR_BLACK, 2);
+        draw_line(x_inner, y_inner, x_outer, y_outer, COLOR_BLACK, 1);
     }
 }
 
@@ -70,11 +85,5 @@ void draw_watch_hands(uint8_t hours, uint8_t minutes, uint8_t seconds) {
 }
 
 void draw_center_dot(void) {
-    for (int dx = -2; dx <= 2; dx++) {
-        for (int dy = -2; dy <= 2; dy++) {
-            int x = CENTER_X + dx;
-            int y = CENTER_Y + dy;
-            screen_set_pixel((uint16_t)x, (uint16_t)y, COLOR_WHITE);
-        }
-    }
+    draw_arc(0, 359, CENTER_X, CENTER_Y, 2, COLOR_WHITE, true, 1);
 }
