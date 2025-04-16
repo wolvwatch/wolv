@@ -2,8 +2,8 @@
 #include "displays/data.h"
 #include "ux/display.h"
 #include "drivers/lcd.h"
-#include "ux/font.h"
 #include <stdio.h>
+#include "ux/rasterizer.h"
 #include <stdint.h>
 
 extern app_data_t g_app_data;
@@ -22,9 +22,8 @@ void watchface_digital_draw(void) {
              g_app_data.timeVal.month,
              g_app_data.timeVal.year);
 
-    display_time_text(30, 40, timeStr, COLOR_BLACK);
-
-    display_main_text(30, 120, dateStr, COLOR_BLACK);
+    draw_text(timeStr, 30, 40, &ultra, COLOR_WHITE, 1.0, false);
+    draw_text(dateStr, 30, 120, &montserrat_reg, COLOR_WHITE, 1.0, false);
 
     // additional stuff needs to be added here like BT
 
