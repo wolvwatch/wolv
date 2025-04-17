@@ -1,17 +1,31 @@
 #include "displays/notification.h"
+
+#include "displays/data.h"
+
 void display_notification(const char* message) {
     uint16_t start_x = 30;
     uint16_t start_y = 50;
     uint16_t width = 180;
     uint16_t height = 140;
-    draw_rectangle(start_x, start_y, width, height, 0b111);
-    draw_line(start_x, start_y, start_x + width - 1, start_y, 0b000, 1);
-    draw_line(start_x, start_y + height - 1, start_x + width - 1, start_y + height - 1, 0b000, 1);
-    draw_line(start_x, start_y, start_x, start_y + height - 1, 0b000, 1);
-    draw_line(start_x + width - 1, start_y, start_x + width - 1, start_y + height - 1, 0b000, 1);
-    uint16_t text_offset_x = 240/2;
-    uint16_t text_offset_y = 240/2;
-//    display_main_text(text_offset_x, text_offset_y, message, 0b000);
-    screen_render();
+    uint16_t radius = 10; // Corner radius
 
+    // Draw the middle filled rectangle background
+    draw_rectangle(start_x+radius, start_y+radius, width-(radius*2), height-(radius*2), 0b111);
+    draw_rectangle(start_x+radius, start_y, width-(radius*2), height+1, 0b111);
+    draw_rectangle(start_x, start_y+radius, width+1, height-(radius*2), 0b111);
+
+    // top left
+    draw_arc(180, 270, start_x + radius, start_y + radius, radius, 0b111, true, 1);
+    // top right
+    draw_arc(270, 360, start_x + width - radius - 1, start_y + radius, radius, 0b111, true, 1);
+    // bottom right
+    draw_arc(0, 90, start_x + width - radius - 1, start_y + height - radius - 1, radius, 0b111, true, 1);
+    // bottom left
+    draw_arc(90, 180, start_x + radius, start_y + height - radius - 1, radius, 0b111, true, 1);
+
+    // Draw the straight lines between corners
+
+    // Draw the text
+    draw_text(message, CENTER_X, CENTER_Y, &montserrat_reg, 0b000, 1.0, true);
+    screen_render();
 }

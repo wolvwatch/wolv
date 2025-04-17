@@ -17,11 +17,12 @@
 extern uint8_t rxData;
 
 #define RX_BUFFER_SIZE 256
+
 volatile char rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxIndex = 0;
 extern app_data_t g_app_data;
-
-
+volatile uint32_t last_ack_time = 0;
+volatile bool waiting_for_ack = false;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART3) {
@@ -44,12 +45,37 @@ void trim(char *str) {
     }
 }
 
+void send_ack_request(void) {
+    const char* ack_cmd = "ACK:CONN\n";
+    if (!waiting_for_ack) {
+        HAL_UART_Transmit(&huart3, (uint8_t*)ack_cmd, strlen(ack_cmd), 1000);
+        waiting_for_ack = true;
+        last_ack_time = HAL_GetTick();
+    }
+}
+
+void check_ack_timeout(void) {
+    if (waiting_for_ack && (HAL_GetTick() - last_ack_time > 30000)) {
+        g_app_data.settings.bluetooth = false;
+        waiting_for_ack = false;
+    }
+}
+
 void parseBluetoothCommand(char *cmd) {
     char cmdCopy[256];
     strncpy(cmdCopy, cmd, sizeof(cmdCopy) - 1);
     cmdCopy[sizeof(cmdCopy)-1] = '\0';
 
     trim(cmdCopy);
+
+
+    if (strcmp(cmdCopy, "ACK:OK\n") == 0) {
+        if (waiting_for_ack) {
+            g_app_data.settings.bluetooth = true;
+            waiting_for_ack = false;
+        }
+        return;
+    }
 
     char *token = strtok(cmdCopy, ":");
     if (!token) {
@@ -235,4 +261,17 @@ void parseBluetoothCommand(char *cmd) {
     } else {
         printf("Unknown module: %s\r\n", module);
     }
+}
+
+void send_sensor_data() {
+    char data_str[128];
+    extern app_data_t g_app_data;
+    
+    // Format: "DATA:HR={heart_rate},SPO2={spo2},STEPS={steps}\n"
+    snprintf(data_str, sizeof(data_str), "DATA:HR=%.1f,SPO2=%.1f,STEPS=%d\n", 
+             g_app_data.biometrics.heart_rate,
+             g_app_data.biometrics.spo2,
+             g_app_data.biometrics.steps);
+             
+    HAL_UART_Transmit(&huart3, (uint8_t*)data_str, strlen(data_str), 1000);
 }

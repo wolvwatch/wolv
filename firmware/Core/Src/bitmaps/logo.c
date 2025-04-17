@@ -26,8 +26,8 @@
      uint8_t dataSize;
      } tImage;
 */
-#include "ux/rasterizer.h"
 #include <stdint.h>
+#include "ux/rasterizer.h"
 
 
 

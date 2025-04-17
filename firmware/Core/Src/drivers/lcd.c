@@ -13,6 +13,7 @@
  ******************************************************************************/
 #include "../Inc/drivers/lcd.h"
 #include <math.h>
+#include <string.h>
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
 #include "../Inc/main.h"
 
@@ -26,6 +27,7 @@
 extern SPI_HandleTypeDef hspi3;
 extern uint8_t rx_buffer[1];
 static uint8_t pixels[(240 * 240 * 3) / 8];
+static uint8_t aa_buffer[(240 * 240 * 3) / 8];
 
 static void send_cmd(uint8_t reg) {
 	SET_DC_LOW;
@@ -302,6 +304,7 @@ void screen_init() {
 	SET_RST_HIGH;
 	screen_reset();
 	LCD_1IN28_InitReg();
+	set_brightness(100);
 }
 
 void setPixel(uint8_t *frameBuffer, int width, int x, int y, uint16_t color) {
@@ -322,6 +325,71 @@ void setPixel(uint8_t *frameBuffer, int width, int x, int y, uint16_t color) {
 		uint8_t mask2 = (1 << bitsInSecondByte) - 1;
 		frameBuffer[byteIndex + 1] = (frameBuffer[byteIndex + 1] & ~mask2) | ((color & 0x07) >> bitsInFirstByte);
 	}
+}
+
+static void apply_fast_aa(const uint8_t *in_buf,
+						  uint8_t       *out_buf,
+						  int            width,
+						  int            height)
+{
+	/* first: copy the whole frame.  Faster than per‑pixel border handling and
+	   guarantees we do not leave stale data in out_buf.                        */
+	memcpy(out_buf, in_buf, (width * height * 3) / 8);
+
+	for (int y = 1; y < height - 1; ++y) {
+		for (int x = 1; x < width  - 1; ++x) {
+
+			int r_cnt = 0, g_cnt = 0, b_cnt = 0;
+
+			/* count the ON bits for the 3×3 neighbourhood */
+			for (int dy = -1; dy <= 1; ++dy) {
+				for (int dx = -1; dx <= 1; ++dx) {
+					uint8_t c = getPixel(in_buf, width, x + dx, y + dy);
+					r_cnt += (c >> 2) & 1;
+					g_cnt += (c >> 1) & 1;
+					b_cnt +=  c       & 1;
+				}
+			}
+
+			/* majority vote (≥ 5 of 9) – tweak threshold to taste            */
+			uint8_t r = (r_cnt >= 5);
+			uint8_t g = (g_cnt >= 5);
+			uint8_t b = (b_cnt >= 5);
+
+			/* re‑pack into RGB111                                            */
+			uint8_t packed = (r << 2) | (g << 1) | b;
+			setPixel(out_buf, width, x, y, packed);
+		}
+	}
+}
+
+void screen_render_aa() {
+	// 1) run AA pass, writing into aa_buffer
+	apply_fast_aa(pixels, aa_buffer, 240, 240);
+
+	// 2) push to display exactly as before, but read from aa_buffer
+	screen_set_windows(0, 0, 239, 239);
+	SET_DC_HIGH;
+	SET_CS_LOW;
+	for (uint16_t j = 0; j < 240; j++) {
+		for (uint16_t i = 0; i < 240; i++) {
+			uint16_t pixel = rgb111_to_rgb565(
+								getPixel(aa_buffer, 240, i, j)
+							  );
+			HAL_SPI_Transmit(&hspi3, (uint8_t*)&pixel, 2, HAL_MAX_DELAY);
+		}
+	}
+	SET_DC_LOW;
+	SET_CS_HIGH;
+}
+
+void screen_clear(void) {
+	for (int i = 0; i < 240; i++) {
+		for (int j = 0; j < 240; j++) {
+			setPixel(pixels, 240, i, j, 0b000);
+		}
+	}
+	screen_render();
 }
 
 void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color) {

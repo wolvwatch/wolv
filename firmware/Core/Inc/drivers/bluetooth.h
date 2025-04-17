@@ -23,6 +23,10 @@ extern UART_HandleTypeDef huart3;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 void parseBluetoothCommand(char *cmd);
+void send_sensor_data(void);
+void send_ack_request(void);
+void check_ack_timeout(void);
+
 
 // commands left to change:
 /*

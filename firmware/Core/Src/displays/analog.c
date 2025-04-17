@@ -3,33 +3,77 @@
 #include "drivers/lcd.h"
 #include "ux/display.h"
 #include "displays/data.h"
-#include "ux/rasterizer.h"
+#include "ux/bitmaps.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/time.h>
 
-
-
 #define HOUR_HAND_LENGTH   50
 #define MINUTE_HAND_LENGTH 80
 #define SECOND_HAND_LENGTH 90
+#define PROGRESS_RADIUS    30
+#define GOAL_STEPS        10000
 
 extern app_data_t g_app_data;
+extern tImage hr;
+
+void draw_biometric_data(void) {
+    char date_str[10];
+    char hr_str[10];
+    char battery_str[10];
+    char steps_str[10];
+
+    // date
+    snprintf(date_str, sizeof(date_str), "%d / %d",
+             g_app_data.timeVal.month,
+             g_app_data.timeVal.day);
+    draw_text(date_str, 120, 60, &montserrat_reg, COLOR_WHITE, 1.4, true);
+
+    // hr icon
+    draw_image(&hr, 75, 170, COLOR_WHITE, 0.25, true);
+    // hr value
+    snprintf(hr_str, sizeof(hr_str), "%d", g_app_data.biometrics.heart_rate);
+    draw_text(hr_str, 75, 150, &montserrat_reg, COLOR_WHITE, 0.75, true);
+    draw_arc(0, 359, 75, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
+    float heart_arc_angle = g_app_data.biometrics.heart_rate / 200.0f;
+    uint16_t filled = (uint16_t)roundf(360.0f * heart_arc_angle);
+    draw_arc(180, 180+filled, 75, 155, PROGRESS_RADIUS, 0b100, false, 2);
+
+
+
+    // battery value
+    snprintf(battery_str, sizeof(battery_str), "%d%%", g_app_data.settings.battery_level);
+    draw_text(battery_str, 165, 150, &montserrat_reg, COLOR_WHITE, 0.75, true);
+    draw_arc(0, 359, 165, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
+    float battery_val_angle = g_app_data.settings.battery_level / 100.0f;
+    uint16_t battery_fill = (uint16_t)roundf(360.0f * battery_val_angle);
+    draw_arc(0, battery_fill, 165, 155, PROGRESS_RADIUS, 0b100, false, 1);
+
+    // steps icon
+    //draw_image(&steps, 120 - 9, 190 - 6, COLOR_WHITE);
+    // steps value
+    snprintf(steps_str, sizeof(steps_str), "%d", g_app_data.biometrics.steps);
+    draw_text(steps_str, 120, 195, &montserrat_reg, COLOR_WHITE, 0.65, true);
+    draw_arc(180, 360, 120, 205, PROGRESS_RADIUS, 0b100, false, 2); // Light gray background
+    uint16_t steps_arc_angle = (g_app_data.biometrics.steps * 180) / GOAL_STEPS;
+    if (steps_arc_angle > 180) steps_arc_angle = 180;
+    draw_arc(180, 180 + steps_arc_angle, 120, 205, PROGRESS_RADIUS, COLOR_WHITE, false, 2);
+}
 
 void watchface_analog_draw(void) {
     draw_watch_face();
     draw_hour_markers();
+    draw_biometric_data();
     draw_watch_hands(g_app_data.timeVal.hour, g_app_data.timeVal.minute, g_app_data.timeVal.second);
     draw_center_dot();
-    screen_render();
+    screen_render_aa();
+    //screen_render();
 }
-
-
 
 // Draws the outer circle of the watch face.
 void draw_watch_face(void) {
-    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, 0b111, false, 2);
+    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_WHITE, false, 1);
 }
 
 void draw_hour_markers(void) {
@@ -43,7 +87,7 @@ void draw_hour_markers(void) {
         int x_inner = CENTER_X + (int)((WATCH_RADIUS - 10) * cosf(rad) + 0.5f);
         int y_inner = CENTER_Y + (int)((WATCH_RADIUS - 10) * sinf(rad) + 0.5f);
 
-        draw_line(x_inner, y_inner, x_outer, y_outer, COLOR_BLACK, 2);
+        draw_line(x_inner, y_inner, x_outer, y_outer, COLOR_WHITE, 1);
     }
 }
 
@@ -71,11 +115,5 @@ void draw_watch_hands(uint8_t hours, uint8_t minutes, uint8_t seconds) {
 }
 
 void draw_center_dot(void) {
-    for (int dx = -2; dx <= 2; dx++) {
-        for (int dy = -2; dy <= 2; dy++) {
-            int x = CENTER_X + dx;
-            int y = CENTER_Y + dy;
-            screen_set_pixel((uint16_t)x, (uint16_t)y, COLOR_WHITE);
-        }
-    }
+    draw_arc(0, 359, CENTER_X, CENTER_Y, 4, COLOR_WHITE, true, 1);
 }
