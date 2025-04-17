@@ -3,7 +3,7 @@
 #include "string.h"
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
 
-extern I2C_HandleTypeDef hi2c2;
+extern I2C_HandleTypeDef hi2c1;
 #define MAX30102_ADDRESS 0x57
 
 // Status Registers
@@ -130,19 +130,19 @@ static const uint8_t MAX_30105_EXPECTEDPARTID = 0x15;
 max_struct_t max30102_sensor = {};
 
 void read_byte(uint8_t reg, uint8_t *buf) {
-    HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(&hi2c2, MAX30102_ADDRESS << 1, &reg, 1, HAL_MAX_DELAY);
-    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c2));
+    HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDRESS << 1, &reg, 1, HAL_MAX_DELAY);
+    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c1));
 
-    result = HAL_I2C_Master_Receive(&hi2c2, MAX30102_ADDRESS << 1, buf, 1, HAL_MAX_DELAY);
-    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c2));
+    result = HAL_I2C_Master_Receive(&hi2c1, MAX30102_ADDRESS << 1, buf, 1, HAL_MAX_DELAY);
+    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c1));
 }
 
 void write_byte(uint8_t reg, uint8_t val) {
     uint8_t buf[2];
     buf[0] = reg;
     buf[1] = val;
-    HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(&hi2c2, MAX30102_ADDRESS << 1, buf, 2, HAL_MAX_DELAY);
-    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c2));
+    HAL_StatusTypeDef result = HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDRESS << 1, buf, 2, HAL_MAX_DELAY);
+    if (result != HAL_OK) printf("I2C MAX30102 ERROR: reg %u result %u", reg, HAL_I2C_GetError(&hi2c1));
 }
 
 void bit_mask(uint8_t reg, uint8_t mask, uint8_t val) {
@@ -204,9 +204,9 @@ int max30102_read_data() {
             bytes_left -= get;
 
             uint8_t data = MAX30102_FIFODATA;
-            HAL_I2C_Master_Transmit(&hi2c2, MAX30102_ADDRESS << 1, &data, 1, HAL_MAX_DELAY);
+            HAL_I2C_Master_Transmit(&hi2c1, MAX30102_ADDRESS << 1, &data, 1, HAL_MAX_DELAY);
             uint8_t buf[new_samps * 6];
-            HAL_I2C_Master_Receive(&hi2c2, MAX30102_ADDRESS << 1, buf, get, HAL_MAX_DELAY);
+            HAL_I2C_Master_Receive(&hi2c1, MAX30102_ADDRESS << 1, buf, get, HAL_MAX_DELAY);
 
             uint16_t i = 0;
             while (get > 0) {

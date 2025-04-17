@@ -7,10 +7,11 @@
 
 
 #include "stm32l4xx_hal.h"
+#include "main.h"
 
 // For example, define the chip select pin:
 
-extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
 
 
 #define ADXL362_REG_SOFT_RESET    0x1F
@@ -22,11 +23,11 @@ extern SPI_HandleTypeDef hspi1;
 
 // For convenience, chip-select helpers:
 static inline void ADXL362_Select(void) {
-    //HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_RESET);
 }
 
 static inline void ADXL362_Unselect(void) {
-    // HAL_GPIO_WritePin(GPIOF, GPIO_PIN_12, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_SET);
 }
 
 /**
@@ -41,7 +42,7 @@ void ADXL362_WriteReg(uint8_t regAddr, uint8_t data) {
     txBuf[2] = data;
 
     ADXL362_Select();
-    HAL_SPI_Transmit(&hspi1, txBuf, 3, HAL_MAX_DELAY);
+    HAL_SPI_Transmit(&hspi2, txBuf, 3, HAL_MAX_DELAY);
     ADXL362_Unselect();
 }
 
@@ -59,9 +60,9 @@ uint8_t ADXL362_ReadReg(uint8_t regAddr) {
 
     ADXL362_Select();
     // Send [READ_CMD, RegisterAddress]
-    HAL_SPI_Transmit(&hspi1, txBuf, 2, HAL_MAX_DELAY);
+    HAL_SPI_Transmit(&hspi2, txBuf, 2, HAL_MAX_DELAY);
     // Now read back one byte
-    HAL_SPI_Receive(&hspi1, rxBuf, 1, HAL_MAX_DELAY);
+    HAL_SPI_Receive(&hspi2, rxBuf, 1, HAL_MAX_DELAY);
     ADXL362_Unselect();
 
     return rxBuf[0];
@@ -82,6 +83,10 @@ void ADXL362_SoftReset(void) {
   *         Adjust to your preferences as needed.
   */
 void ADXL362_Init(void) {
+	HAL_GPIO_WritePin(ACC_3_3V_GPIO_Port, ACC_3_3V_Pin, GPIO_PIN_RESET);
+	HAL_Delay(150);
+	HAL_GPIO_WritePin(ACC_3_3V_GPIO_Port, ACC_3_3V_Pin, GPIO_PIN_SET);
+	HAL_Delay(150);
     ADXL362_Unselect();
     // 1) Soft reset
     ADXL362_SoftReset();
@@ -121,9 +126,9 @@ void ADXL362_ReadXYZ(int16_t *xRaw, int16_t *yRaw, int16_t *zRaw) {
 
     ADXL362_Select();
     // Transmit the read command + start address
-    HAL_SPI_Transmit(&hspi1, txBuf, 2, HAL_MAX_DELAY);
+    HAL_SPI_Transmit(&hspi2, txBuf, 2, HAL_MAX_DELAY);
     // Now read 6 bytes
-    HAL_SPI_Receive(&hspi1, rxBuf, 6, HAL_MAX_DELAY);
+    HAL_SPI_Receive(&hspi2, rxBuf, 6, HAL_MAX_DELAY);
     ADXL362_Unselect();
 
     // Reassemble each axis (little-endian)

@@ -99,6 +99,7 @@ void draw_rectangle(uint16_t start_x, uint16_t start_y,
             }
         }
     }
+}
 
 int get_char_index(const char *c, const tFont *font) {
     for (int i = 0; i < font->length; i++) {

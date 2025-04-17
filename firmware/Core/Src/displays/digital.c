@@ -2,7 +2,7 @@
 #include "displays/data.h"
 #include "ux/display.h"
 #include "drivers/lcd.h"
-#include "ux/font.h"
+#include "ux/rasterizer.h"
 #include <stdio.h>
 #include <stdint.h>
 
@@ -22,9 +22,9 @@ void watchface_digital_draw(void) {
              g_app_data.timeVal.month,
              g_app_data.timeVal.year);
 
-    display_time_text(30, 40, timeStr, COLOR_BLACK);
+ //   display_time_text(30, 40, timeStr, COLOR_BLACK);
 
-    display_main_text(30, 120, dateStr, COLOR_BLACK);
+//    display_main_text(30, 120, dateStr, COLOR_BLACK);
 
     // additional stuff needs to be added here like BT
 

@@ -11,7 +11,7 @@ void display_notification(const char* message) {
     draw_line(start_x + width - 1, start_y, start_x + width - 1, start_y + height - 1, 0b000, 1);
     uint16_t text_offset_x = 240/2;
     uint16_t text_offset_y = 240/2;
-    display_main_text(text_offset_x, text_offset_y, message, 0b000);
+//    display_main_text(text_offset_x, text_offset_y, message, 0b000);
     screen_render();
 
 }
