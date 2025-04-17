@@ -64,6 +64,7 @@ SPI_HandleTypeDef hspi3;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
 uint8_t max30102_head = 0;
@@ -84,6 +85,7 @@ static void MX_LPUART1_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI3_Init(void);
 static void MX_RTC_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -93,8 +95,8 @@ static void MX_RTC_Init(void);
 
 app_data_t g_app_data = {
   .display = {
-    .active_screen = WATCHFACE_DIGITAL,
-    .brightness    = 80,
+    .active_screen = WATCHFACE_ANALOG,
+    .brightness    = 100,
     .on            = true,
     .metric        = false,
     .show_heart    = true,
@@ -102,12 +104,14 @@ app_data_t g_app_data = {
     .show_spo2     = true,
 },
   .settings = {
+    .bluetooth = false,
+    .battery_level = 68,
     .brightness = 80,
     .metric     = false,
 },
   .biometrics = {
-    .heart_rate = 0,
-    .steps      = 0,
+    .heart_rate = 75,
+    .steps      = 4560,
     .spo2       = 0,
 },
   .timeVal = {
@@ -125,25 +129,30 @@ void watch_init() {
   max30102_init();
   ADXL362_Init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
-
-
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
 void watch_tick() {
-  update_biometrics();
-  //add_biometric_callback(&draw_biometric_data);
-  switch (g_app_data.display.active_screen) {
-    case WATCHFACE_DIGITAL:
-      watchface_digital_draw();
-    break;
-    case WATCHFACE_ANALOG:
-      watchface_analog_draw();
-    break;
-    default:
-      watchface_digital_draw();
-    break;
-  }
+  //update_biometrics();
+  // add_biometric_callback(&draw_biometric_data);
+   switch (g_app_data.display.active_screen) {
+     case WATCHFACE_DIGITAL: {
+       watchface_digital_draw();
+       break;
+     }
+
+     case WATCHFACE_ANALOG: {
+       watchface_analog_draw();
+       break;
+     }
+
+     default: {
+       watchface_digital_draw();
+       break;
+     }
+
+
+   }
 }
 /* USER CODE END 0 */
 
@@ -184,14 +193,24 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI3_Init();
   MX_RTC_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+  //HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   watch_init();
-  HAL_Delay(5000);
-  display_notification("wolv!");
-  screen_render();
-  splashscreen_draw();
-  screen_render();
+
+
+  // HAL_Delay(1000);
+  screen_clear();
+  // HAL_Delay(1000);
+   splashscreen_draw();
+  screen_render_aa();
+  // screen_render();
+  //HAL_Delay(30000);
+  screen_clear();
+  //display_notification("wolv!");
+  //screen_render();
+  //HAL_Delay(20000);
+  screen_clear();
 
   /* USER CODE END 2 */
 
@@ -200,13 +219,13 @@ int main(void)
   while (1) {
     static uint32_t last_data_send = 0;
     uint32_t current_tick = HAL_GetTick();
-    
+
     watch_tick();
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
     
     // sends sensor data once a second
     if (current_tick - last_data_send >= 1000) {
-        send_sensor_data();
+        //send_sensor_data();
         last_data_send = current_tick;
     }
 
@@ -670,6 +689,44 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 36620;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 65535;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
 
 }
 

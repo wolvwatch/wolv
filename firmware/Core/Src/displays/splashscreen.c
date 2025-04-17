@@ -12,5 +12,5 @@ void splashscreen_draw(void) {
     uint16_t x = (LCD_1IN28_WIDTH - logo.width) / 2;
     uint16_t y = (LCD_1IN28_HEIGHT - logo.height) / 2;
     
-    draw_image(&logo, x, y, COLOR_WHITE);
+    draw_image(&logo, x, y, 0b111, 1.0, false);
 } 

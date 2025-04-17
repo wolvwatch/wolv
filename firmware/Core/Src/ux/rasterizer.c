@@ -180,32 +180,26 @@ void draw_arc(uint16_t startAngle,
     if (endAngle < startAngle) {
         endAngle += 360;
     }
+    // For thicker lines or filled arcs, use the existing implementation
+    float step = 1.0f;
+    float degToRad = (float) M_PI / 180.0f;
+    int xPrev = cx + (int) (radius * cosf(startAngle * degToRad) + 0.5f);
+    int yPrev = cy + (int) (radius * sinf(startAngle * degToRad) + 0.5f);
 
-    if (stroke == 1 && !fill) {
-        // Use anti-aliased arc drawing for single-pixel lines
-        draw_arc_aa(startAngle, endAngle, cx, cy, radius, color);
-    } else {
-        // For thicker lines or filled arcs, use the existing implementation
-        float step = 1.0f;
-        float degToRad = (float) M_PI / 180.0f;
-        int xPrev = cx + (int) (radius * cosf(startAngle * degToRad) + 0.5f);
-        int yPrev = cy + (int) (radius * sinf(startAngle * degToRad) + 0.5f);
+    for (float angle = (float) startAngle; angle <= (float) endAngle; angle += step) {
+        float rad = angle * degToRad;
+        int xArc = cx + (int) (radius * cosf(rad) + 0.5f);
+        int yArc = cy + (int) (radius * sinf(rad) + 0.5f);
 
-        for (float angle = (float) startAngle; angle <= (float) endAngle; angle += step) {
-            float rad = angle * degToRad;
-            int xArc = cx + (int) (radius * cosf(rad) + 0.5f);
-            int yArc = cy + (int) (radius * sinf(rad) + 0.5f);
-
-            if (fill) {
-                draw_line(cx, cy, xArc, yArc, color, stroke);
-                draw_line(xPrev, yPrev, xArc, yArc, color, stroke);
-            } else {
-                draw_line(xPrev, yPrev, xArc, yArc, color, stroke);
-            }
-
-            xPrev = xArc;
-            yPrev = yArc;
+        if (fill) {
+            draw_line(cx, cy, xArc, yArc, color, stroke);
+            draw_line(xPrev, yPrev, xArc, yArc, color, stroke);
+        } else {
+            draw_line(xPrev, yPrev, xArc, yArc, color, stroke);
         }
+
+        xPrev = xArc;
+        yPrev = yArc;
     }
 }
 
@@ -367,28 +361,44 @@ static float bilinear_interpolate(float x, float y, const uint8_t *data, uint16_
     return top * (1 - y_frac) + bottom * y_frac;
 }
 
-void draw_image(const tImage *image, uint16_t x, uint16_t y, color_t color) {
-    if (!image || !image->data) return;
+void draw_image(const tImage *image,
+                uint16_t x, uint16_t y,
+                color_t color,
+                float scale,
+                bool center)
+{
+    if (!image || !image->data || scale <= 0.0f) return;
 
-    uint16_t width = image->width;
-    uint16_t height = image->height;
+    uint16_t src_w = image->width;
+    uint16_t src_h = image->height;
     const uint8_t *data = image->data;
+    int bytes_per_row = (src_w + 7) / 8;
 
-    // For each pixel in the output image
-    for (uint16_t row = 0; row < height; row++) {
-        for (uint16_t col = 0; col < width; col++) {
-            // Calculate the exact position in the source image
-            float src_x = col;
-            float src_y = row;
-            
-            // Get interpolated value
-            float intensity = bilinear_interpolate(src_x, src_y, data, width, height);
-            
-            // Only draw if there's some intensity
-            if (intensity > 0.0f) {
-                // For now, we'll use the same color with full intensity
-                // In a more advanced implementation, you could blend with background
-                put_pixel_safe(x + col, y + row, color);
+    uint16_t dst_w = (uint16_t)ceilf(src_w * scale);
+    uint16_t dst_h = (uint16_t)ceilf(src_h * scale);
+
+    int start_x = center
+                  ? (int)x - (int)(dst_w / 2)
+                  : (int)x;
+    int start_y = center
+                  ? (int)y - (int)(dst_h / 2)
+                  : (int)y;
+
+    for (uint16_t dst_row = 0; dst_row < dst_h; dst_row++) {
+        for (uint16_t dst_col = 0; dst_col < dst_w; dst_col++) {
+            uint16_t src_x = (uint16_t)floorf(dst_col / scale);
+            uint16_t src_y = (uint16_t)floorf(dst_row / scale);
+
+            if (src_x >= src_w) src_x = src_w - 1;
+            if (src_y >= src_h) src_y = src_h - 1;
+
+            int byte_offset = src_y * bytes_per_row + (src_x / 8);
+            uint8_t bit_mask = 0x80 >> (src_x % 8);
+
+            if (data[byte_offset] & bit_mask) {
+                put_pixel_safe(start_x + dst_col,
+                               start_y + dst_row,
+                               color);
             }
         }
     }

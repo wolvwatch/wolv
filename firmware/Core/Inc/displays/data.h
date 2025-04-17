@@ -10,10 +10,12 @@
 typedef struct {
     uint8_t brightness;
     bool metric;
+    bool bluetooth;
+    uint8_t battery_level;
 } settings_t;
 
 typedef struct {
-    float heart_rate;
+    uint8_t heart_rate;
     uint16_t steps;
     float spo2;
 } biometrics_t;
@@ -46,7 +48,7 @@ typedef struct {
 #define COLOR_RED 0b100
 #endif
 
-#define CENTER_X 118
+#define CENTER_X 121
 #define CENTER_Y 120
 #define WATCH_RADIUS 118
 

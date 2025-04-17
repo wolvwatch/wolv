@@ -69,6 +69,10 @@ void draw_arc(uint16_t startAngle,
 void draw_rectangle(uint16_t start_x, uint16_t start_y,
     uint16_t width, uint16_t height, color_t color);
 
-void draw_image(const tImage *image, uint16_t x, uint16_t y, color_t color);
+void draw_image(const tImage *image,
+                uint16_t x, uint16_t y,
+                color_t color,
+                float scale,
+                bool center);
 
 #endif // RASTERIZER_H
