@@ -236,3 +236,16 @@ void parseBluetoothCommand(char *cmd) {
         printf("Unknown module: %s\r\n", module);
     }
 }
+
+void send_sensor_data() {
+    char data_str[128];
+    extern app_data_t g_app_data;
+    
+    // Format: "DATA:HR={heart_rate},SPO2={spo2},STEPS={steps}\n"
+    snprintf(data_str, sizeof(data_str), "DATA:HR=%.1f,SPO2=%.1f,STEPS=%d\n", 
+             g_app_data.biometrics.heart_rate,
+             g_app_data.biometrics.spo2,
+             g_app_data.biometrics.steps);
+             
+    HAL_UART_Transmit(&huart3, (uint8_t*)data_str, strlen(data_str), 1000);
+}

@@ -198,10 +198,17 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
+    static uint32_t last_data_send = 0;
+    uint32_t current_tick = HAL_GetTick();
+    
     watch_tick();
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
-
-
+    
+    // sends sensor data once a second
+    if (current_tick - last_data_send >= 1000) {
+        send_sensor_data();
+        last_data_send = current_tick;
+    }
 
     /* USER CODE END WHILE */
 
