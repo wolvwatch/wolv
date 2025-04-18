@@ -13,13 +13,6 @@
 
 #define RX_BUFFER_SIZE 256
 
-/* External variable declared elsewhere (e.g., in main.c) */
-extern uint8_t rxData;
-
-extern volatile char rxBuffer[RX_BUFFER_SIZE];
-extern volatile uint16_t rxIndex;
-extern UART_HandleTypeDef huart3;
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 void parseBluetoothCommand(char *cmd);

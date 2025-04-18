@@ -18,6 +18,7 @@ extern uint8_t rxData;
 
 #define RX_BUFFER_SIZE 256
 
+extern UART_HandleTypeDef huart3;
 volatile char rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxIndex = 0;
 extern app_data_t g_app_data;
@@ -33,9 +34,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             parseBluetoothCommand((char *)rxBuffer);
             rxIndex = 0;
         }
-
-        HAL_UART_Receive_IT(huart, &rxData, 1);
     }
+
+    HAL_UART_Receive_IT(huart, &rxData, 1);
 }
 void trim(char *str) {
     size_t len = strlen(str);
@@ -113,7 +114,6 @@ void parseBluetoothCommand(char *cmd) {
         if (strcmp(command, "BRIGHT") == 0) {
             if (parameter) {
                 int bright = atoi(parameter);
-
                 g_app_data.settings.brightness = bright;
             } else {
                 printf("Error: BRIGHT command missing parameter\r\n");

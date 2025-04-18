@@ -10,7 +10,6 @@ typedef enum {
 
 typedef struct {
   screen_t active_screen;
-  uint8_t brightness;
   bool on;
   bool metric;
   bool show_heart;
