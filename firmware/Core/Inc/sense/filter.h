@@ -9,10 +9,7 @@
  */
 #ifndef filter_h
 #define filter_h
-
-#if __cplusplus
-extern "C"{
-#endif
+#include "stdint.h"
 
 #define DOUBLE_PRECISION 0
 

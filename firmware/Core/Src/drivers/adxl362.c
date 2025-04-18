@@ -6,6 +6,7 @@
  */
 
 
+#include "main.h"
 #include "stm32l4xx_hal.h"
 #include "main.h"
 
@@ -88,24 +89,10 @@ void ADXL362_Init(void) {
 	HAL_GPIO_WritePin(ACC_3_3V_GPIO_Port, ACC_3_3V_Pin, GPIO_PIN_SET);
 	HAL_Delay(150);
     ADXL362_Unselect();
-    // 1) Soft reset
+
     ADXL362_SoftReset();
-
-    // 2) FILTER_CTL (0x2C):
-    //    Bits: [7:6] = range (00 => ±2g),
-    //          [3]   = HALF_BW=1 => bandwidth is ODR/4, or 0 => ODR/2,
-    //          [2:0] = ODR (011 => 100 Hz)
-    //    So 0x13 => Range=±2g, HALF_BW=0, ODR=100Hz.
-    //    Or 0x12 => Range=±2g, HALF_BW=1, ODR=100Hz
-    ADXL362_WriteReg(ADXL362_REG_FILTER_CTL, 0x13);
-
-    // 3) POWER_CTL (0x2D):
-    //    Bits: [6:5] = low noise mode (00 => normal, 01 => low noise, etc.)
-    //          [2]   = wake-up mode
-    //          [1:0] = measurement mode (10 => measure)
-    //    0x02 => normal noise, measurement mode
-    //    (0b00000010)
-    ADXL362_WriteReg(ADXL362_REG_POWER_CTL, 0x02);
+    ADXL362_WriteReg(ADXL362_REG_FILTER_CTL, 0x12);
+    ADXL362_WriteReg(ADXL362_REG_POWER_CTL, 0x22);
 }
 
 /**
