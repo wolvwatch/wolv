@@ -67,8 +67,8 @@ void watchface_analog_draw(void) {
     draw_biometric_data();
     draw_watch_hands(g_app_data.timeVal.hour, g_app_data.timeVal.minute, g_app_data.timeVal.second);
     draw_center_dot();
-    screen_render_aa();
-    //screen_render();
+    //screen_render_aa();
+    screen_render();
 }
 
 // Draws the outer circle of the watch face.

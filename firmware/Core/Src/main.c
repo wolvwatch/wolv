@@ -129,8 +129,8 @@ void watch_init() {
   filter = create_bw_band_pass_filter(4, 25, 0.5, 3);
   PeakDetector_Init(&detector, 10, 10);
   screen_init();
-  max30102_init();
   ADXL362_Init();
+  max30102_init();
   HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
@@ -152,8 +152,6 @@ void watch_tick() {
        watchface_digital_draw();
        break;
      }
-
-
    }
 }
 
@@ -198,25 +196,14 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   watch_init();
-    HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-    static uint32_t last_data_send = 0;
-    uint32_t current_tick = HAL_GetTick();
-
     watch_tick();
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
-
-    // sends sensor data once a second
-    if (current_tick - last_data_send >= 1000) {
-        //send_sensor_data();
-        last_data_send = current_tick;
-    }
-
 
     /* USER CODE END WHILE */
 

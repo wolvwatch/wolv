@@ -21,7 +21,7 @@
 
 void screen_init();
 
-void screen_clear();
+void screen_clear(uint16_t color);
 
 void screen_set_backlight(uint16_t Value);
 

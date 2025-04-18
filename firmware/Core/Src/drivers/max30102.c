@@ -157,7 +157,7 @@ void soft_reset() {
     uint8_t response;
     do {
         read_byte(MAX30102_MODECONFIG, &response);
-        HAL_Delay(500);
+        HAL_Delay(100);
     } while ((response & MAX30102_RESET) != 0);
 }
 

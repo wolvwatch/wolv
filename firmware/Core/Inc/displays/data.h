@@ -37,15 +37,15 @@ typedef struct {
 } app_data_t;
 
 #ifndef COLOR_WHITE
-#define COLOR_WHITE 0b111
+#define COLOR_WHITE 0xFFFF
 #endif
 
 #ifndef COLOR_BLACK
-#define COLOR_BLACK 0b000
+#define COLOR_BLACK 0x0000
 #endif
 
 #ifndef COLOR_RED
-#define COLOR_RED 0b100
+#define COLOR_RED 0xFF00
 #endif
 
 #define CENTER_X 121
