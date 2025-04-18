@@ -105,7 +105,12 @@ void Error_Handler(void);
 #define HR_INT_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
-
+#define DEBUG_BT 1 // redirect printf statements to bluetooth instead of usb
+#define RAW_ACCEL_DEBUG 1 // send raw accel data over printf
+#define RAW_HR_DEBUG 0 // send raw hr data over printf
+#define STEPS_DEBUG 0 // send step count over printf
+#define HR_DEBUG 0 // send heartrate over printf
+#define SPO2_DEBUG 0 // send spo2 over printf
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

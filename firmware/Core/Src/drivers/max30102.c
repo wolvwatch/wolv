@@ -233,6 +233,13 @@ int max30102_read_data() {
                 temp[3] = 0;
                 max30102_sensor.red[max30102_sensor.head] = hr;
                 max30102_sensor.IR[max30102_sensor.head] = spo2;
+#if RAW_HR_DEBUG && RAW_SPO2_DEBUG
+                printf("raw_hr: %d raw_spo2: %d\n", hr, spo2);
+#elif RAW_HR_DEBUG
+                printf("raw_hr: %d\n", hr);
+#elif SPO2_DEBUG
+                printf("raw_spo2: %d\n", spo2);
+#endif
                 i++;
                 get -= 6;
             }

@@ -6,6 +6,8 @@
  */
 
 
+#include <stdio.h>
+
 #include "main.h"
 #include "stm32l4xx_hal.h"
 #include "main.h"
@@ -122,4 +124,7 @@ void ADXL362_ReadXYZ(int16_t *xRaw, int16_t *yRaw, int16_t *zRaw) {
     *xRaw = (int16_t) ((rxBuf[1] << 8) | rxBuf[0]);
     *yRaw = (int16_t) ((rxBuf[3] << 8) | rxBuf[2]);
     *zRaw = (int16_t) ((rxBuf[5] << 8) | rxBuf[4]);
+#if RAW_ACCEL_DEBUG
+    printf("raw_x:%d raw_y:%d raw_z%d\n");
+#endif
 }
