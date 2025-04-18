@@ -61,10 +61,13 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BTN1_Pin GPIO_PIN_13
 #define BTN1_GPIO_Port GPIOC
+#define BTN1_EXTI_IRQn EXTI15_10_IRQn
 #define BTN2_Pin GPIO_PIN_14
 #define BTN2_GPIO_Port GPIOC
+#define BTN2_EXTI_IRQn EXTI15_10_IRQn
 #define BTN3_Pin GPIO_PIN_15
 #define BTN3_GPIO_Port GPIOC
+#define BTN3_EXTI_IRQn EXTI15_10_IRQn
 #define PWM_Haptic_Pin GPIO_PIN_0
 #define PWM_Haptic_GPIO_Port GPIOA
 #define LED1_Pin GPIO_PIN_4
@@ -77,8 +80,10 @@ void Error_Handler(void);
 #define BT_RST_GPIO_Port GPIOB
 #define ACC_INT1_Pin GPIO_PIN_10
 #define ACC_INT1_GPIO_Port GPIOB
+#define ACC_INT1_EXTI_IRQn EXTI15_10_IRQn
 #define ACC_INT2_Pin GPIO_PIN_11
 #define ACC_INT2_GPIO_Port GPIOB
+#define ACC_INT2_EXTI_IRQn EXTI15_10_IRQn
 #define CS_ACC_Pin GPIO_PIN_12
 #define CS_ACC_GPIO_Port GPIOB
 #define ACC_3_3V_Pin GPIO_PIN_6
@@ -97,6 +102,7 @@ void Error_Handler(void);
 #define Flashing_SWCLK_GPIO_Port GPIOA
 #define HR_INT_Pin GPIO_PIN_5
 #define HR_INT_GPIO_Port GPIOB
+#define HR_INT_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 
