@@ -17,19 +17,20 @@
 
 extern app_data_t g_app_data;
 extern tImage hr;
+extern tImage battery;
 
 void draw_biometric_data(void) {
     char date_str[10];
     char hr_str[10];
     char battery_str[10];
     char steps_str[10];
-    
+
     // date
     snprintf(date_str, sizeof(date_str), "%d / %d",
-             g_app_data.timeVal.month, 
+             g_app_data.timeVal.month,
              g_app_data.timeVal.day);
     draw_text(date_str, 120, 60, &montserrat_reg, COLOR_WHITE, 1.4, true);
-    
+
     // hr icon
     draw_image(&hr, 75, 170, COLOR_WHITE, 0.25, true);
     // hr value
@@ -43,13 +44,24 @@ void draw_biometric_data(void) {
 
 
     // battery value
+    draw_image(&battery, 165, 170, COLOR_WHITE, 1, true);
+    const int bmp_tl_x = 165 - battery.width  / 2;
+    const int bmp_tl_y = 170 - battery.height / 2;
+    const uint16_t INNER_X = bmp_tl_x + 1;
+    const uint16_t INNER_Y = bmp_tl_y + 3;
+    const uint16_t INNER_W = battery.width  - 2;
+    const uint16_t INNER_H = battery.height - 5;
+    uint16_t fill_h = (INNER_H * g_app_data.settings.battery_level) / 100;
+    if (fill_h && fill_h < 1) fill_h = 1;
+
+    draw_rectangle(INNER_X, INNER_Y+(INNER_H-fill_h),INNER_W,  fill_h,COLOR_WHITE);
     snprintf(battery_str, sizeof(battery_str), "%d%%", g_app_data.settings.battery_level);
     draw_text(battery_str, 165, 150, &montserrat_reg, COLOR_WHITE, 0.75, true);
     draw_arc(0, 359, 165, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
     float battery_val_angle = g_app_data.settings.battery_level / 100.0f;
     uint16_t battery_fill = (uint16_t)roundf(360.0f * battery_val_angle);
     draw_arc(0, battery_fill, 165, 155, PROGRESS_RADIUS, 0b100, false, 1);
-    
+
     // steps icon
     //draw_image(&steps, 120 - 9, 190 - 6, COLOR_WHITE);
     // steps value
@@ -67,8 +79,8 @@ void watchface_analog_draw(void) {
     draw_biometric_data();
     draw_watch_hands(g_app_data.timeVal.hour, g_app_data.timeVal.minute, g_app_data.timeVal.second);
     draw_center_dot();
-    screen_render_aa();
-    //screen_render();
+    //screen_render_aa();
+    screen_render();
 }
 
 // Draws the outer circle of the watch face.
