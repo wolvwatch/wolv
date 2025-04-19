@@ -8,6 +8,7 @@
 #include <math.h>
 
 extern app_data_t g_app_data;
+extern tImage battery;
 
 // Constants for the watchface
 #define INNER_RADIUS 110
@@ -161,6 +162,17 @@ static void draw_side_metrics(void) {
 
     // Draw battery %
     draw_text("BATT %", bottom_x+5, bottom_y+15, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_image(&battery, 165, 170, COLOR_WHITE, 1, true);
+    const int bmp_tl_x = 165 - battery.width  / 2;
+    const int bmp_tl_y = 170 - battery.height / 2;
+    const uint16_t INNER_X = bmp_tl_x + 1;
+    const uint16_t INNER_Y = bmp_tl_y + 3;
+    const uint16_t INNER_W = battery.width  - 2;
+    const uint16_t INNER_H = battery.height - 5;
+    uint16_t fill_h = (INNER_H * g_app_data.settings.battery_level) / 100;
+    if (fill_h && fill_h < 1) fill_h = 1;
+
+    draw_rectangle(INNER_X, INNER_Y+(INNER_H-fill_h),INNER_W,  fill_h,COLOR_WHITE);
 }
 
 

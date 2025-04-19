@@ -1,6 +1,3 @@
-//
-// Created by Ryan Kaelle on 4/11/25.
-//
 
 #ifndef DATA_H
 #define DATA_H

@@ -17,6 +17,7 @@
 
 extern app_data_t g_app_data;
 extern tImage hr;
+extern tImage battery;
 
 void draw_biometric_data(void) {
     char date_str[10];
@@ -43,6 +44,17 @@ void draw_biometric_data(void) {
 
 
     // battery value
+    draw_image(&battery, 165, 170, COLOR_WHITE, 1, true);
+    const int bmp_tl_x = 165 - battery.width  / 2;
+    const int bmp_tl_y = 170 - battery.height / 2;
+    const uint16_t INNER_X = bmp_tl_x + 1;
+    const uint16_t INNER_Y = bmp_tl_y + 3;
+    const uint16_t INNER_W = battery.width  - 2;
+    const uint16_t INNER_H = battery.height - 5;
+    uint16_t fill_h = (INNER_H * g_app_data.settings.battery_level) / 100;
+    if (fill_h && fill_h < 1) fill_h = 1;
+
+    draw_rectangle(INNER_X, INNER_Y+(INNER_H-fill_h),INNER_W,  fill_h,COLOR_WHITE);
     snprintf(battery_str, sizeof(battery_str), "%d%%", g_app_data.settings.battery_level);
     draw_text(battery_str, 165, 150, &montserrat_reg, COLOR_WHITE, 0.75, true);
     draw_arc(0, 359, 165, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
