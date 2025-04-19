@@ -9,11 +9,14 @@
 
 extern app_data_t g_app_data;
 extern tImage battery;
+extern tImage hr;
+extern tImage bluetoothImg;
+extern tImage logoFontless;
 
 // Constants for the watchface
 #define INNER_RADIUS 110
 #define BEZEL_WIDTH 4
-#define ACCENT_COLOR 0b100  // Blue color for accents
+#define ACCENT_COLOR COLOR_RED  // Blue color for accents
 
 // Helper function to draw the background and bezel
 static void draw_background_and_bezel(void) {
@@ -21,10 +24,9 @@ static void draw_background_and_bezel(void) {
     //draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_BLACK, true, 1);
 
     // Draw bezel ring
-    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, 0b111, false, BEZEL_WIDTH);
+    draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_WHITE, false, BEZEL_WIDTH);
 }
 
-// Helper function to draw day and date
 static void draw_day_and_date(void) {
     char dayStr[4];
     char dateStr[8];
@@ -40,10 +42,8 @@ static void draw_day_and_date(void) {
     snprintf(dateStr, sizeof(dateStr), "%02d / %02d",
              g_app_data.timeVal.month, g_app_data.timeVal.day);
 
-    // Draw day
-    draw_text(dayStr, CENTER_X, 40, &montserrat_reg, COLOR_WHITE, 0.85, true);
-    // Draw date
-    draw_text(dateStr, CENTER_X, 65, &montserrat_reg, COLOR_WHITE, 0.75, true);
+    draw_text(dayStr, CENTER_X, 30, &montserrat_reg, COLOR_WHITE, 0.75, true);
+    draw_text(dateStr, CENTER_X, 55, &montserrat_reg, COLOR_WHITE, 0.75, true);
 }
 
 // Helper function to draw the digital time
@@ -63,21 +63,21 @@ static void draw_digital_time(void) {
     char hourStr[3];
     snprintf(hourStr, sizeof(hourStr), "%02d",
              g_app_data.timeVal.hour % 12 ? g_app_data.timeVal.hour % 12 : 12);
-    draw_text(hourStr, CENTER_X - 55, CENTER_Y + 6, &ultra, COLOR_WHITE, 0.5, true);
+    draw_text(hourStr, CENTER_X - 55, CENTER_Y - 24, &ultra, COLOR_WHITE, 0.5, true);
 
     // colon
-    draw_text(":", CENTER_X-15, CENTER_Y + 6, &ultra, COLOR_WHITE, 0.5, true);
+    draw_text(":", CENTER_X-15, CENTER_Y - 24, &ultra, COLOR_WHITE, 0.5, true);
 
     // minutes
     char minStr[3];
     snprintf(minStr, sizeof(minStr), "%02d", g_app_data.timeVal.minute);
-    draw_text(minStr, CENTER_X + 25, CENTER_Y + 6, &ultra, ACCENT_COLOR, 0.5, true);
+    draw_text(minStr, CENTER_X + 25, CENTER_Y - 24, &ultra, ACCENT_COLOR, 0.5, true);
 
     // AM/PM
-    draw_text(ampmStr, CENTER_X + 75, CENTER_Y - 5, &montserrat_reg, ACCENT_COLOR, 0.8, true);
+    draw_text(ampmStr, CENTER_X + 75, CENTER_Y - 35, &montserrat_reg, ACCENT_COLOR, 0.8, true);
 
     // seconds
-    draw_text(secStr, CENTER_X + 75, CENTER_Y + 15, &montserrat_reg, COLOR_WHITE, 0.8, true);
+    draw_text(secStr, CENTER_X + 75, CENTER_Y - 15, &montserrat_reg, COLOR_WHITE, 0.8, true);
 }
 
 // Helper function to draw gauge arcs
@@ -101,13 +101,10 @@ static void draw_gauge_arcs(void) {
         uint16_t a0 = (uint16_t)floorf(a0f + 0.5f);
         uint16_t a1 = (uint16_t)floorf(a1f + 0.5f);
 
-        color_t col = (i < filled)? ACCENT_COLOR:0b111;
+        color_t col = (i < filled)? ACCENT_COLOR:COLOR_WHITE;
 
         draw_arc(a0, a1,CENTER_X, CENTER_Y,INNER_RADIUS,col,false,  4);     // stroke thickness
     }
-    // draw_arc(45, 105, CENTER_X, CENTER_Y, INNER_RADIUS, 0b111, false, 4); // Background
-    // uint16_t battery_angle = (uint16_t)(60 * g_app_data.settings.battery_level / 100.0f);
-    // draw_arc(45, 45 + battery_angle, CENTER_X, CENTER_Y, INNER_RADIUS, ACCENT_COLOR, false, 4);
 
     // Battery label
     float bat_angle = 0.0f * M_PI / 180.0f;
@@ -115,13 +112,13 @@ static void draw_gauge_arcs(void) {
     int bat_y = CENTER_Y - (int)(INNER_RADIUS * sinf(bat_angle));
 
     // steps guage
-    draw_arc(165, 225, CENTER_X, CENTER_Y, INNER_RADIUS, 0b111, false, 4); // Background
+    draw_arc(165, 225, CENTER_X, CENTER_Y, INNER_RADIUS, COLOR_WHITE, false, 4); // Background
     uint16_t steps_angle = (g_app_data.biometrics.steps*(225-165)) / 10000.0f;
     draw_arc(165, 165 + steps_angle, CENTER_X, CENTER_Y, INNER_RADIUS, ACCENT_COLOR, false, 4);
 
 
     // hr gauge
-    draw_arc(315, 375, CENTER_X, CENTER_Y, INNER_RADIUS, 0b111, false, 4); // Background
+    draw_arc(315, 375, CENTER_X, CENTER_Y, INNER_RADIUS, COLOR_WHITE, false, 4); // Background
     uint16_t hr_percentage = (uint16_t)((g_app_data.biometrics.heart_rate * 100) / 200);
     if (hr_percentage > 100) hr_percentage = 100;
     uint16_t hr_angle = (uint16_t)(60 * hr_percentage / 100.0f);
@@ -153,18 +150,19 @@ static void draw_side_metrics(void) {
 
 
     // Draw steps
-    draw_text(stepsStr, left_x-10, left_y, &montserrat_reg, COLOR_WHITE, 0.7, true);
-    draw_text("Steps", left_x-10, left_y+15, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_text(stepsStr, left_x-26, left_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_text("Steps", left_x-20, left_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
 
     // Draw heart rate
-    draw_text(hrStr, right_x+10, right_y, &montserrat_reg, COLOR_WHITE, 0.7, true);
-    draw_text("HR", right_x+10, right_y+15, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_text(hrStr, right_x+37, right_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_image(&hr, right_x+33, right_y+95, COLOR_WHITE, 0.2, true);
+    //draw_text("HR", right_x+25, right_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
 
     // Draw battery %
-    draw_text("BATT %", bottom_x+5, bottom_y+15, &montserrat_reg, COLOR_WHITE, 0.5, true);
-    draw_image(&battery, 165, 170, COLOR_WHITE, 1, true);
-    const int bmp_tl_x = 165 - battery.width  / 2;
-    const int bmp_tl_y = 170 - battery.height / 2;
+    draw_text("%", bottom_x-75, bottom_y+13, &montserrat_reg, COLOR_WHITE, 0.55, true);
+    draw_image(&battery, bottom_x-88, bottom_y+13, COLOR_WHITE, 1, true);
+    const int bmp_tl_x = bottom_x-88 - battery.width  / 2;
+    const int bmp_tl_y = bottom_y+15 - battery.height / 2;
     const uint16_t INNER_X = bmp_tl_x + 1;
     const uint16_t INNER_Y = bmp_tl_y + 3;
     const uint16_t INNER_W = battery.width  - 2;
@@ -175,12 +173,33 @@ static void draw_side_metrics(void) {
     draw_rectangle(INNER_X, INNER_Y+(INNER_H-fill_h),INNER_W,  fill_h,COLOR_WHITE);
 }
 
+static void draw_middle_icons(void) {
+    color_t color;
+
+    if (g_app_data.settings.bluetooth) {
+        color = COLOR_GREEN;
+    } else {
+        color = COLOR_WHITE;
+    }
+
+    draw_image(&bluetoothImg,CENTER_X-40, CENTER_Y+20, color,0.4f,true);
+    draw_image(&logoFontless, CENTER_X, CENTER_Y+40, color,0.5f,true);
+}
+
 
 void watchface_digital_draw(void) {
+    //screen_clear(0x0000);
+    draw_radial_gradient(
+      CENTER_X, CENTER_Y,
+      WATCH_RADIUS,
+      COLOR_LIGHT_GRAY,
+      0x0000
+    );
     draw_background_and_bezel();
     draw_day_and_date();
     draw_digital_time();
     draw_gauge_arcs();
     draw_side_metrics();
+    draw_middle_icons();
     screen_render();
 }

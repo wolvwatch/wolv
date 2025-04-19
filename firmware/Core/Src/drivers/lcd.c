@@ -14,8 +14,19 @@
 #include "../Inc/drivers/lcd.h"
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include "../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
 #include "../Inc/main.h"
+static uint8_t luma_prev[240];
+static uint8_t luma_cur [240];
+static uint8_t luma_next[240];
+
+#define EDGE_THRESHOLD_MIN   9     // tweak: ‑> lower = softer, higher = sharper
+#define EDGE_THRESHOLD_MAX   15    // stops over‑blurring of very sharp edges
+#define BLEND_FRAC_SHIFT     4     // 4‑bit fixed‑point for blend weight [0…16]
+
+
 
 #define SET_RST_HIGH HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_SET)
 #define SET_RST_LOW HAL_GPIO_WritePin(SCRN_RST_GPIO_Port, SCRN_RST_Pin, GPIO_PIN_RESET)
@@ -23,6 +34,7 @@
 #define SET_CS_LOW HAL_GPIO_WritePin(SCRN_CS_GPIO_Port, SCRN_CS_Pin, GPIO_PIN_RESET)
 #define SET_DC_HIGH HAL_GPIO_WritePin(SCRN_DC_GPIO_Port, SCRN_DC_Pin, GPIO_PIN_SET)
 #define SET_DC_LOW HAL_GPIO_WritePin(SCRN_DC_GPIO_Port, SCRN_DC_Pin, GPIO_PIN_RESET)
+
 
 extern SPI_HandleTypeDef hspi3;
 static uint16_t pixels[LCD_1IN28_HEIGHT][LCD_1IN28_WIDTH];
@@ -63,6 +75,7 @@ static void screen_set_windows(uint8_t Xstart, uint8_t Ystart, uint8_t Xend, uin
 }
 
 void screen_render() {
+	//fxaa_pass(pixels);
 	screen_set_windows(0, 0, 239, 239);
 	SET_DC_HIGH;
 	SET_CS_LOW;
@@ -260,73 +273,103 @@ void screen_init() {
 	LCD_1IN28_InitReg();
 	set_brightness(100);
 }
-/**
-static void apply_fast_aa(const uint8_t *in_buf,
-						  uint8_t       *out_buf,
-						  int            width,
-						  int            height)
-{
-	/* first: copy the whole frame.  Faster than per‑pixel border handling and
-	   guarantees we do not leave stale data in out_buf.
-	memcpy(out_buf, in_buf, (width * height * 3) / 8);
-
-	for (int y = 1; y < height - 1; ++y) {
-		for (int x = 1; x < width  - 1; ++x) {
-
-			int r_cnt = 0, g_cnt = 0, b_cnt = 0;
-
-			/* count the ON bits for the 3×3 neighbourhood
-			for (int dy = -1; dy <= 1; ++dy) {
-				for (int dx = -1; dx <= 1; ++dx) {
-					uint8_t c = getPixel(in_buf, width, x + dx, y + dy);
-					r_cnt += (c >> 2) & 1;
-					g_cnt += (c >> 1) & 1;
-					b_cnt +=  c       & 1;
-				}
-			}
-
-			/* majority vote (≥ 5 of 9) – tweak threshold to taste
-			uint8_t r = (r_cnt >= 5);
-			uint8_t g = (g_cnt >= 5);
-			uint8_t b = (b_cnt >= 5);
-
-			/* re‑pack into RGB111
-			uint8_t packed = (r << 2) | (g << 1) | b;
-			setPixel(out_buf, width, x, y, packed);
-		}
-	}
-}
-
-void screen_render_aa() {
-	apply_fast_aa(pixels, aa_buffer, 240, 240);
-
-	screen_set_windows(0, 0, 239, 239);
-	SET_DC_HIGH;
-	SET_CS_LOW;
-	for (uint16_t j = 0; j < 240; j++) {
-		for (uint16_t i = 0; i < 240; i++) {
-			uint16_t pixel = rgb111_to_rgb565(
-								getPixel(aa_buffer, 240, i, j)
-							  );
-			HAL_SPI_Transmit(&hspi3, (uint8_t*)&pixel, 2, HAL_MAX_DELAY);
-		}
-	}
-	SET_DC_LOW;
-	SET_CS_HIGH;
-}*/
 
 void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color) {
 	pixels[y][x] = color;
 }
 
 void screen_clear(uint16_t color) {
-	for (int y = 0; y < LCD_1IN28_HEIGHT; y++) {
-		for (int x = 0; x < LCD_1IN28_WIDTH; x++) {
-			screen_set_pixel(x, y, color);
-		}
+	uint16_t *p = &pixels[0][0];
+	size_t count = LCD_1IN28_WIDTH * LCD_1IN28_HEIGHT;
+	for (size_t i = 0; i < count; i++) {
+		p[i] = color;
 	}
 }
 
 void set_brightness(uint8_t brightness) {
 	TIM1->CCR1 = brightness * 65535/100;
+}
+
+static inline uint16_t blend_channel(uint16_t colC,
+									 uint16_t colP,
+									 uint16_t colN,
+									 uint8_t  w,
+									 uint16_t mask,
+									 uint8_t  shift)
+{
+	uint16_t c = (colC >> shift) & mask;
+	uint16_t p = (colP >> shift) & mask;
+	uint16_t n = (colN >> shift) & mask;
+
+	uint16_t avg = (p + n) >> 1;                       // arithmetic mean
+	uint16_t mix = (((16 - w) * c + w * avg) + 8) >> 4; // round‑correct
+
+	return (mix > mask) ? mask : mix;
+}
+
+static inline uint8_t fast_luma(uint16_t rgb565)
+{
+	uint8_t r = (rgb565 >> 11) * 255 / 31;     // 5 bits → 0‑255
+	uint8_t g = ((rgb565 >> 5) & 0x3F) * 255 / 63; // 6 bits
+	uint8_t b = (rgb565 & 0x1F) * 255 / 31;
+
+	/*  77  = 0.299*256, 150 = 0.587*256, 29 = 0.114*256  */
+	return (uint8_t)((77*r + 150*g + 29*b) >> 8);
+}
+
+
+void fxaa_pass(uint16_t buf[240][240])
+{
+    for (uint16_t x = 0; x < 240; ++x) {
+        luma_cur [x] = fast_luma(buf[0][x]);
+        luma_next[x] = fast_luma(buf[1][x]);
+    }
+
+    for (uint16_t y = 1; y < 239; ++y) {
+        memcpy(luma_prev, luma_cur,  240);
+        memcpy(luma_cur,  luma_next, 240);
+
+        for (uint16_t x = 0; x < 240; ++x)
+            luma_next[x] = fast_luma(buf[y+1][x]);
+
+        for (uint16_t x = 1; x < 239; ++x) {
+
+            uint8_t l00 = luma_prev[x-1], l01 = luma_prev[x], l02 = luma_prev[x+1];
+            uint8_t l10 = luma_cur [x-1], l11 = luma_cur [x], l12 = luma_cur [x+1];
+            uint8_t l20 = luma_next[x-1], l21 = luma_next[x], l22 = luma_next[x+1];
+
+            uint8_t l_min = l00; uint8_t l_max = l00;
+#define UPD(v) do{ if((v)<l_min)l_min=(v); if((v)>l_max)l_max=(v);}while(0)
+            UPD(l01); UPD(l02); UPD(l10); UPD(l11); UPD(l12); UPD(l20); UPD(l21); UPD(l22);
+#undef UPD
+            uint8_t contrast = l_max - l_min;
+            if (contrast < EDGE_THRESHOLD_MIN) continue;            // skip low‑contrast
+
+            int16_t gx = (l02 + (l12<<1) + l22) - (l00 + (l10<<1) + l20);
+            int16_t gy = (l20 + (l21<<1) + l22) - (l00 + (l01<<1) + l02);
+
+            bool horiz = abs(gx) >= abs(gy);
+
+            uint8_t l_pos = horiz ? l12 : l21;
+            uint8_t l_neg = horiz ? l10 : l01;
+
+            uint8_t dif = abs(l_pos - l_neg);
+            if (dif < EDGE_THRESHOLD_MIN) continue;
+            if (dif > EDGE_THRESHOLD_MAX) dif = EDGE_THRESHOLD_MAX;
+
+            uint8_t w = (dif << BLEND_FRAC_SHIFT) / contrast;  // 0…16
+
+            uint16_t colC = buf[y][x];
+            uint16_t colP = horiz ? buf[y-1][x] : buf[y][x-1];
+            uint16_t colN = horiz ? buf[y+1][x] : buf[y][x+1];
+
+        	uint16_t r_out = blend_channel(colC, colP, colN, w, 0x1F, 11);  // R5
+        	uint16_t g_out = blend_channel(colC, colP, colN, w, 0x3F,  5);  // G6
+        	uint16_t b_out = blend_channel(colC, colP, colN, w, 0x1F,  0);  // B5
+
+        	buf[y][x] = (r_out << 11) | (g_out << 5) | b_out;
+
+            buf[y][x] = (r_out << 11) | (g_out << 5) | b_out;
+        }
+    }
 }

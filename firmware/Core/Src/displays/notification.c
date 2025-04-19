@@ -1,8 +1,12 @@
 #include "displays/notification.h"
+
+#include "stm32l4xx_hal.h"
 #include "drivers/lcd.h"
 #include "displays/data.h"
+#include "drivers/haptic.h"
 
 void display_notification(const char* message) {
+    screen_clear(0x0000);
     uint16_t start_x = 30;
     uint16_t start_y = 50;
     uint16_t width = 180;
@@ -29,4 +33,6 @@ void display_notification(const char* message) {
     draw_text(message, CENTER_X, CENTER_Y, &montserrat_reg, 0b000, 1.0, true);
     //screen_render();
     screen_render();
+    Haptic_Buzz(1000);
+    HAL_Delay(1000);
 }

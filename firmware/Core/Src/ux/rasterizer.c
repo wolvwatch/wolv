@@ -15,18 +15,15 @@ static inline void put_pixel_safe(int x, int y, color_t color) {
     }
 }
 
-// Xiaolin Wu's line algorithm implementation
 static void draw_line_aa(int x0, int y0, int x1, int y1, color_t color) {
     int steep = abs(y1 - y0) > abs(x1 - x0);
     
     if (steep) {
-        // Swap x and y coordinates
         int temp = x0; x0 = y0; y0 = temp;
         temp = x1; x1 = y1; y1 = temp;
     }
     
     if (x0 > x1) {
-        // Swap points to ensure left to right drawing
         int temp = x0; x0 = x1; x1 = temp;
         temp = y0; y0 = y1; y1 = temp;
     }
@@ -35,7 +32,6 @@ static void draw_line_aa(int x0, int y0, int x1, int y1, color_t color) {
     int dy = y1 - y0;
     float gradient = dx == 0 ? 1.0f : (float)dy / (float)dx;
     
-    // Handle first endpoint
     int xend = roundf(x0);
     float yend = y0 + gradient * (xend - x0);
     float xgap = 1.0f - (x0 + 0.5f - floorf(x0 + 0.5f));
@@ -52,7 +48,6 @@ static void draw_line_aa(int x0, int y0, int x1, int y1, color_t color) {
     
     float intery = yend + gradient;
     
-    // Handle second endpoint
     xend = roundf(x1);
     yend = y1 + gradient * (xend - x1);
     xgap = x1 + 0.5f - floorf(x1 + 0.5f);
@@ -67,7 +62,6 @@ static void draw_line_aa(int x0, int y0, int x1, int y1, color_t color) {
         put_pixel_safe(xpxl2, ypxl2 + 1, color);
     }
     
-    // Main loop
     for (int x = xpxl1 + 1; x < xpxl2; x++) {
         if (steep) {
             put_pixel_safe(floorf(intery), x, color);
@@ -85,10 +79,8 @@ void draw_line(uint16_t x0, uint16_t y0,
                color_t color,
                uint16_t stroke) {
     if (stroke == 1) {
-        // Use anti-aliased line drawing for single-pixel lines
         draw_line_aa(x0, y0, x1, y1, color);
     } else {
-        // For thicker lines, use the existing implementation
         int dx = (int) x1 - (int) x0;
         int dy = (int) y1 - (int) y0;
 
@@ -126,40 +118,31 @@ static void draw_arc_aa(uint16_t startAngle,
                        uint16_t cy,
                        uint16_t radius,
                        color_t color) {
-    // Convert angles to radians
     float startRad = (float)startAngle * M_PI / 180.0f;
     float endRad = (float)endAngle * M_PI / 180.0f;
     
-    // Ensure end angle is greater than start angle
     if (endRad < startRad) {
         endRad += 2.0f * M_PI;
     }
     
-    // Calculate step size based on radius (smaller step for larger radius)
     float step = 1.0f / (float)radius;
     if (step > 0.1f) step = 0.1f; // Maximum step size
     
     for (float angle = startRad; angle <= endRad; angle += step) {
-        // Calculate exact point on circle
         float x = (float)cx + (float)radius * cosf(angle);
         float y = (float)cy + (float)radius * sinf(angle);
         
-        // Get fractional parts for anti-aliasing
         float xf = x - floorf(x);
         float yf = y - floorf(y);
         
-        // Calculate intensities for the four surrounding pixels
         float intensity1 = (1.0f - xf) * (1.0f - yf);
         float intensity2 = xf * (1.0f - yf);
         float intensity3 = (1.0f - xf) * yf;
         float intensity4 = xf * yf;
         
-        // Draw the four pixels with appropriate intensities
         int x0 = (int)floorf(x);
         int y0 = (int)floorf(y);
         
-        // We'll use the same color for all pixels, but in a real implementation
-        // you would blend with the background color based on intensity
         put_pixel_safe(x0, y0, color);
         put_pixel_safe(x0 + 1, y0, color);
         put_pixel_safe(x0, y0 + 1, color);
@@ -180,7 +163,6 @@ void draw_arc(uint16_t startAngle,
     if (endAngle < startAngle) {
         endAngle += 360;
     }
-    // For thicker lines or filled arcs, use the existing implementation
     float step = 1.0f;
     float degToRad = (float) M_PI / 180.0f;
     int xPrev = cx + (int) (radius * cosf(startAngle * degToRad) + 0.5f);
@@ -222,31 +204,25 @@ int get_char_index(const char *c, const tFont *font) {
     return -1;
 }
 
-// Anti-aliased character drawing implementation
 static void draw_char_aa(const tChar *c, uint8_t x, uint8_t y, color_t color, float scale) {
     const tImage *img = c->image;
     int bytes_per_row = (img->width + 7) / 8;
     const uint8_t *bitmap = img->data;
 
-    // Calculate scaled dimensions
     float scaled_width = img->width * scale;
     float scaled_height = img->height * scale;
 
     for (float row = 0; row < scaled_height; row += 1.0f) {
         for (float col = 0; col < scaled_width; col += 1.0f) {
-            // Map scaled coordinates back to original bitmap
             float orig_row = row / scale;
             float orig_col = col / scale;
             
-            // Get the four surrounding pixels in the original bitmap
             int orig_row_int = (int)orig_row;
             int orig_col_int = (int)orig_col;
             
-            // Calculate fractional parts for interpolation
             float row_frac = orig_row - orig_row_int;
             float col_frac = orig_col - orig_col_int;
             
-            // Get the four surrounding pixels' values
             float intensities[4] = {0.0f, 0.0f, 0.0f, 0.0f};
             
             for (int i = 0; i < 2; i++) {
@@ -277,8 +253,6 @@ static void draw_char_aa(const tChar *c, uint8_t x, uint8_t y, color_t color, fl
                 
                 if (pixel_x >= 0 && pixel_x < LCD_1IN28_WIDTH &&
                     pixel_y >= 0 && pixel_y < LCD_1IN28_HEIGHT) {
-                    // For now, we'll use the same color with full intensity
-                    // In a more advanced implementation, you could blend with background
                     screen_set_pixel(pixel_x, pixel_y, color);
                 }
             }
@@ -288,7 +262,6 @@ static void draw_char_aa(const tChar *c, uint8_t x, uint8_t y, color_t color, fl
 
 void draw_char(const tChar *c, uint8_t x, uint8_t y, color_t color, float scale) {
     if (scale == 1.0f) {
-        // Use original implementation for scale 1.0
         const tImage *img = c->image;
         int bytes_per_row = (img->width + 7) / 8;
         const uint8_t *bitmap = img->data;
@@ -307,7 +280,7 @@ void draw_char(const tChar *c, uint8_t x, uint8_t y, color_t color, float scale)
             }
         }
     } else {
-        // Use anti-aliased version for scaled text
+        // anti-aliased version for scaled text
         draw_char_aa(c, x, y, color, scale);
     }
 }
@@ -399,6 +372,37 @@ void draw_image(const tImage *image,
                 put_pixel_safe(start_x + dst_col,
                                start_y + dst_row,
                                color);
+            }
+        }
+    }
+}
+
+
+
+
+void draw_radial_gradient(uint16_t cx, uint16_t cy, uint16_t radius,
+                          color_t inner_color, color_t outer_color) {
+    for (int16_t dy = -radius; dy <= radius; dy++) {
+        for (int16_t dx = -radius; dx <= radius; dx++) {
+            int16_t x = cx + dx;
+            int16_t y = cy + dy;
+            float dist = sqrtf((float)(dx*dx + dy*dy));
+            if (dist <= radius) {
+                float t = dist / (float)radius;
+
+                uint8_t r1 = (inner_color >> 11) & 0x1F,
+                        g1 = (inner_color >>  5) & 0x3F,
+                        b1 =  inner_color        & 0x1F;
+                uint8_t r2 = (outer_color >> 11) & 0x1F,
+                        g2 = (outer_color >>  5) & 0x3F,
+                        b2 =  outer_color        & 0x1F;
+
+                uint8_t r = r1 + (uint8_t)((r2 - r1) * t);
+                uint8_t g = g1 + (uint8_t)((g2 - g1) * t);
+                uint8_t b = b1 + (uint8_t)((b2 - b1) * t);
+
+                color_t c = (r << 11) | (g << 5) | b;
+                put_pixel_safe(x, y, c);
             }
         }
     }

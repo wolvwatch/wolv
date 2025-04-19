@@ -75,4 +75,7 @@ void draw_image(const tImage *image,
                 float scale,
                 bool center);
 
+void draw_radial_gradient(uint16_t cx, uint16_t cy, uint16_t radius,
+                          color_t inner_color, color_t outer_color);
+
 #endif // RASTERIZER_H

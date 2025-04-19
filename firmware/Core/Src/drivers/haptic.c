@@ -18,6 +18,6 @@ void Haptic_Stop(void)
 void Haptic_Buzz(uint32_t duration_ms)
 {
     Haptic_Start();
-    HAL_Delay(200);
+    HAL_Delay(duration_ms);
     Haptic_Stop();
 }

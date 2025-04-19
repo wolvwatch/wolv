@@ -32,4 +32,7 @@ void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color);
 void set_brightness(uint8_t brightness);
 
 void screen_render_aa();
+
+void fxaa_pass(uint16_t buf[240][240]);
+
 #endif

@@ -24,12 +24,28 @@ void draw_biometric_data(void) {
     char hr_str[10];
     char battery_str[10];
     char steps_str[10];
+    char dayStr[4];
+    char dateStr[8];
+
+    // day of week
+    int dayOfWeek = (g_app_data.timeVal.day + 2 * g_app_data.timeVal.month +
+                    3 * (g_app_data.timeVal.month + 1) / 5 + g_app_data.timeVal.year +
+                    g_app_data.timeVal.year / 4 - g_app_data.timeVal.year / 100 +
+                    g_app_data.timeVal.year / 400) % 7;
+
+    const char* days[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+    snprintf(dayStr, sizeof(dayStr), "%s", days[dayOfWeek]);
+    snprintf(dateStr, sizeof(dateStr), "%02d / %02d",
+             g_app_data.timeVal.month, g_app_data.timeVal.day);
+
+    // day
+    draw_text(dayStr, CENTER_X, 90, &montserrat_reg, COLOR_WHITE, 0.75, true);
 
     // date
     snprintf(date_str, sizeof(date_str), "%d / %d",
              g_app_data.timeVal.month,
              g_app_data.timeVal.day);
-    draw_text(date_str, 120, 60, &montserrat_reg, COLOR_WHITE, 1.4, true);
+    draw_text(date_str, 120, 55, &montserrat_reg, COLOR_WHITE, 1.4, true);
 
     // hr icon
     draw_image(&hr, 75, 170, COLOR_WHITE, 0.25, true);
@@ -39,7 +55,7 @@ void draw_biometric_data(void) {
     draw_arc(0, 359, 75, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
     float heart_arc_angle = g_app_data.biometrics.heart_rate / 200.0f;
     uint16_t filled = (uint16_t)roundf(360.0f * heart_arc_angle);
-    draw_arc(180, 180+filled, 75, 155, PROGRESS_RADIUS, 0b100, false, 2);
+    draw_arc(180, 180+filled, 75, 155, PROGRESS_RADIUS, COLOR_RED, false, 2);
 
 
 
@@ -60,20 +76,28 @@ void draw_biometric_data(void) {
     draw_arc(0, 359, 165, 155, PROGRESS_RADIUS, COLOR_WHITE, false, 1);
     float battery_val_angle = g_app_data.settings.battery_level / 100.0f;
     uint16_t battery_fill = (uint16_t)roundf(360.0f * battery_val_angle);
-    draw_arc(0, battery_fill, 165, 155, PROGRESS_RADIUS, 0b100, false, 1);
+    draw_arc(0, battery_fill, 165, 155, PROGRESS_RADIUS, COLOR_RED, false, 1);
 
     // steps icon
     //draw_image(&steps, 120 - 9, 190 - 6, COLOR_WHITE);
     // steps value
     snprintf(steps_str, sizeof(steps_str), "%d", g_app_data.biometrics.steps);
     draw_text(steps_str, 120, 195, &montserrat_reg, COLOR_WHITE, 0.65, true);
-    draw_arc(180, 360, 120, 205, PROGRESS_RADIUS, 0b100, false, 2); // Light gray background
+    draw_arc(180, 360, 120, 205, PROGRESS_RADIUS, COLOR_RED, false, 2); // Light gray background
     uint16_t steps_arc_angle = (g_app_data.biometrics.steps * 180) / GOAL_STEPS;
     if (steps_arc_angle > 180) steps_arc_angle = 180;
     draw_arc(180, 180 + steps_arc_angle, 120, 205, PROGRESS_RADIUS, COLOR_WHITE, false, 2);
 }
 
+
+
 void watchface_analog_draw(void) {
+    draw_radial_gradient(
+      CENTER_X, CENTER_Y,
+      WATCH_RADIUS,
+      COLOR_LIGHT_GRAY,
+      0x0000     // outer: black
+    );
     draw_watch_face();
     draw_hour_markers();
     draw_biometric_data();
@@ -83,14 +107,13 @@ void watchface_analog_draw(void) {
     screen_render();
 }
 
-// Draws the outer circle of the watch face.
 void draw_watch_face(void) {
     draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_WHITE, false, 1);
 }
 
+
 void draw_hour_markers(void) {
     for (int i = 0; i < 12; i++) {
-        // Each marker is 30 degrees apart.
         float angle = i * 30.0f;
         float rad = angle * (M_PI / 180.0f);
 
