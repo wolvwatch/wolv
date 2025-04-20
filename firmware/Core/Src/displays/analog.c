@@ -18,6 +18,7 @@
 extern app_data_t g_app_data;
 extern tImage hr;
 extern tImage battery;
+extern tImage stepsImg;
 
 void draw_biometric_data(void) {
     char date_str[10];
@@ -83,6 +84,7 @@ void draw_biometric_data(void) {
     // steps value
     snprintf(steps_str, sizeof(steps_str), "%d", g_app_data.biometrics.steps);
     draw_text(steps_str, 120, 195, &montserrat_reg, COLOR_WHITE, 0.65, true);
+    draw_image(&stepsImg, 120, 215, COLOR_WHITE, 0.3, true);
     draw_arc(180, 360, 120, 205, PROGRESS_RADIUS, COLOR_RED, false, 2); // Light gray background
     uint16_t steps_arc_angle = (g_app_data.biometrics.steps * 180) / GOAL_STEPS;
     if (steps_arc_angle > 180) steps_arc_angle = 180;

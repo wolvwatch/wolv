@@ -12,6 +12,7 @@ extern tImage battery;
 extern tImage hr;
 extern tImage bluetoothImg;
 extern tImage logoFontless;
+extern tImage stepsImg;
 
 // Constants for the watchface
 #define INNER_RADIUS 110
@@ -151,7 +152,8 @@ static void draw_side_metrics(void) {
 
     // Draw steps
     draw_text(stepsStr, left_x-26, left_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
-    draw_text("Steps", left_x-20, left_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_image(&stepsImg, left_x-25, left_y+95, COLOR_WHITE, 0.3, true);
+    //draw_text("Steps", left_x-20, left_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
 
     // Draw heart rate
     draw_text(hrStr, right_x+37, right_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
@@ -182,7 +184,8 @@ static void draw_middle_icons(void) {
         color = COLOR_WHITE;
     }
 
-    draw_image(&bluetoothImg,CENTER_X-40, CENTER_Y+20, color,0.4f,true);
+    if (g_app_data.settings.bluetooth)
+    {draw_image(&bluetoothImg,CENTER_X-40, CENTER_Y+20, COLOR_WHITE,0.5f,true);}
     draw_image(&logoFontless, CENTER_X, CENTER_Y+40, color,0.5f,true);
 }
 
