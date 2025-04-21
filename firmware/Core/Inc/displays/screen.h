@@ -5,7 +5,17 @@
 #include "stdbool.h"
 
 typedef enum {
-  WATCHFACE_DIGITAL, WATCHFACE_ANALOG
+  SCREEN_LAUNCHER = 0, // not done
+  WATCHFACE_DIGITAL, // done
+  WATCHFACE_ANALOG, // done
+  SCREEN_WEATHER, // not done
+  SCREEN_GAMES, // flappy bird
+  SCREEN_TIMER, // done
+  SCREEN_MEDCARD, //not done
+  SCREEN_METRONOME, // not done
+  SCREEN_SYSMON, // done
+  SCREEN_FLASHLIGHT, // done
+  SCREEN_COUNT // not done
 } screen_t;
 
 typedef struct {
