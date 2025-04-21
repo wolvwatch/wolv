@@ -47,7 +47,6 @@ void timer_update(void) {
 }
 
 void timer_draw(void) {
-  screen_clear();
 
   char buf[16];
   if (state == TMR_SETTING) {

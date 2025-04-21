@@ -41,7 +41,7 @@ void sysmon_init(void) {
 
     // ADC1 clocks & TS/VBAT enable
     __HAL_RCC_ADC_CLK_ENABLE();
-    ADC1_COMMON->CCR |= ADC_CCR_TSEN | ADC_CCR_VBATEN;
+    ADC123_COMMON->CCR |= ADC_CCR_TSEN | ADC_CCR_VBATEN;
     HAL_ADC_Init(&hadc1);
     //MX_ADC1_Init();
 
@@ -109,7 +109,6 @@ static void draw_cpu_ring(void) {
 }
 
 void sysmon_draw(void) {
-    screen_clear();
 
     char hdr[24];
     snprintf(hdr, sizeof(hdr), "STM32L4 %lu MHz", sysclkMHz);

@@ -75,16 +75,13 @@ void flappy_update(void) {
 }
 
 void flappy_draw(void) {
-    HAL_Delay(1000);
-    screen_clear();
-
     // ground
     draw_rectangle(0, 0, 240, 240, COLOR_BLUE);
     draw_rectangle(0, GROUND_Y, 240, 240-GROUND_Y, COLOR_GREEN);
 
     // pipes
-    draw_rectangle(pipeX, 0, PIPE_WIDTH, gapY - GAP_HEIGHT/2, 0b010);
-    draw_rectangle(pipeX, gapY + GAP_HEIGHT/2, PIPE_WIDTH, GROUND_Y - (gapY + GAP_HEIGHT/2), 0b010);
+    draw_rectangle(pipeX, 0, PIPE_WIDTH, gapY - GAP_HEIGHT/2, COLOR_RED);
+    draw_rectangle(pipeX, gapY + GAP_HEIGHT/2, PIPE_WIDTH, GROUND_Y - (gapY + GAP_HEIGHT/2), COLOR_BLUE);
 
     const int tail_height = 12;
     const int max_width = 7;
@@ -125,8 +122,6 @@ void flappy_draw(void) {
         draw_text("GAME OVER", CENTER_X, CENTER_Y, &montserrat_reg, COLOR_WHITE, 0.7f, true);
         draw_text("SEL to restart", CENTER_X, CENTER_Y+20, &montserrat_reg, COLOR_WHITE, 0.5f, true);
     }
-
-    screen_render();
 }
 
 // Tap to flap or restart

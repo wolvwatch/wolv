@@ -29,7 +29,11 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+//#include "stm32l4xx_hal_rtc.h"
+#include "main.h"
+#include "stm32l4xx_hal.h"
 
+extern RTC_HandleTypeDef hrtc;
 
 /* Variables */
 extern int __io_putchar(int ch) __attribute__((weak));
@@ -173,4 +177,40 @@ int _execve(char *name, char **argv, char **env)
   (void)env;
   errno = ENOMEM;
   return -1;
+}
+
+
+static time_t rtc_to_epoch(void) {
+  RTC_TimeTypeDef sTime;
+  RTC_DateTypeDef sDate;
+  HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+  struct tm tm = {
+    .tm_year = sDate.Year + 100,  // RTC year offset from 2000 → since 1900
+    .tm_mon  = sDate.Month - 1,
+    .tm_mday = sDate.Date,
+    .tm_hour = sTime.Hours,
+    .tm_min  = sTime.Minutes,
+    .tm_sec  = sTime.Seconds,
+    .tm_isdst= 0,
+};
+  return mktime(&tm);
+}
+
+int _gettimeofday(struct timeval *tp, void *tzvp) {
+  (void)tzvp;
+  if (!tp) {
+    errno = EINVAL;
+    return -1;
+  }
+  time_t secs = rtc_to_epoch();
+  tp->tv_sec  = secs;
+  tp->tv_usec = 0;
+  return 0;
+}
+
+int _gettimeofday_r(void *reent, struct timeval *tp, void *tzvp) {
+  (void)reent;
+  return _gettimeofday(tp, tzvp);
 }

@@ -275,7 +275,7 @@ void screen_init() {
 }
 
 void screen_set_pixel(uint16_t x, uint16_t y, uint16_t color) {
-	pixels[y][x] = color;
+	pixels[y][x] = ((color >> 8) & 0xFF) | ((color << 8) && 0xFF00);
 }
 
 void screen_clear(uint16_t color) {
