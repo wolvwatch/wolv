@@ -345,7 +345,7 @@ void draw_image(const tImage *image,
     uint16_t src_w = image->width;
     uint16_t src_h = image->height;
     const uint8_t *data = image->data;
-    int bytes_per_row = (src_w + 7) / 8;
+    int bytes_per_row = (src_w + 7)*4 / 8;
 
     uint16_t dst_w = (uint16_t)ceilf(src_w * scale);
     uint16_t dst_h = (uint16_t)ceilf(src_h * scale);

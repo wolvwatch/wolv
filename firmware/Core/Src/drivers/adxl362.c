@@ -8,28 +8,20 @@
 
 #include <stdio.h>
 
+#include "drivers/adxl362.h"
 #include "main.h"
 #include "stm32l4xx_hal.h"
-#include "main.h"
 
 // For example, define the chip select pin:
 
 extern SPI_HandleTypeDef hspi2;
 
-
-#define ADXL362_REG_SOFT_RESET    0x1F
-#define ADXL362_REG_FILTER_CTL    0x2C
-#define ADXL362_REG_POWER_CTL     0x2D
-
-#define ADXL362_CMD_WRITE_REG     0x0A
-#define ADXL362_CMD_READ_REG      0x0B
-
 // For convenience, chip-select helpers:
-static inline void ADXL362_Select(void) {
+void ADXL362_Select(void) {
     HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_RESET);
 }
 
-static inline void ADXL362_Unselect(void) {
+void ADXL362_Unselect(void) {
     HAL_GPIO_WritePin(CS_ACC_GPIO_Port, CS_ACC_Pin, GPIO_PIN_SET);
 }
 

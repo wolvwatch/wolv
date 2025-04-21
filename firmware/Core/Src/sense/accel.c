@@ -1,7 +1,11 @@
 #include "sense/accel.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include "main.h"
+
+#include "drivers/adxl362.h"
 
 /**
  * NOTE: this algorithm was implemented using the "Step Counting Using the ADXL367" resource from Analog Devices.
@@ -145,4 +149,11 @@ void update_steps(const uint16_t x, const uint16_t y, const uint16_t z) {
 
 void update_raise_to_wake(const uint16_t x, const uint16_t y, const uint16_t z) {
 // TODO implement
+}
+
+void update_accel_data() {
+    int16_t x, y, z;
+    ADXL362_ReadXYZ(&x, &y, &z);
+    update_steps(x, y, z);
+    update_raise_to_wake(x, y, z);
 }

@@ -78,12 +78,6 @@ void Error_Handler(void);
 #define LED3_GPIO_Port GPIOA
 #define BT_RST_Pin GPIO_PIN_0
 #define BT_RST_GPIO_Port GPIOB
-#define ACC_INT1_Pin GPIO_PIN_10
-#define ACC_INT1_GPIO_Port GPIOB
-#define ACC_INT1_EXTI_IRQn EXTI15_10_IRQn
-#define ACC_INT2_Pin GPIO_PIN_11
-#define ACC_INT2_GPIO_Port GPIOB
-#define ACC_INT2_EXTI_IRQn EXTI15_10_IRQn
 #define CS_ACC_Pin GPIO_PIN_12
 #define CS_ACC_GPIO_Port GPIOB
 #define ACC_3_3V_Pin GPIO_PIN_6
@@ -100,15 +94,12 @@ void Error_Handler(void);
 #define Flashing_SWDIO_GPIO_Port GPIOA
 #define Flashing_SWCLK_Pin GPIO_PIN_14
 #define Flashing_SWCLK_GPIO_Port GPIOA
-#define HR_INT_Pin GPIO_PIN_5
-#define HR_INT_GPIO_Port GPIOB
-#define HR_INT_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 #define DEBUG_BT 1 // redirect printf statements to bluetooth instead of usb
-#define RAW_ACCEL_DEBUG 1 // send raw accel data over printf
+#define RAW_ACCEL_DEBUG 0 // send raw accel data over printf
 #define RAW_HR_DEBUG 0 // send raw hr data over printf
-#define STEPS_DEBUG 0 // send step count over printf
+#define STEPS_DEBUG 1 // send step count over printf
 #define HR_DEBUG 0 // send heartrate over printf
 #define SPO2_DEBUG 0 // send spo2 over printf
 /* USER CODE END Private defines */

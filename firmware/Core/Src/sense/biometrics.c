@@ -7,7 +7,7 @@
 #include "sense/filter.h"
 #include "displays/data.h"
 
-#define HR_WINDOW 750
+#define HR_WINDOW 500.0
 
 extern max_struct_t max30102_sensor;
 extern app_data_t g_app_data;
@@ -27,7 +27,7 @@ void update_biometrics(BWBandPass *filter, PeakDetector *detector) {
         peaks += PeakDetector_Process(detector, hr_reading);
 
         if (count == HR_WINDOW) {
-            g_app_data.biometrics.heart_rate = peaks * (HR_WINDOW / 1500.0);
+            g_app_data.biometrics.heart_rate = (peaks/HR_WINDOW) * 1500.0;
             printf("hr: %f\n", g_app_data.biometrics.heart_rate);
             peaks = 0;
             count = 0;

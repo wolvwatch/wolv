@@ -34,5 +34,4 @@ void display_notification(const char* message) {
     //screen_render();
     screen_render();
     Haptic_Buzz(1000);
-    HAL_Delay(1000);
 }

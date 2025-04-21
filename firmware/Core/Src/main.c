@@ -34,8 +34,10 @@
 #include "displays/notification.h"
 #include "displays/data.h"
 #include "displays/splashscreen.h"
+#include "drivers/haptic.h"
 #include "sense/filter.h"
 #include "drivers/lights.h"
+#include "sense/accel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,6 +68,7 @@ SPI_HandleTypeDef hspi3;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 uint8_t max30102_head = 0;
@@ -88,6 +91,7 @@ static void MX_TIM2_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_RTC_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -128,10 +132,10 @@ app_data_t g_app_data = {
 void update_time_from_rtc(void) {
     RTC_TimeTypeDef time = {0};
     RTC_DateTypeDef date = {0};
-    
+
     HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
     HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-    
+
     g_app_data.timeVal.hour = time.Hours;
     g_app_data.timeVal.minute = time.Minutes;
     g_app_data.timeVal.second = time.Seconds;
@@ -148,17 +152,20 @@ void watch_init() {
     max30102_init();
     HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+    HAL_TIM_Base_Start_IT(&htim3);
+
     // Initialize time from RTC
     update_time_from_rtc();
 }
 
 void watch_tick() {
-    // Update time from RTC
+    update_biometrics(filter, &detector);
+    update_accel_data();
     update_time_from_rtc();
-    
+
     set_brightness(g_app_data.settings.brightness);
-    switch (g_app_data.display.active_screen) {
+    switch (g_app_data.display.active_screen*-1) { // multiplied by -1 to disable drawing
         case WATCHFACE_DIGITAL: {
             watchface_digital_draw();
             break;
@@ -170,7 +177,6 @@ void watch_tick() {
         }
 
         default: {
-            watchface_digital_draw();
             break;
         }
     }
@@ -215,8 +221,9 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_RTC_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  watch_init();
+    watch_init();
 
 
   /* USER CODE END 2 */
@@ -225,17 +232,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
     while (1) {
-      // static uint32_t last_data_send = 0;
-      // uint32_t current_tick = HAL_GetTick();
+        // static uint32_t last_data_send = 0;
+        // uint32_t current_tick = HAL_GetTick();
 
-      watch_tick();
-      //HAL_UART_Receive_IT(&huart3, &rxData, 1);
+        //HAL_UART_Receive_IT(&huart3, &rxData, 1);
 
-      // sends sensor data once a second
-      // if (current_tick - last_data_send >= 1000) {
-      //   //send_sensor_data();
-      //   last_data_send = current_tick;
-      // }
+        // sends sensor data once a second
+        // if (current_tick - last_data_send >= 1000) {
+        //   //send_sensor_data();
+        //   last_data_send = current_tick;
+        // }
 
     /* USER CODE END WHILE */
 
@@ -305,7 +311,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10805D88;
+  hi2c1.Init.Timing = 0x0090194B;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -413,6 +419,7 @@ static void MX_USART3_UART_Init(void)
   */
 static void MX_RTC_Init(void)
 {
+
   /* USER CODE BEGIN RTC_Init 0 */
 
   /* USER CODE END RTC_Init 0 */
@@ -435,33 +442,31 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  
   /* USER CODE BEGIN RTC_Init 2 */
-  // Set initial time and date if RTC is not already configured
-  RTC_TimeTypeDef sTime = {0};
-  RTC_DateTypeDef sDate = {0};
-  
-  // Initialize with default time from g_app_data
-  sTime.Hours = g_app_data.timeVal.hour;
-  sTime.Minutes = g_app_data.timeVal.minute;
-  sTime.Seconds = g_app_data.timeVal.second;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY; // Default to Monday if not known
-  sDate.Month = g_app_data.timeVal.month;
-  sDate.Date = g_app_data.timeVal.day;
-  sDate.Year = g_app_data.timeVal.year - 2000; // Convert to 2-digit year
-  
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
+    // Set initial time and date if RTC is not already configured
+    RTC_TimeTypeDef sTime = {0};
+    RTC_DateTypeDef sDate = {0};
+
+    // Initialize with default time from g_app_data
+    sTime.Hours = g_app_data.timeVal.hour;
+    sTime.Minutes = g_app_data.timeVal.minute;
+    sTime.Seconds = g_app_data.timeVal.second;
+    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+
+    sDate.WeekDay = RTC_WEEKDAY_MONDAY; // Default to Monday if not known
+    sDate.Month = g_app_data.timeVal.month;
+    sDate.Date = g_app_data.timeVal.day;
+    sDate.Year = g_app_data.timeVal.year - 2000; // Convert to 2-digit year
+
+    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) {
+        Error_Handler();
+    }
+    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) {
+        Error_Handler();
+    }
   /* USER CODE END RTC_Init 2 */
+
 }
 
 /**
@@ -635,9 +640,9 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 256000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
   {
     Error_Handler();
@@ -660,6 +665,51 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
 
 }
 
@@ -692,8 +742,8 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : BTN1_Pin BTN2_Pin BTN3_Pin */
   GPIO_InitStruct.Pin = BTN1_Pin|BTN2_Pin|BTN3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin SCRN_RST_Pin
@@ -712,9 +762,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ACC_INT1_Pin ACC_INT2_Pin HR_INT_Pin */
-  GPIO_InitStruct.Pin = ACC_INT1_Pin|ACC_INT2_Pin|HR_INT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  /*Configure GPIO pins : PB10 PB11 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -726,9 +776,6 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(ACC_3_3V_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
@@ -748,12 +795,26 @@ PUTCHAR_PROTOTYPE {
     return ch;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    // if (GPIO_Pin == BTN2_Pin) {
-    //   printf("BTN2_Pin\n");
-    //   Haptic_Buzz(200);
-    // }
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    switch (GPIO_Pin) {
+        case BTN1_Pin: {
+            break;
+        }
+
+        case BTN2_Pin: {
+            break;
+        }
+
+        case BTN3_Pin: {
+            break;
+        }
+
+        default: break;
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM3) watch_tick();
 }
 
 /* USER CODE END 4 */
