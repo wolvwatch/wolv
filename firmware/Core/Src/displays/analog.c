@@ -91,16 +91,13 @@ void draw_biometric_data(void) {
     draw_arc(180, 180 + steps_arc_angle, 120, 205, PROGRESS_RADIUS, COLOR_WHITE, false, 2);
 }
 
-
-
-void watchface_analog_draw(void)
+void watchface_analog_draw(void) {
     draw_watch_face();
     draw_hour_markers();
     draw_biometric_data();
     draw_watch_hands(g_app_data.timeVal.hour, g_app_data.timeVal.minute, g_app_data.timeVal.second);
     draw_center_dot();
     //screen_render_aa();
-    screen_render();
 }
 
 void draw_watch_face(void) {

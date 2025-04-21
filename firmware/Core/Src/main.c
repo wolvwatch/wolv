@@ -162,10 +162,11 @@ void watch_init() {
 void watch_tick() {
     update_biometrics(filter, &detector);
     update_accel_data();
-    update_time_from_rtc();
 
     set_brightness(g_app_data.settings.brightness);
-    switch (g_app_data.display.active_screen*-1) { // multiplied by -1 to disable drawing
+    screen_clear(0);
+
+    switch (g_app_data.display.active_screen*-1) {
         case WATCHFACE_DIGITAL: {
             watchface_digital_draw();
             break;
@@ -180,6 +181,7 @@ void watch_tick() {
             break;
         }
     }
+    screen_render();
 }
 
 /* USER CODE END 0 */
@@ -232,6 +234,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
     HAL_UART_Receive_IT(&huart3, &rxData, 1);
     while (1) {
+        watch_tick();
         // static uint32_t last_data_send = 0;
         // uint32_t current_tick = HAL_GetTick();
 
@@ -424,6 +427,10 @@ static void MX_RTC_Init(void)
 
   /* USER CODE END RTC_Init 0 */
 
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  RTC_AlarmTypeDef sAlarm = {0};
+
   /* USER CODE BEGIN RTC_Init 1 */
 
   /* USER CODE END RTC_Init 1 */
@@ -442,29 +449,50 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
+
+  /* USER CODE BEGIN Check_RTC_BKUP */
+
+  /* USER CODE END Check_RTC_BKUP */
+
+  /** Initialize RTC and set the Time and Date
+  */
+  sTime.Hours = 0;
+  sTime.Minutes = 0;
+  sTime.Seconds = 0;
+  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+  sDate.Month = RTC_MONTH_JANUARY;
+  sDate.Date = 1;
+  sDate.Year = 0;
+
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Enable the Alarm A
+  */
+  sAlarm.AlarmTime.Hours = 0;
+  sAlarm.AlarmTime.Minutes = 0;
+  sAlarm.AlarmTime.Seconds = 0;
+  sAlarm.AlarmTime.SubSeconds = 0;
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_NONE;
+  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  sAlarm.AlarmDateWeekDay = 1;
+  sAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN RTC_Init 2 */
-    // Set initial time and date if RTC is not already configured
-    RTC_TimeTypeDef sTime = {0};
-    RTC_DateTypeDef sDate = {0};
-
-    // Initialize with default time from g_app_data
-    sTime.Hours = g_app_data.timeVal.hour;
-    sTime.Minutes = g_app_data.timeVal.minute;
-    sTime.Seconds = g_app_data.timeVal.second;
-    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-
-    sDate.WeekDay = RTC_WEEKDAY_MONDAY; // Default to Monday if not known
-    sDate.Month = g_app_data.timeVal.month;
-    sDate.Date = g_app_data.timeVal.day;
-    sDate.Year = g_app_data.timeVal.year - 2000; // Convert to 2-digit year
-
-    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) {
-        Error_Handler();
-    }
-    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) {
-        Error_Handler();
-    }
   /* USER CODE END RTC_Init 2 */
 
 }
@@ -727,6 +755,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -814,7 +843,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM3) watch_tick();
+    //if (htim->Instance == TIM3) watch_tick();
+}
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
+    update_time_from_rtc();
 }
 
 /* USER CODE END 4 */

@@ -36,7 +36,7 @@ float get_buf_avg() {
     return sum / 4.0;
 }
 
-void update_steps(const uint16_t x, const uint16_t y, const uint16_t z) {
+void update_steps(const int16_t x, const int16_t y, const int16_t z) {
     add_to_buf(abs(x) + abs(y) + abs(z));
     if (!raw_filled) return;
     filtered[filtered_idx++] = get_buf_avg();

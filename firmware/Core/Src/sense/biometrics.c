@@ -28,7 +28,6 @@ void update_biometrics(BWBandPass *filter, PeakDetector *detector) {
 
         if (count == HR_WINDOW) {
             g_app_data.biometrics.heart_rate = (peaks/HR_WINDOW) * 1500.0;
-            printf("hr: %f\n", g_app_data.biometrics.heart_rate);
             peaks = 0;
             count = 0;
         }

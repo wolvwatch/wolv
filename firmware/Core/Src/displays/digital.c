@@ -198,5 +198,4 @@ void watchface_digital_draw(void) {
     draw_gauge_arcs();
     draw_side_metrics();
     draw_middle_icons();
-    screen_render();
 }

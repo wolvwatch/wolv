@@ -32,6 +32,5 @@ void display_notification(const char* message) {
     // Draw the text
     draw_text(message, CENTER_X, CENTER_Y, &montserrat_reg, 0b000, 1.0, true);
     //screen_render();
-    screen_render();
     Haptic_Buzz(1000);
 }
