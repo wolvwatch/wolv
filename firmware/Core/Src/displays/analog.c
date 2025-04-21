@@ -93,13 +93,7 @@ void draw_biometric_data(void) {
 
 
 
-void watchface_analog_draw(void) {
-    draw_radial_gradient(
-      CENTER_X, CENTER_Y,
-      WATCH_RADIUS,
-      COLOR_LIGHT_GRAY,
-      0x0000     // outer: black
-    );
+void watchface_analog_draw(void)
     draw_watch_face();
     draw_hour_markers();
     draw_biometric_data();

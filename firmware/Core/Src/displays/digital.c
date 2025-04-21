@@ -192,12 +192,6 @@ static void draw_middle_icons(void) {
 
 void watchface_digital_draw(void) {
     //screen_clear(0x0000);
-    draw_radial_gradient(
-      CENTER_X, CENTER_Y,
-      WATCH_RADIUS,
-      COLOR_LIGHT_GRAY,
-      0x0000
-    );
     draw_background_and_bezel();
     draw_day_and_date();
     draw_digital_time();
