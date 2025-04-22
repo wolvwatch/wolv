@@ -25,16 +25,11 @@
 #include "drivers/lcd.h"
 #include "drivers/max30102.h"
 #include "drivers/adxl362.h"
-#include "ux/display.h"
 #include "drivers/bluetooth.h"
 #include "sense/biometrics.h"
-#include "displays/analog.h"
-#include "displays/digital.h"
 #include "displays/screen.h"
-#include "displays/notification.h"
 #include "displays/data.h"
 #include "displays/flappy.h"
-#include "displays/splashscreen.h"
 #include "sense/filter.h"
 #include "displays/launcher.h"
 #include "displays/timerApp.h"
@@ -42,8 +37,6 @@
 #include "displays/flashlight.h"
 #include "drivers/haptic.h"
 #include "drivers/apps.h"
-#include "displays/weather.h"
-#include "drivers/lights.h"
 #include "sense/accel.h"
 /* USER CODE END Includes */
 
@@ -86,7 +79,6 @@ uint8_t rxData = 0;
 BWBandPass *filter;
 PeakDetector detector;
 bool init = false;
-// display_t disp = {};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,31 +102,31 @@ static void MX_TIM3_Init(void);
 
 app_data_t g_app_data = {
   .display = {
-      .active_screen = SCREEN_LAUNCHER,
-      .on = true,
-      .metric = false,
-      .show_heart = true,
-      .show_steps = true,
-      .show_spo2 = true,
+    .active_screen = SCREEN_LAUNCHER,
+    .on = true,
+    .metric = false,
+    .show_heart = true,
+    .show_steps = true,
+    .show_spo2 = true,
   },
   .settings = {
-      .bluetooth = false,
-      .battery_level = 68,
-      .brightness = 80,
-      .metric = false,
+    .bluetooth = false,
+    .battery_level = 68,
+    .brightness = 80,
+    .metric = false,
   },
   .biometrics = {
-      .heart_rate = 75,
-      .steps = 4560,
-      .spo2 = 0,
+    .heart_rate = 75,
+    .steps = 4560,
+    .spo2 = 0,
   },
   .timeVal = {
-      .month = 4,
-      .day = 19,
-      .year = 2025,
-      .hour = 3,
-      .minute = 20,
-      .second = 51,
+    .month = 4,
+    .day = 19,
+    .year = 2025,
+    .hour = 3,
+    .minute = 20,
+    .second = 51,
   },
   .weather = {
     .condition = 1,
@@ -148,41 +140,41 @@ app_data_t g_app_data = {
 };
 
 void update_time_from_rtc(void) {
-    RTC_TimeTypeDef time = {0};
-    RTC_DateTypeDef date = {0};
-    
-    HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-    
-    g_app_data.timeVal.hour = time.Hours;
-    g_app_data.timeVal.minute = time.Minutes;
-    g_app_data.timeVal.second = time.Seconds;
-    g_app_data.timeVal.day = date.Date;
-    g_app_data.timeVal.month = date.Month;
-    g_app_data.timeVal.year = 2000 + date.Year;
+  RTC_TimeTypeDef time = {0};
+  RTC_DateTypeDef date = {0};
+
+  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
+
+  g_app_data.timeVal.hour = time.Hours;
+  g_app_data.timeVal.minute = time.Minutes;
+  g_app_data.timeVal.second = time.Seconds;
+  g_app_data.timeVal.day = date.Date;
+  g_app_data.timeVal.month = date.Month;
+  g_app_data.timeVal.year = 2000 + date.Year;
 }
 
 void watch_init() {
-    init_apps();
-    
-    filter = create_bw_band_pass_filter(4, 25, 0.5, 3);
-    PeakDetector_Init(&detector, 10, 10);
-    screen_init();
-    ADXL362_Init();
-    max30102_init();
-    HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    
-    // launcher and apps
+  init_apps();
 
-    launcher_init();
-    flappy_init();
-    timer_init();
-    sysmon_init();
-    flash_init();
-    
-    // Initialize time from RTC
-    update_time_from_rtc();
+  filter = create_bw_band_pass_filter(4, 25, 0.5, 3);
+  PeakDetector_Init(&detector, 10, 10);
+  screen_init();
+  ADXL362_Init();
+  max30102_init();
+  HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
+  HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
+
+  // launcher and apps
+
+  launcher_init();
+  flappy_init();
+  timer_init();
+  sysmon_init();
+  flash_init();
+
+  // Initialize time from RTC
+  update_time_from_rtc();
   init = true;
 }
 
@@ -214,7 +206,6 @@ void watch_tick() {
     }
 
 
-
     case SCREEN_GAMES: {
       apps[APP_GAMES].update();
       apps[APP_GAMES].draw();
@@ -243,7 +234,6 @@ void watch_tick() {
       //screen_render();
       break;
     }
-
   }
   screen_render();
 }
@@ -299,25 +289,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-    HAL_UART_Receive_IT(&huart3, &rxData, 1);
-    HAL_TIM_Base_Start_IT(&htim3);
-    while (1) {
-      // static uint32_t last_data_send = 0;
-      // uint32_t current_tick = HAL_GetTick();
+  HAL_UART_Receive_IT(&huart3, &rxData, 1);
+  HAL_TIM_Base_Start_IT(&htim3);
+  while (1) {
+    // static uint32_t last_data_send = 0;
+    // uint32_t current_tick = HAL_GetTick();
 
-      watch_tick();
-      //HAL_UART_Receive_IT(&huart3, &rxData, 1);
+    watch_tick();
+    //HAL_UART_Receive_IT(&huart3, &rxData, 1);
 
-      // sends sensor data once a second
-      // if (current_tick - last_data_send >= 1000) {
-      //   //send_sensor_data();
-      //   last_data_send = current_tick;
-      // }
+    // sends sensor data once a second
+    // if (current_tick - last_data_send >= 1000) {
+    //   //send_sensor_data();
+    //   last_data_send = current_tick;
+    // }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    }
+  }
   /* USER CODE END 3 */
 }
 
@@ -344,8 +334,14 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_11;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_MSI;
+  RCC_OscInitStruct.PLL.PLLM = 1;
+  RCC_OscInitStruct.PLL.PLLN = 30;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -355,12 +351,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -382,7 +378,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x0090194B;
+  hi2c1.Init.Timing = 0x00B01E60;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -727,6 +723,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 0 */
 
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
@@ -739,6 +736,15 @@ static void MX_TIM2_Init(void)
   htim2.Init.Period = 256000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
   {
     Error_Handler();
@@ -888,84 +894,80 @@ static void MX_GPIO_Init(void)
   #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 PUTCHAR_PROTOTYPE {
-    HAL_UART_Transmit(&huart3, (uint8_t *) &ch, 1, 0xFFFF);
-    return ch;
+  HAL_UART_Transmit(&huart3, (uint8_t *) &ch, 1, 0xFFFF);
+  return ch;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    button_t btn;
-    if (GPIO_Pin == BTN1_Pin) {
-        btn = BTN_UP;
-        Haptic_Buzz(); // Short
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  button_t btn;
+  if (GPIO_Pin == BTN1_Pin) {
+    btn = BTN_DOWN;
+    Haptic_Buzz(); // Short
+  } else if (GPIO_Pin == BTN2_Pin) {
+    btn = BTN_SEL;
+    Haptic_Buzz(); // Medium
+  } else if (GPIO_Pin == BTN3_Pin) {
+    btn = BTN_UP;
+    Haptic_Buzz(); // Short
+  } else {
+    return;
+  }
+
+  // Route button input to current app
+  switch (g_app_data.display.active_screen) {
+    case SCREEN_LAUNCHER: {
+      launcher_input(btn);
+      break;
     }
-    else if (GPIO_Pin == BTN2_Pin) {
-        btn = BTN_SEL;
-        Haptic_Buzz(); // Medium
-    }
-    else if (GPIO_Pin == BTN3_Pin) {
-        btn = BTN_DOWN;
-        Haptic_Buzz(); // Short
-    }
-    else {
-        return;
+
+
+    case WATCHFACE_DIGITAL: {
+      apps[APP_WATCHFACE_DIGITAL].input(btn);
+      break;
     }
 
-    // Route button input to current app
-    switch (g_app_data.display.active_screen) {
-        case SCREEN_LAUNCHER: {
-          launcher_input(btn);
-          break;
-        }
 
-            
-        case WATCHFACE_DIGITAL: {
-          apps[APP_WATCHFACE_DIGITAL].input(btn);
-          break;
-        }
-
-            
-        case WATCHFACE_ANALOG:{
-          apps[APP_WATCHFACE_ANALOG].input(btn);
-          break;
-        }
-
-            
-        case SCREEN_GAMES: {
-          apps[APP_GAMES].input(btn);
-          break;
-        }
-
-            
-        case SCREEN_TIMER:{
-          apps[APP_TIMER].input(btn);
-          break;
-        }
-
-            
-        case SCREEN_SYSMON: {
-          apps[APP_SYSINFO].input(btn);
-          break;
-        }
-
-            
-        case SCREEN_FLASHLIGHT: {
-          apps[APP_FLASHLIGHT].input(btn);
-          break;
-        }
-
-            
-        default: {
-          apps[APP_WATCHFACE_ANALOG].input(btn);
-          break;
-        }
-
+    case WATCHFACE_ANALOG: {
+      apps[APP_WATCHFACE_ANALOG].input(btn);
+      break;
     }
+
+
+    case SCREEN_GAMES: {
+      apps[APP_GAMES].input(btn);
+      break;
+    }
+
+
+    case SCREEN_TIMER: {
+      apps[APP_TIMER].input(btn);
+      break;
+    }
+
+
+    case SCREEN_SYSMON: {
+      apps[APP_SYSINFO].input(btn);
+      break;
+    }
+
+
+    case SCREEN_FLASHLIGHT: {
+      apps[APP_FLASHLIGHT].input(btn);
+      break;
+    }
+
+
+    default: {
+      apps[APP_WATCHFACE_ANALOG].input(btn);
+      break;
+    }
+  }
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+  Haptic_Stop();
   update_accel_data();
-  update_biometrics(filter,&detector);
+  update_biometrics(filter, &detector);
 }
 
 /* USER CODE END 4 */
@@ -977,10 +979,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-    __disable_irq();
-    while (1) {
-    }
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1) {
+  }
   /* USER CODE END Error_Handler_Debug */
 }
 

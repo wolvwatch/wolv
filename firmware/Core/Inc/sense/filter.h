@@ -9,7 +9,6 @@
  */
 #ifndef filter_h
 #define filter_h
-#include "stdint.h"
 
 #define DOUBLE_PRECISION 0
 

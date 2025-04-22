@@ -1,7 +1,29 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2025 Sandro Petrovski, Austin Sierco, Ryan Kaelle, and Tenzin Sherab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
+
 #include "displays/digital.h"
 #include "displays/data.h"
 #include "ux/display.h"
-#include "drivers/lcd.h"
 #include <stdio.h>
 #include "ux/rasterizer.h"
 #include <stdint.h>
@@ -29,11 +51,12 @@ static void draw_background_and_bezel(void) {
     draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_WHITE, false, BEZEL_WIDTH);
 }
 
-static int monthTableOne[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+static int monthTableOne[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+
 int dayOfWeekOne(int y, int m, int d) {
     // treat Jan & Feb as months 13 & 14 of the PREVIOUS year
     y -= m < 3;
-    return (y + y/4 - y/100 + y/400 + monthTableOne[m-1] + d) % 7;
+    return (y + y / 4 - y / 100 + y / 400 + monthTableOne[m - 1] + d) % 7;
 }
 
 static void draw_day_and_date(void) {
@@ -42,10 +65,10 @@ static void draw_day_and_date(void) {
 
     // Get day of week (0=Sunday, 6=Saturday)
     int dow = dayOfWeekOne(g_app_data.timeVal.year,
-                    g_app_data.timeVal.month,
-                    g_app_data.timeVal.day);
+                           g_app_data.timeVal.month,
+                           g_app_data.timeVal.day);
 
-    const char* days[] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
+    const char *days[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     snprintf(dayStr, sizeof dayStr, "%s", days[dow]);
     snprintf(dateStr, sizeof dateStr, "%02d / %02d",
              g_app_data.timeVal.month,
@@ -75,7 +98,7 @@ static void draw_digital_time(void) {
     draw_text(hourStr, CENTER_X - 55, CENTER_Y - 24, &ultra, COLOR_WHITE, 0.5, true);
 
     // colon
-    draw_text(":", CENTER_X-15, CENTER_Y - 24, &ultra, COLOR_WHITE, 0.5, true);
+    draw_text(":", CENTER_X - 15, CENTER_Y - 24, &ultra, COLOR_WHITE, 0.5, true);
 
     // minutes
     char minStr[3];
@@ -92,45 +115,44 @@ static void draw_digital_time(void) {
 // Helper function to draw gauge arcs
 static void draw_gauge_arcs(void) {
     // Battery gauge
-    const int blocks       = 10;
-    const float span       = 75.0f;
+    const int blocks = 10;
+    const float span = 75.0f;
     const float start_base = 45.0f;
-    const float block_ang  = span / blocks;
-    const float gap_deg      = 2.0f;     // total gap between blocks
-    const float half_gap     = gap_deg / 2.0f;
+    const float block_ang = span / blocks;
+    const float gap_deg = 2.0f; // total gap between blocks
+    const float half_gap = gap_deg / 2.0f;
 
     int lvl = g_app_data.settings.battery_level;
     int filled = (lvl + 5) / 10;
 
     for (int i = 0; i < blocks; i++) {
-
         float a0f = start_base + i * block_ang + half_gap;
-        float a1f = start_base + (i+1) * block_ang - half_gap;
+        float a1f = start_base + (i + 1) * block_ang - half_gap;
 
-        uint16_t a0 = (uint16_t)floorf(a0f + 0.5f);
-        uint16_t a1 = (uint16_t)floorf(a1f + 0.5f);
+        uint16_t a0 = (uint16_t) floorf(a0f + 0.5f);
+        uint16_t a1 = (uint16_t) floorf(a1f + 0.5f);
 
-        color_t col = (i < filled)? ACCENT_COLOR:COLOR_WHITE;
+        color_t col = (i < filled) ? ACCENT_COLOR : COLOR_WHITE;
 
-        draw_arc(a0, a1,CENTER_X, CENTER_Y,INNER_RADIUS,col,false,  4);     // stroke thickness
+        draw_arc(a0, a1,CENTER_X, CENTER_Y,INNER_RADIUS, col,false, 4); // stroke thickness
     }
 
     // Battery label
     float bat_angle = 0.0f * M_PI / 180.0f;
-    int bat_x = CENTER_X + (int)(INNER_RADIUS * cosf(bat_angle));
-    int bat_y = CENTER_Y - (int)(INNER_RADIUS * sinf(bat_angle));
+    int bat_x = CENTER_X + (int) (INNER_RADIUS * cosf(bat_angle));
+    int bat_y = CENTER_Y - (int) (INNER_RADIUS * sinf(bat_angle));
 
     // steps guage
     draw_arc(165, 225, CENTER_X, CENTER_Y, INNER_RADIUS, COLOR_WHITE, false, 4); // Background
-    uint16_t steps_angle = (g_app_data.biometrics.steps*(225-165)) / 10000.0f;
+    uint16_t steps_angle = (g_app_data.biometrics.steps * (225 - 165)) / 10000.0f;
     draw_arc(165, 165 + steps_angle, CENTER_X, CENTER_Y, INNER_RADIUS, ACCENT_COLOR, false, 4);
 
 
     // hr gauge
     draw_arc(315, 375, CENTER_X, CENTER_Y, INNER_RADIUS, COLOR_WHITE, false, 4); // Background
-    uint16_t hr_percentage = (uint16_t)((g_app_data.biometrics.heart_rate * 100) / 200);
+    uint16_t hr_percentage = (uint16_t) ((g_app_data.biometrics.heart_rate * 100) / 200);
     if (hr_percentage > 100) hr_percentage = 100;
-    uint16_t hr_angle = (uint16_t)(60 * hr_percentage / 100.0f);
+    uint16_t hr_angle = (uint16_t) (60 * hr_percentage / 100.0f);
     draw_arc(315, 315 + hr_angle, CENTER_X, CENTER_Y, INNER_RADIUS, ACCENT_COLOR, false, 4);
 }
 
@@ -144,43 +166,42 @@ static void draw_side_metrics(void) {
 
     // Calculate positions for left side (145°)
     float left_angle = 145.0f * M_PI / 180.0f;
-    int left_x = CENTER_X + (int)(75 * cosf(left_angle));
-    int left_y = CENTER_Y - (int)(75 * sinf(left_angle));
+    int left_x = CENTER_X + (int) (75 * cosf(left_angle));
+    int left_y = CENTER_Y - (int) (75 * sinf(left_angle));
 
     // Calculate positions for right side (35°)
     float right_angle = 35.0f * M_PI / 180.0f;
-    int right_x = CENTER_X + (int)(75 * cosf(right_angle));
-    int right_y = CENTER_Y - (int)(75 * sinf(right_angle));
+    int right_x = CENTER_X + (int) (75 * cosf(right_angle));
+    int right_y = CENTER_Y - (int) (75 * sinf(right_angle));
 
     float bottom_angle = 160.0f * M_PI / 180.0f;
-    int bottom_x = CENTER_X + (int)(75 * sinf(bottom_angle));
-    int bottom_y = CENTER_Y - (int)(75 * cosf(bottom_angle));
-
+    int bottom_x = CENTER_X + (int) (75 * sinf(bottom_angle));
+    int bottom_y = CENTER_Y - (int) (75 * cosf(bottom_angle));
 
 
     // Draw steps
-    draw_text(stepsStr, left_x-26, left_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
-    draw_image(&stepsImg, left_x-25, left_y+95, COLOR_WHITE, 0.3, true);
+    draw_text(stepsStr, left_x - 26, left_y + 80, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_image(&stepsImg, left_x - 25, left_y + 95, COLOR_WHITE, 0.3, true);
     //draw_text("Steps", left_x-20, left_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
 
     // Draw heart rate
-    draw_text(hrStr, right_x+37, right_y+80, &montserrat_reg, COLOR_WHITE, 0.5, true);
-    draw_image(&hr, right_x+33, right_y+95, COLOR_WHITE, 0.2, true);
+    draw_text(hrStr, right_x + 37, right_y + 80, &montserrat_reg, COLOR_WHITE, 0.5, true);
+    draw_image(&hr, right_x + 33, right_y + 95, COLOR_WHITE, 0.2, true);
     //draw_text("HR", right_x+25, right_y+95, &montserrat_reg, COLOR_WHITE, 0.5, true);
 
     // Draw battery %
-    draw_text("%", bottom_x-75, bottom_y+13, &montserrat_reg, COLOR_WHITE, 0.55, true);
-    draw_image(&battery, bottom_x-88, bottom_y+13, COLOR_WHITE, 1, true);
-    const int bmp_tl_x = bottom_x-88 - battery.width  / 2;
-    const int bmp_tl_y = bottom_y+15 - battery.height / 2;
+    draw_text("%", bottom_x - 75, bottom_y + 13, &montserrat_reg, COLOR_WHITE, 0.55, true);
+    draw_image(&battery, bottom_x - 88, bottom_y + 13, COLOR_WHITE, 1, true);
+    const int bmp_tl_x = bottom_x - 88 - battery.width / 2;
+    const int bmp_tl_y = bottom_y + 15 - battery.height / 2;
     const uint16_t INNER_X = bmp_tl_x + 1;
     const uint16_t INNER_Y = bmp_tl_y + 3;
-    const uint16_t INNER_W = battery.width  - 2;
+    const uint16_t INNER_W = battery.width - 2;
     const uint16_t INNER_H = battery.height - 5;
     uint16_t fill_h = (INNER_H * g_app_data.settings.battery_level) / 100;
     if (fill_h && fill_h < 1) fill_h = 1;
 
-    draw_rectangle(INNER_X, INNER_Y+(INNER_H-fill_h),INNER_W,  fill_h,COLOR_WHITE);
+    draw_rectangle(INNER_X, INNER_Y + (INNER_H - fill_h), INNER_W, fill_h,COLOR_WHITE);
 }
 
 static void draw_middle_icons(void) {
@@ -192,12 +213,14 @@ static void draw_middle_icons(void) {
         color = COLOR_WHITE;
     }
 
-    draw_image(&logoFontless, CENTER_X, CENTER_Y+40, color,0.5f,true);
+    draw_image(&logoFontless, CENTER_X, CENTER_Y + 40, color, 0.5f,true);
 }
 
-void watchface_digital_init(void) {}
+void watchface_digital_init(void) {
+}
 
-void watchface_digital_update(void) {}
+void watchface_digital_update(void) {
+}
 
 void watchface_digital_draw(void) {
     //screen_clear(0x0000);

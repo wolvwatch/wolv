@@ -1,11 +1,31 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2025 Sandro Petrovski, Austin Sierco, Ryan Kaelle, and Tenzin Sherab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
+
 #include "displays/sysmon.h"
 #include "main.h"
-#include "ux/display.h"
 #include "ux/rasterizer.h"
-#include "drivers/lcd.h"
 #include "stm32l4xx_hal.h"
 #include <stdio.h>
-#include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include "displays/data.h"
@@ -24,7 +44,7 @@ extern app_data_t g_app_data;
 #define GRAY COLOR_WHITE
 
 static uint32_t lastCycles, lastMs;
-static uint8_t  cpuLoadPc;
+static uint8_t cpuLoadPc;
 static uint32_t usedRam, totalRam;
 static uint16_t coreTempC;
 static uint32_t vbatmV;
@@ -34,15 +54,16 @@ static uint32_t sysclkMHz;
 
 // forward
 static uint16_t read_core_temp(void);
+
 static uint32_t read_vbat_mv(void);
 
 void sysmon_init(void) {
     // cycle counter for CPU load
-    CoreDebug->DEMCR   |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CYCCNT        = 0;
-    DWT->CTRL         |= DWT_CTRL_CYCCNTENA_Msk;
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
     lastCycles = DWT->CYCCNT;
-    lastMs     = HAL_GetTick();
+    lastMs = HAL_GetTick();
 
     // ADC1 clocks & TS/VBAT enable
     __HAL_RCC_ADC_CLK_ENABLE();
@@ -52,68 +73,66 @@ void sysmon_init(void) {
 
     // sysclk & RAM size
     sysclkMHz = HAL_RCC_GetSysClockFreq() / 1000000UL;
-    totalRam = (uint32_t)&__StackTop  - (uint32_t)&__HeapBase;
+    totalRam = (uint32_t) &__StackTop - (uint32_t) &__HeapBase;
 }
 
 void sysmon_update(void) {
     uint32_t now = HAL_GetTick();
-    uint32_t dm  = now - lastMs;
+    uint32_t dm = now - lastMs;
     if (dm < UPDATE_MS) return;
 
     //CPU
     uint32_t cc = DWT->CYCCNT;
     uint32_t dC = cc - lastCycles;
     uint32_t exp = dm * sysclkMHz * 1000UL;
-    cpuLoadPc = (uint8_t)((dC * 100UL + exp/2) / exp);
+    cpuLoadPc = (uint8_t) ((dC * 100UL + exp / 2) / exp);
     lastCycles = cc;
     lastMs = now;
     uint32_t sp = __get_MSP();
-    uint32_t freeRam = sp - (uint32_t)&__HeapBase;
+    uint32_t freeRam = sp - (uint32_t) &__HeapBase;
     usedRam = totalRam - freeRam;
-    coreTempC = 6;//read_core_temp();
-    vbatmV    = 2000;//read_vbat_mv();
+    coreTempC = 6; //read_core_temp();
+    vbatmV = 2000; //read_vbat_mv();
 }
 
 static void draw_cpu_ring(void) {
     draw_arc(0, 359,
-             CENTER_X, CENTER_Y-20,
+             CENTER_X, CENTER_Y - 20,
              CPU_RING_RADIUS,
-             GRAY,    // color
-             false,   // not filled
+             GRAY, // color
+             false, // not filled
              3);
 
     uint16_t span = cpuLoadPc > 100
-                    ? 270
-                    : (uint16_t)(cpuLoadPc * 270UL / 100UL);
+                        ? 270
+                        : (uint16_t) (cpuLoadPc * 270UL / 100UL);
 
     const uint16_t start = 135;
     uint16_t end = start + span;
     if (end <= 359) {
         draw_arc(start, end,
-                 CENTER_X, CENTER_Y-20,
+                 CENTER_X, CENTER_Y - 20,
                  CPU_RING_RADIUS,
                  ACCENT, false, 3);
     } else {
         draw_arc(start, 359,
-                 CENTER_X, CENTER_Y-20,
+                 CENTER_X, CENTER_Y - 20,
                  CPU_RING_RADIUS,
                  ACCENT, false, 3);
         draw_arc(0, end - 360,
-                 CENTER_X, CENTER_Y-20,
+                 CENTER_X, CENTER_Y - 20,
                  CPU_RING_RADIUS,
                  ACCENT, false, 3);
     }
 
     char buf[6];
     int len = snprintf(buf, sizeof(buf), "%u%%", cpuLoadPc);
-    if (len<0 || len>=sizeof(buf)) strcpy(buf, ":");
+    if (len < 0 || len >= sizeof(buf)) strcpy(buf, ":");
     draw_text(buf, CENTER_X, CENTER_Y - 26, &montserrat_reg, COLOR_WHITE, 0.6f, true);
-    draw_text("CPU",     CENTER_X, CENTER_Y -6, &montserrat_reg, COLOR_WHITE, 0.6f, true);
-
+    draw_text("CPU", CENTER_X, CENTER_Y - 6, &montserrat_reg, COLOR_WHITE, 0.6f, true);
 }
 
 void sysmon_draw(void) {
-
     char hdr[24];
     snprintf(hdr, sizeof(hdr), "STM32L4 %lu MHz", sysclkMHz);
     draw_text(hdr, CENTER_X, 40, &montserrat_reg, COLOR_WHITE, 0.7, true);
@@ -129,7 +148,6 @@ void sysmon_draw(void) {
 
     snprintf(buf, sizeof(buf), "VBAT %lu mV", vbatmV);
     draw_text(buf, CENTER_X, 205, &montserrat_reg, COLOR_WHITE, 0.55, true);
-
 }
 
 static uint16_t read_core_temp(void) {
@@ -152,7 +170,7 @@ static uint16_t read_core_temp(void) {
     // convert: raw*(Vref/4096)
     float vsense = 4; //raw * 3.0f / 4096.0f;
     // sensor curve: 30C 0.76V, slope 2.5mV/C
-    return (uint16_t)((vsense - 0.76f)/0.0025f + 30.0f + 0.5f);
+    return (uint16_t) ((vsense - 0.76f) / 0.0025f + 30.0f + 0.5f);
 }
 
 // VBAT via ADC1 channel VBAT

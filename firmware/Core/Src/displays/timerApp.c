@@ -1,7 +1,29 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2025 Sandro Petrovski, Austin Sierco, Ryan Kaelle, and Tenzin Sherab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
+
 #include "displays/timerApp.h"
 #include "ux/display.h"
 #include "ux/rasterizer.h"
-#include "drivers/lcd.h"
 #include "displays/data.h"
 #include "displays/launcher.h"
 #include "stm32l4xx_hal.h"
@@ -92,14 +114,22 @@ void timer_input(button_t btn) {
         case TMR_SETTING:
             if (btn == BTN_UP) {
                 if (sel_sec < 59) sel_sec++;
-                else { sel_sec = 0; if (sel_min < 99) sel_min++; }
-            }
-            else if (btn == BTN_DOWN) {
+                else {
+                    sel_sec = 0;
+                    if (sel_min < 99) sel_min++;
+                }
+            } else if (btn == BTN_DOWN) {
+                if (sel_sec == 0 && sel_min == 0) {
+                    g_app_data.display.active_screen = SCREEN_LAUNCHER;
+                    launcher_init();
+                }
                 if (sel_sec > 0) sel_sec--;
-                else if (sel_min > 0) { sel_min--; sel_sec = 59; }
-            }
-            else if (btn == BTN_SEL) {
-                duration_ms = (uint32_t)sel_min * 60000u + (uint32_t)sel_sec * 1000u;
+                else if (sel_min > 0) {
+                    sel_min--;
+                    sel_sec = 59;
+                }
+            } else if (btn == BTN_SEL) {
+                duration_ms = (uint32_t) sel_min * 60000u + (uint32_t) sel_sec * 1000u;
                 remaining_ms = duration_ms;
                 last_tick = HAL_GetTick();
                 if (duration_ms > 0) state = TMR_RUNNING;
@@ -116,8 +146,7 @@ void timer_input(button_t btn) {
             if (btn == BTN_SEL) {
                 state = TMR_RUNNING;
                 last_tick = HAL_GetTick();
-            }
-            else if (btn == BTN_UP) {
+            } else if (btn == BTN_UP) {
                 timer_init();
             }
             break;

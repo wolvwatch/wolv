@@ -1,14 +1,30 @@
 /*
-* bluetooth.h
- *
- *  Created on: Mar 22, 2025
- *      Author: ryankaelle
- */
+The MIT License (MIT)
+
+Copyright (c) 2025 Sandro Petrovski, Austin Sierco, Ryan Kaelle, and Tenzin Sherab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
 
 #ifndef INC_BLUETOOTH_H_
 #define INC_BLUETOOTH_H_
 
-#include "../../../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h"
+#include "stm32l4xx_hal.h"
 #include <stdio.h>
 
 #define RX_BUFFER_SIZE 256
@@ -19,20 +35,5 @@ void parseBluetoothCommand(char *cmd);
 void send_sensor_data(void);
 void send_ack_request(void);
 void check_ack_timeout(void);
-
-
-// commands left to change:
-/*
- * batt
- * face
- * app:list,launch,close
- * set:timezone,hr_interval
- * sens: hr, spo2, accel
- * time: get, set, date
- * notif: call icon
- *
- */
-
-
 
 #endif /* INC_BLUETOOTH_H_ */

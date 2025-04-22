@@ -1,6 +1,25 @@
-//
-// Created by Ryan Kaelle on 4/21/25.
-//
+/*
+The MIT License (MIT)
+
+Copyright (c) 2025 Sandro Petrovski, Austin Sierco, Ryan Kaelle, and Tenzin Sherab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.*/
 
 #ifndef APPS_H
 #define APPS_H
@@ -8,12 +27,10 @@
 typedef enum {
     APP_WATCHFACE_ANALOG,
     APP_WATCHFACE_DIGITAL,
-    APP_LAUNCHER,          // the apps screen
+    APP_LAUNCHER,
     APP_WEATHER,
     APP_GAMES,
     APP_TIMER,
-    //APP_MEDCARD,
-    //APP_METRONOME,
     APP_SYSINFO,
     APP_FLASHLIGHT,
     APP_COUNT
@@ -26,16 +43,15 @@ typedef enum {
 } button_t;
 
 typedef struct {
-    void (*init)   (void);
-    void (*update) (void);
-    void (*draw)   (void);
-    void (*input)  (button_t btn);
+    void (*init)(void);
+
+    void (*update)(void);
+
+    void (*draw)(void);
+
+    void (*input)(button_t btn);
 } app_t;
 
-// External declarations for all app instances
-
-
 void init_apps(void);
-
 
 #endif //APPS_H
