@@ -25,7 +25,7 @@ static uint16_t coreTempC;
 static uint32_t vbatmV;
 static uint32_t sysclkMHz;
 
-extern ADC_HandleTypeDef hadc1;
+/*extern ADC_HandleTypeDef hadc1;
 
 // forward
 static uint16_t read_core_temp(void);
@@ -173,4 +173,4 @@ static uint32_t read_vbat_mv(void) {
 //    .update = sysmon_update,
 //    .draw   = sysmon_draw,
 //    .input  = sysmon_input
-//};
+//};*/
