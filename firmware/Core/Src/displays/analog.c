@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 
+#include "displays/launcher.h"
+
 #define HOUR_HAND_LENGTH   50
 #define MINUTE_HAND_LENGTH 80
 #define SECOND_HAND_LENGTH 90
@@ -144,3 +146,21 @@ void draw_watch_hands(uint8_t hours, uint8_t minutes, uint8_t seconds) {
 void draw_center_dot(void) {
     draw_arc(0, 359, CENTER_X, CENTER_Y, 4, COLOR_WHITE, true, 1);
 }
+
+void watchface_analog_init(void) {}
+
+void watchface_analog_update(void) {}
+
+void watchface_analog_input(button_t btn) {
+    if (btn == BTN_UP || btn == BTN_DOWN || btn == BTN_SEL) {
+        g_app_data.display.active_screen = SCREEN_LAUNCHER;
+        launcher_init();
+    }
+}
+
+const app_t analog_app = {
+    .init = watchface_analog_init,
+    .update = watchface_analog_update,
+    .draw = watchface_analog_draw,
+    .input = watchface_analog_input
+};

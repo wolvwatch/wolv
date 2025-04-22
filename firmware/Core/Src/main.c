@@ -36,7 +36,12 @@
 #include "displays/flappy.h"
 #include "displays/splashscreen.h"
 #include "sense/filter.h"
-#include "displays/flappy.h"
+#include "displays/launcher.h"
+#include "displays/timerApp.h"
+#include "displays/sysmon.h"
+#include "displays/flashlight.h"
+#include "drivers/haptic.h"
+#include "drivers/apps.h"
 #include "drivers/lights.h"
 /* USER CODE END Includes */
 
@@ -103,33 +108,42 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN 0 */
 
 app_data_t g_app_data = {
-    .display = {
-        .active_screen = WATCHFACE_DIGITAL,
-        .on = true,
-        .metric = false,
-        .show_heart = true,
-        .show_steps = true,
-        .show_spo2 = true,
-    },
-    .settings = {
-        .bluetooth = false,
-        .battery_level = 68,
-        .brightness = 80,
-        .metric = false,
-    },
-    .biometrics = {
-        .heart_rate = 75,
-        .steps = 4560,
-        .spo2 = 0,
-    },
-    .timeVal = {
-        .month = 4,
-        .day = 19,
-        .year = 2025,
-        .hour = 3,
-        .minute = 20,
-        .second = 51,
-    }
+  .display = {
+      .active_screen = WATCHFACE_DIGITAL,
+      .on = true,
+      .metric = false,
+      .show_heart = true,
+      .show_steps = true,
+      .show_spo2 = true,
+  },
+  .settings = {
+      .bluetooth = false,
+      .battery_level = 68,
+      .brightness = 80,
+      .metric = false,
+  },
+  .biometrics = {
+      .heart_rate = 75,
+      .steps = 4560,
+      .spo2 = 0,
+  },
+  .timeVal = {
+      .month = 4,
+      .day = 19,
+      .year = 2025,
+      .hour = 3,
+      .minute = 20,
+      .second = 51,
+  },
+  .weather = {
+    .condition = 1,
+    .humidity = 16,
+    .location = "Ann Arbor",
+    .temp_current = 59,
+    .temp_high = 68,
+    .temp_low = 45,
+    .description = "Beautiful day to code!"
+  }
 };
 
 void update_time_from_rtc(void) {
@@ -148,6 +162,8 @@ void update_time_from_rtc(void) {
 }
 
 void watch_init() {
+    init_apps();
+    
     filter = create_bw_band_pass_filter(4, 25, 0.5, 3);
     PeakDetector_Init(&detector, 10, 10);
     screen_init();
@@ -156,33 +172,65 @@ void watch_init() {
     HAL_UART_Receive_IT(&hlpuart1, rx_buffer, 1);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     
+    // launcher and apps
+    launcher_init();
+    flappy_init();
+    timer_init();
+    sysmon_init();
+    flash_init();
+    
     // Initialize time from RTC
     update_time_from_rtc();
 }
 
 void watch_tick() {
-    // Update time from RTC
-    update_time_from_rtc();
-    screen_clear(0x0000);
-    set_brightness(g_app_data.settings.brightness);
-    switch (g_app_data.display.active_screen) {
-        case WATCHFACE_DIGITAL: {
-            watchface_digital_draw();
-            break;
-        }
+  // Update time from RTC
+  update_time_from_rtc();
+  screen_clear(0x0000);
+  set_brightness(g_app_data.settings.brightness);
+    
 
-        case WATCHFACE_ANALOG: {
-            watchface_analog_draw();
-            break;
-        }
+  switch (g_app_data.display.active_screen) {
+    case SCREEN_LAUNCHER:
+      launcher_update();
+      launcher_draw();
+      break;
 
-        default: {
-            watchface_digital_draw();
-            break;
-        }
-    }
-  screen_render();
+    case WATCHFACE_DIGITAL:
+      apps[APP_WATCHFACE_DIGITAL].update();
+      apps[APP_WATCHFACE_DIGITAL].draw();
+      break;
 
+    case WATCHFACE_ANALOG:
+      apps[APP_WATCHFACE_ANALOG].update();
+      apps[APP_WATCHFACE_ANALOG].draw();
+      break;
+
+    case SCREEN_GAMES:
+      apps[APP_GAMES].update();
+      apps[APP_GAMES].draw();
+      break;
+
+    case SCREEN_TIMER:
+      apps[APP_TIMER].update();
+      apps[APP_TIMER].draw();
+      break;
+
+    case SCREEN_SYSMON:
+      apps[APP_SYSINFO].update();
+      apps[APP_SYSINFO].draw();
+      break;
+
+    case SCREEN_FLASHLIGHT:
+      apps[APP_FLASHLIGHT].update();
+      apps[APP_FLASHLIGHT].draw();
+      break;
+
+    default:
+      apps[APP_WATCHFACE_ANALOG].update();
+      apps[APP_WATCHFACE_ANALOG].draw();
+      break;
+  }
 }
 
 /* USER CODE END 0 */
@@ -902,10 +950,57 @@ PUTCHAR_PROTOTYPE {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    // if (GPIO_Pin == BTN2_Pin) {
-    //   printf("BTN2_Pin\n");
-    //   Haptic_Buzz(200);
-    // }
+    button_t btn;
+    if (GPIO_Pin == BTN1_Pin) {
+        btn = BTN_UP;
+        Haptic_Buzz(50); // Short 
+    }
+    else if (GPIO_Pin == BTN2_Pin) {
+        btn = BTN_SEL;
+        Haptic_Buzz(100); // Medium 
+    }
+    else if (GPIO_Pin == BTN3_Pin) {
+        btn = BTN_DOWN;
+        Haptic_Buzz(50); // Short 
+    }
+    else {
+        return;
+    }
+
+    // Route button input to current app
+    switch (g_app_data.display.active_screen) {
+        case SCREEN_LAUNCHER:
+            launcher_input(btn);
+            break;
+            
+        case WATCHFACE_DIGITAL:
+            apps[APP_WATCHFACE_DIGITAL].input(btn);
+            break;
+            
+        case WATCHFACE_ANALOG:
+            apps[APP_WATCHFACE_ANALOG].input(btn);
+            break;
+            
+        case SCREEN_GAMES:
+            apps[APP_GAMES].input(btn);
+            break;
+            
+        case SCREEN_TIMER:
+            apps[APP_TIMER].input(btn);
+            break;
+            
+        case SCREEN_SYSMON:
+            apps[APP_SYSINFO].input(btn);
+            break;
+            
+        case SCREEN_FLASHLIGHT:
+            apps[APP_FLASHLIGHT].input(btn);
+            break;
+            
+        default:
+            apps[APP_WATCHFACE_ANALOG].input(btn);
+            break;
+    }
 }
 
 /* USER CODE END 4 */

@@ -6,6 +6,7 @@
 #include "ux/rasterizer.h"
 #include <stdint.h>
 #include <math.h>
+#include "displays/launcher.h"
 
 extern app_data_t g_app_data;
 extern tImage battery;
@@ -189,6 +190,9 @@ static void draw_middle_icons(void) {
     draw_image(&logoFontless, CENTER_X, CENTER_Y+40, color,0.5f,true);
 }
 
+void watchface_digital_init(void) {}
+
+void watchface_digital_update(void) {}
 
 void watchface_digital_draw(void) {
     //screen_clear(0x0000);
@@ -199,3 +203,18 @@ void watchface_digital_draw(void) {
     draw_side_metrics();
     draw_middle_icons();
 }
+
+void watchface_digital_input(button_t btn) {
+    if (btn == BTN_UP || btn == BTN_DOWN || btn == BTN_SEL) {
+        g_app_data.display.active_screen = SCREEN_LAUNCHER;
+        launcher_init();
+    }
+}
+
+
+const app_t digital_app = {
+    .init = watchface_digital_init,
+    .update = watchface_digital_update,
+    .draw = watchface_digital_draw,
+    .input = watchface_digital_input
+};

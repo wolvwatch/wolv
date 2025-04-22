@@ -6,8 +6,7 @@
 #define SYSMON_H
 
 
-#include <stdint.h>
-//#include "apps.h"
+#include "drivers/apps.h"
 
 void sysmon_init(void);
 
@@ -15,7 +14,7 @@ void sysmon_update(void);
 
 void sysmon_draw(void);
 
-//void sysmon_input(button_t btn);
+void sysmon_input(button_t button);
 
 //extern const app_t sysmon_app;
 

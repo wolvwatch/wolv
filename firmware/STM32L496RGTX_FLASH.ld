@@ -166,6 +166,14 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM
 
+  _estack = ORIGIN(RAM) + LENGTH(RAM);
+
+        /* make C‐symbols out of those two addresses: */
+PROVIDE(end_of_heap     = _ebss);
+PROVIDE(start_of_stack = _estack);
+  PROVIDE(__HeapBase  = _ebss);
+  PROVIDE(__StackTop  = _estack);
+
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :
   {
