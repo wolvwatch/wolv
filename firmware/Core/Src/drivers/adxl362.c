@@ -79,9 +79,9 @@ void ADXL362_SoftReset(void) {
   */
 void ADXL362_Init(void) {
 	HAL_GPIO_WritePin(ACC_3_3V_GPIO_Port, ACC_3_3V_Pin, GPIO_PIN_RESET);
-	HAL_Delay(150);
+	HAL_Delay(300);
 	HAL_GPIO_WritePin(ACC_3_3V_GPIO_Port, ACC_3_3V_Pin, GPIO_PIN_SET);
-	HAL_Delay(150);
+	HAL_Delay(300);
     ADXL362_Unselect();
 
     ADXL362_SoftReset();

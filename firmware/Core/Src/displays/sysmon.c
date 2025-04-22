@@ -186,3 +186,4 @@ const app_t sysmon_app = {
     .draw = sysmon_draw,
     .input = sysmon_input
 };
+

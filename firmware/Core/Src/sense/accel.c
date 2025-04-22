@@ -1,159 +1,244 @@
-#include "sense/accel.h"
+#include "sense/accel.h" // Assuming this declares update_accel_data etc.
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> // For memset
+#include <math.h>   // For fabs
 #include "main.h"
+#include "displays/data.h" // Assumes this declares g_app_data
 
-#include "drivers/adxl362.h"
+#include "drivers/adxl362.h" // Assumes this declares ADXL362_ReadXYZ
 
-/**
- * NOTE: this algorithm was implemented using the "Step Counting Using the ADXL367" resource from Analog Devices.
- * https://www.analog.com/en/resources/app-notes/an-2554.html
- */
-#define SENSITIVITY 400.0
-#define INIT_OFFSET_VALUE 4000
+// --- Robust Step Counting Algorithm ---
 
-static uint32_t raw[4];
-static bool raw_filled = false;
-static float filtered[17];
-static float thresh[4];
+// --- Configuration Constants (TUNABLE) ---
+#define SAMPLING_RATE_HZ 50.0f
+#define SAMPLING_INTERVAL_MS (1000.0f / SAMPLING_RATE_HZ)
 
-static uint16_t steps = 0, thresh_count = 0, max_min_sample_count = 0, step_to_step_count = 0, possible_steps = 0;
-static uint8_t raw_idx = 0, filtered_idx = 0, min_idx = 0, max_idx = 0, thresh_idx = 0;
-static float max_val = 0, min_val = 0, last_min_val = 0, last_max_val = 0, difference = 0, last_thresh = 0, thresh_val = 0, dyn_thresh = 0;
-static bool detected_max = false, above_thresh = false, reg_mode = false;
+// Filter for smoothing the magnitude signal (Simple Moving Average)
+#define MAG_FILTER_SIZE 8
 
-void add_to_buf(const uint32_t val) {
-    raw[raw_idx++] = val;
-    if (!raw_filled && raw_idx == 4) raw_filled = true;
-    raw_idx %= 4;
-}
+// Filter for estimating the slowly changing baseline/average magnitude (SMA)
+// INCREASED SIZE to slow down baseline adaptation further
+#define BASELINE_FILTER_SIZE 200
 
-float get_buf_avg() {
-    uint32_t sum = 0;
-    for (int i = 0; i < 4; i++) sum += raw[i];
-    return sum / 4.0;
-}
+// Threshold: A peak must be this much *above* the adaptive baseline to be considered.
+// LOWERED SIGNIFICANTLY based on log analysis showing peaks often < Base + 250
+#define STEP_PEAK_THRESHOLD 125.0f
 
-void update_steps(const int16_t x, const int16_t y, const int16_t z) {
-    add_to_buf(abs(x) + abs(y) + abs(z));
-    if (!raw_filled) return;
-    filtered[filtered_idx++] = get_buf_avg();
-    filtered_idx %= 4;
+// Timing constraints for valid steps (in milliseconds)
+#define MIN_STEP_INTERVAL_MS 200.0f
+#define MAX_STEP_INTERVAL_MS 2000.0f
 
-    max_val = filtered[0];
-    max_idx = 0;
-    for (int i = 1; i < 4; i++) {
-        if (filtered[i] > max_val) {
-            max_val = filtered[i];
-            max_idx = i;
-        }
+// How many consecutive valid steps are needed to confirm walking/running
+#define REG_MODE_COUNT 4
+
+// Timeout: If no valid step peak detected for this duration (ms), reset consecutive count.
+#define STEP_DETECTION_TIMEOUT_MS (MAX_STEP_INTERVAL_MS * 2) // e.g., 4 seconds
+
+
+// --- Static Variables ---
+// Buffers for filters
+static float mag_filter_buf[MAG_FILTER_SIZE];
+// *** IMPORTANT: Update baseline buffer size ***
+static float baseline_filter_buf[BASELINE_FILTER_SIZE]; // Size updated
+static uint8_t mag_filter_idx = 0;
+// *** Baseline index needs potentially larger type if size > 255 ***
+static uint8_t baseline_filter_idx = 0; // Use uint16_t for safety
+static float mag_filter_sum = 0.0f;
+static float baseline_filter_sum = 0.0f;
+static bool mag_filter_filled = false;
+static bool baseline_filter_filled = false;
+
+// Peak detection state
+static float last_filtered_mag = 0.0f;
+static bool is_potential_peak = false;
+
+// Timing and step counting state
+static uint32_t last_step_timestamp_ms = 0;
+static uint32_t last_peak_timestamp_ms = 0;
+static uint16_t consecutive_valid_steps = 0;
+static bool in_regulation_mode = false;
+static uint16_t total_steps = 0;
+
+extern app_data_t g_app_data;
+
+
+// --- Helper Functions ---
+
+// Simple Moving Average Update (using uint16_t for index/size)
+float update_sma(float new_value, float* buffer, uint8_t* index, float* sum, bool* filled, const uint16_t size) {
+    uint16_t current_idx = *index;
+
+    if (*filled) {
+        *sum -= buffer[current_idx];
     }
 
-    min_val = filtered[0];
-    min_idx = 0;
-    for (int i = 1; i < 4; i++) {
-        if (filtered[i] < min_val) {
-            min_val = filtered[i];
-            min_idx = i;
-        }
+    buffer[current_idx] = new_value;
+    *sum += new_value;
+
+    *index = (current_idx + 1) % size;
+
+    // Check if buffer just became full *after* index increment
+    if (!(*filled) && (*index == 0) && (current_idx == size - 1)) {
+         *filled = true;
     }
 
-    // max value is in middle of window
-    if (max_idx == (filtered_idx + 17/2) % 17) {
-        if (!detected_max) {
-            detected_max = true;
-            last_max_val = max_val;
-            max_min_sample_count = 0;
-        } else {
-            last_min_val = min_val;
-            difference = last_max_val - last_min_val;
-            detected_max = false;
-            max_min_sample_count = 0;
+    if (*filled) {
+        return *sum / (float)size;
+    } else {
+        // Correct average calculation when not filled: sum / number_of_elements_added
+        // If index is 0 after incrementing, it means we just added the last element (size-1 index)
+        // or we just added the first element (index was 0, now 1).
+        uint16_t count = (*index == 0) ? size : *index; // Number of elements currently used
+        return (count == 0) ? new_value : (*sum / (float)count); // Avoid division by zero if called before first element added
+    }
+}
 
-            if (last_max_val > last_thresh + SENSITIVITY/2 && last_min_val < last_thresh - SENSITIVITY/2) {
-                above_thresh = true;
-                thresh_count = 0;
-            } else {
-                thresh_count++;
-            }
 
-            if (difference > SENSITIVITY) {
-                thresh_val = (last_min_val + last_max_val) / 2;
-                dyn_thresh = dyn_thresh - thresh[thresh_idx] + thresh_val;
-                last_thresh = dyn_thresh / 4;
-                thresh[thresh_idx] = thresh_val;
-                thresh_idx++;
-                thresh_idx %= 4;
+// --- Main Step Counter Logic ---
 
-                if (above_thresh) {
-                    above_thresh = 0;
-                    step_to_step_count = 0;
-                    max_min_sample_count = 0;
+// Call this once at startup
+void init_step_counter_robust(void) {
+    memset(mag_filter_buf, 0, sizeof(mag_filter_buf));
+    memset(baseline_filter_buf, 0, sizeof(baseline_filter_buf)); // Use updated size
+    mag_filter_idx = 0;
+    baseline_filter_idx = 0;
+    mag_filter_sum = 0.0f;
+    baseline_filter_sum = 0.0f;
+    mag_filter_filled = false;
+    baseline_filter_filled = false;
 
-                    if (reg_mode) {
-                        steps++;
-                    } else {
-                        possible_steps++;
-                        if (possible_steps == 8) {
-                            steps += possible_steps;
-                            possible_steps = 0;
-                            reg_mode = true;
-                        }
-                    }
+    last_filtered_mag = 0.0f;
+    is_potential_peak = false;
+    last_step_timestamp_ms = 0;
+    last_peak_timestamp_ms = 0;
+    consecutive_valid_steps = 0;
+    in_regulation_mode = false;
+    total_steps = 0;
+    g_app_data.biometrics.steps = 0;
+
+    // Pre-fill baseline with estimate from idle log data (~980)
+    float idle_guess = 980.0f;
+    for(int i=0; i<BASELINE_FILTER_SIZE; ++i) baseline_filter_buf[i] = idle_guess;
+    baseline_filter_sum = idle_guess * BASELINE_FILTER_SIZE;
+    baseline_filter_filled = true; // Assume pre-filled
+    last_filtered_mag = idle_guess; // Also init last_filtered_mag to avoid initial false peak
+}
+
+// Call this for every new accelerometer sample (x, y, z) at 50Hz
+void update_steps_robust(const int16_t x, const int16_t y, const int16_t z) {
+    // 1. Calculate scalar magnitude
+    float current_mag = (float)abs(x) + (float)abs(y) + (float)abs(z);
+
+    // 2. Update short-term filter
+    float filtered_mag = update_sma(current_mag, mag_filter_buf, &mag_filter_idx, &mag_filter_sum, &mag_filter_filled, MAG_FILTER_SIZE);
+
+    // 3. Update long-term baseline filter
+    float baseline_mag = update_sma(filtered_mag, baseline_filter_buf, &baseline_filter_idx, &baseline_filter_sum, &baseline_filter_filled, BASELINE_FILTER_SIZE);
+
+    // Filters need to be filled
+    if (!mag_filter_filled || !baseline_filter_filled) {
+        last_filtered_mag = filtered_mag;
+        return;
+    }
+
+    uint32_t current_time_ms = HAL_GetTick();
+
+    // 4. Simple Peak Detection Logic
+    if (filtered_mag < last_filtered_mag) { // Signal is now falling
+        if (is_potential_peak) {          // And it was rising just before -> Peak was at last_filtered_mag
+            float peak_value = last_filtered_mag;
+
+            // 5. Qualify the Peak
+            if (peak_value > baseline_mag + STEP_PEAK_THRESHOLD) {
+                uint32_t time_diff_ms = current_time_ms - last_peak_timestamp_ms;
+                // Handle timestamp wraparound
+                if (current_time_ms < last_peak_timestamp_ms) {
+                    time_diff_ms = (0xFFFFFFFF - last_peak_timestamp_ms) + current_time_ms + 1;
                 }
-            }
 
-            min_val = 0;
-            if (thresh_count > 1) {
-                thresh_count = 0;
-                max_min_sample_count = 0;
-                max_val = 0;
-                min_val = 0;
-                reg_mode = false;
-                possible_steps = 0;
-                thresh_count = 0;
+                // Treat first qualified peak specially for timing check
+                if (last_peak_timestamp_ms == 0) {
+                     time_diff_ms = MIN_STEP_INTERVAL_MS; // Allow first peak
+                }
+
+
+                if (time_diff_ms >= MIN_STEP_INTERVAL_MS && time_diff_ms <= MAX_STEP_INTERVAL_MS) {
+                    // Timing valid!
+                    last_step_timestamp_ms = current_time_ms; // Use current time for step timeout check
+                    consecutive_valid_steps++;
+
+                    if (!in_regulation_mode) {
+                        if (consecutive_valid_steps >= REG_MODE_COUNT) {
+                            total_steps += consecutive_valid_steps;
+                            in_regulation_mode = true;
+                        }
+                    } else {
+                        total_steps++;
+                    }
+                    g_app_data.biometrics.steps = total_steps;
+
+                } else { // Timing invalid
+                    // Reset consecutive count if timing fails, might miss steps but avoids false positives from bursts
+                    consecutive_valid_steps = 0;
+                    // Option: Should we exit regulation mode on a single timing failure? Maybe not immediately.
+                    // in_regulation_mode = false;
+                }
+                // Record the time of this *qualified* peak for the *next* interval check
+                 // Use approximate time of the actual peak (one sample ago)
+                last_peak_timestamp_ms = current_time_ms - (uint32_t)SAMPLING_INTERVAL_MS;
+                 if (current_time_ms < (uint32_t)SAMPLING_INTERVAL_MS) { // Handle wraparound near 0
+                     last_peak_timestamp_ms = 0; // Or estimate differently
+                 }
+
+
             }
-        }
-    } else if (detected_max) {
-        max_min_sample_count++;
-        if (max_min_sample_count == 100) {
-            max_min_sample_count = 0;
-            max_val = 0;
-            min_val = 0;
-            detected_max = false;
-            possible_steps = 0;
-        }
+             // else: Peak below threshold
+         }
+         is_potential_peak = false; // Reset flag as signal is falling or flat
+    } else if (filtered_mag > last_filtered_mag) {
+        is_potential_peak = true; // Signal is rising
+    }
+    // else: signal is flat, is_potential_peak remains unchanged
+
+    last_filtered_mag = filtered_mag;
+
+    // 6. Handle Step Detection Timeout (Reset consecutive count if no valid steps detected)
+     // Check time since the last *valid step detection* time stamp
+     if (last_step_timestamp_ms > 0 &&
+        (current_time_ms - last_step_timestamp_ms > STEP_DETECTION_TIMEOUT_MS))
+    {
+         // Basic wrap check for timeout detection
+         if (current_time_ms >= last_step_timestamp_ms) {
+             consecutive_valid_steps = 0;
+             in_regulation_mode = false;
+             // Reset last step timestamp to prevent continuous timeout triggering after a pause
+             last_step_timestamp_ms = 0;
+             // Also reset peak timestamp so next peak starts fresh timing check
+             last_peak_timestamp_ms = 0;
+         }
     }
 
-    step_to_step_count++;
-    if (step_to_step_count >= 100) {
-        step_to_step_count = 0;
-        possible_steps = 0;
-        if (reg_mode) {
-            reg_mode = false;
-            thresh_val = 4000;
-            dyn_thresh = 4000*4;
-            thresh_idx = 0;
-            thresh_count = 0;
-            for (int i = 0; i < 4; i++) thresh[i] = 4000;
-        }
-        max_min_sample_count = 0;
-    }
 
-#if STEPS_DEBUG
-    printf("steps: %d\n", steps);
+#if STEPS_DEBUG // Keep the debug print
+    static uint32_t last_print_time = 0;
+    if (HAL_GetTick() - last_print_time > 500) {
+         printf("Steps:%u|Reg:%d|Cons:%u|Mag:%.1f|Filt:%.1f|Base:%.1f|PeakThr:%.1f\n",
+                total_steps, in_regulation_mode, consecutive_valid_steps,
+                current_mag, filtered_mag, baseline_mag, baseline_mag + STEP_PEAK_THRESHOLD);
+         last_print_time = HAL_GetTick();
+    }
 #endif
+
 }
 
-void update_raise_to_wake(const uint16_t x, const uint16_t y, const uint16_t z) {
-// TODO implement
-}
+// --- Main Update Function (Called periodically @ 50Hz) ---
 
 void update_accel_data() {
-    int16_t x, y, z;
+    static int16_t x, y, z;
     ADXL362_ReadXYZ(&x, &y, &z);
-    update_steps(x, y, z);
-    update_raise_to_wake(x, y, z);
+    update_steps_robust(x, y, z);
+    // update_raise_to_wake(x, y, z);
 }
