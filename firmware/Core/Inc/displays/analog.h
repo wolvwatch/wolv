@@ -22,6 +22,4 @@ void watchface_analog_draw(void);
 void watchface_analog_input(button_t button);
 
 
-extern const app_t analog_app;
-
 #endif /* ANALOG_H */

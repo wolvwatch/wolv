@@ -29,20 +29,27 @@ static void draw_background_and_bezel(void) {
     draw_arc(0, 359, CENTER_X, CENTER_Y, WATCH_RADIUS, COLOR_WHITE, false, BEZEL_WIDTH);
 }
 
+static int monthTableOne[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+int dayOfWeekOne(int y, int m, int d) {
+    // treat Jan & Feb as months 13 & 14 of the PREVIOUS year
+    y -= m < 3;
+    return (y + y/4 - y/100 + y/400 + monthTableOne[m-1] + d) % 7;
+}
+
 static void draw_day_and_date(void) {
     char dayStr[4];
     char dateStr[8];
 
     // Get day of week (0=Sunday, 6=Saturday)
-    int dayOfWeek = (g_app_data.timeVal.day + 2 * g_app_data.timeVal.month +
-                    3 * (g_app_data.timeVal.month + 1) / 5 + g_app_data.timeVal.year +
-                    g_app_data.timeVal.year / 4 - g_app_data.timeVal.year / 100 +
-                    g_app_data.timeVal.year / 400) % 7;
+    int dow = dayOfWeekOne(g_app_data.timeVal.year,
+                    g_app_data.timeVal.month,
+                    g_app_data.timeVal.day);
 
-    const char* days[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-    snprintf(dayStr, sizeof(dayStr), "%s", days[dayOfWeek]);
-    snprintf(dateStr, sizeof(dateStr), "%02d / %02d",
-             g_app_data.timeVal.month, g_app_data.timeVal.day);
+    const char* days[] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
+    snprintf(dayStr, sizeof dayStr, "%s", days[dow]);
+    snprintf(dateStr, sizeof dateStr, "%02d / %02d",
+             g_app_data.timeVal.month,
+             g_app_data.timeVal.day);
 
     draw_text(dayStr, CENTER_X, 30, &montserrat_reg, COLOR_WHITE, 0.75, true);
     draw_text(dateStr, CENTER_X, 55, &montserrat_reg, COLOR_WHITE, 0.75, true);
@@ -180,13 +187,11 @@ static void draw_middle_icons(void) {
     color_t color;
 
     if (g_app_data.settings.bluetooth) {
-        color = COLOR_GREEN;
+        color = COLOR_RED;
     } else {
         color = COLOR_WHITE;
     }
 
-    if (g_app_data.settings.bluetooth)
-    {draw_image(&bluetoothImg,CENTER_X-40, CENTER_Y+20, COLOR_WHITE,0.5f,true);}
     draw_image(&logoFontless, CENTER_X, CENTER_Y+40, color,0.5f,true);
 }
 

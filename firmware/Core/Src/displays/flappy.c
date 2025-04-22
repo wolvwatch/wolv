@@ -84,7 +84,7 @@ void flappy_draw(void) {
 
     // pipes
     draw_rectangle(pipeX, 0, PIPE_WIDTH, gapY - GAP_HEIGHT/2, COLOR_RED);
-    draw_rectangle(pipeX, gapY + GAP_HEIGHT/2, PIPE_WIDTH, GROUND_Y - (gapY + GAP_HEIGHT/2), COLOR_BLUE);
+    draw_rectangle(pipeX, gapY + GAP_HEIGHT/2, PIPE_WIDTH, GROUND_Y - (gapY + GAP_HEIGHT/2),COLOR_RED);
 
     const int tail_height = 12;
     const int max_width = 7;
@@ -97,15 +97,14 @@ void flappy_draw(void) {
         }
         int x_start = CENTER_X - BIRD_RADIUS - 3 - (width / 2);
         draw_line(x_start, birdY - tail_height/2 + i,
-                 x_start + width, birdY - tail_height/2 + i,
-                 0b011, 1);
+                 x_start + width, birdY - tail_height/2 + i,COLOR_YELLOW, 1);
     }
 
     // bird body
-    draw_arc(0, 358, CENTER_X, birdY, BIRD_RADIUS, 0b011, true, 2);
+    draw_arc(0, 358, CENTER_X, birdY, BIRD_RADIUS, COLOR_YELLOW, true, 2);
     
     // bird eye
-    draw_arc(0, 358, CENTER_X+3, birdY-2, 1, 0b000, true, 1);
+    draw_arc(0, 358, CENTER_X+3, birdY-2, 1, COLOR_BLACK, true, 1);
     
     // bird wing (downward triangle)
     for(int i = 0; i <= 7; i++) {
@@ -113,7 +112,7 @@ void flappy_draw(void) {
         int x_start = CENTER_X - 2 + i/2;
         draw_line(x_start, birdY+4+i,
                  x_start + width, birdY+4+i,
-                 0b000, 1);
+                 COLOR_BLACK, 1);
     }
 
     // score

@@ -16,7 +16,6 @@ void flash_draw(void) {
     uint8_t tempBrightness = TIM1->CCR1;
     set_brightness(100);
     draw_rectangle(0, 0, LCD_1IN28_WIDTH, LCD_1IN28_HEIGHT, COLOR_WHITE);
-    screen_render();
 }
 
 void flash_input(button_t btn) {

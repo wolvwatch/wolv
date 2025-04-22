@@ -16,6 +16,4 @@ void sysmon_draw(void);
 
 void sysmon_input(button_t button);
 
-//extern const app_t sysmon_app;
-
 #endif //SYSMON_H

@@ -20,8 +20,8 @@ extern app_data_t g_app_data;
 #define UPDATE_MS 500
 #define CPU_RING_RADIUS 40
 #define CPU_RING_THICKNESS 6
-#define ACCENT 0b100
-#define GRAY 0b111
+#define ACCENT COLOR_BLUE
+#define GRAY COLOR_WHITE
 
 static uint32_t lastCycles, lastMs;
 static uint8_t  cpuLoadPc;
@@ -30,7 +30,7 @@ static uint16_t coreTempC;
 static uint32_t vbatmV;
 static uint32_t sysclkMHz;
 
-extern ADC_HandleTypeDef hadc1;
+//extern ADC_HandleTypeDef hadc1;
 
 // forward
 static uint16_t read_core_temp(void);
@@ -47,7 +47,7 @@ void sysmon_init(void) {
     // ADC1 clocks & TS/VBAT enable
     __HAL_RCC_ADC_CLK_ENABLE();
     ADC123_COMMON->CCR |= ADC_CCR_TSEN | ADC_CCR_VBATEN;
-    HAL_ADC_Init(&hadc1);
+    //HAL_ADC_Init(&hadc1);
     //MX_ADC1_Init();
 
     // sysclk & RAM size
@@ -70,8 +70,8 @@ void sysmon_update(void) {
     uint32_t sp = __get_MSP();
     uint32_t freeRam = sp - (uint32_t)&__HeapBase;
     usedRam = totalRam - freeRam;
-    coreTempC = read_core_temp();
-    vbatmV    = read_vbat_mv();
+    coreTempC = 6;//read_core_temp();
+    vbatmV    = 2000;//read_vbat_mv();
 }
 
 static void draw_cpu_ring(void) {
@@ -130,46 +130,45 @@ void sysmon_draw(void) {
     snprintf(buf, sizeof(buf), "VBAT %lu mV", vbatmV);
     draw_text(buf, CENTER_X, 205, &montserrat_reg, COLOR_WHITE, 0.55, true);
 
-    screen_render();
 }
 
 static uint16_t read_core_temp(void) {
-    ADC_ChannelConfTypeDef s = {0};
-    s.Channel = ADC_CHANNEL_TEMPSENSOR;
-    s.Rank = ADC_REGULAR_RANK_1;
-    s.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
-
-    // reconfigure channel
-    HAL_ADC_ConfigChannel(&hadc1, &s);
-
-    // start + wait
-    HAL_ADC_Start(&hadc1);
-    if (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK) {
-        return 0xFFFF;  // error
-    }
-    uint32_t raw = HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
+    // ADC_ChannelConfTypeDef s = {0};
+    // s.Channel = ADC_CHANNEL_TEMPSENSOR;
+    // s.Rank = ADC_REGULAR_RANK_1;
+    // s.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
+    //
+    // // reconfigure channel
+    // HAL_ADC_ConfigChannel(&hadc1, &s);
+    //
+    // // start + wait
+    // HAL_ADC_Start(&hadc1);
+    // if (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK) {
+    //     return 0xFFFF;  // error
+    // }
+    // uint32_t raw = HAL_ADC_GetValue(&hadc1);
+    // HAL_ADC_Stop(&hadc1);
 
     // convert: raw*(Vref/4096)
-    float vsense = raw * 3.0f / 4096.0f;
+    float vsense = 4; //raw * 3.0f / 4096.0f;
     // sensor curve: 30C 0.76V, slope 2.5mV/C
     return (uint16_t)((vsense - 0.76f)/0.0025f + 30.0f + 0.5f);
 }
 
 // VBAT via ADC1 channel VBAT
 static uint32_t read_vbat_mv(void) {
-    ADC_ChannelConfTypeDef sConfig = {0};
-    sConfig.Channel      = ADC_CHANNEL_VBAT;
-    sConfig.Rank         = ADC_REGULAR_RANK_1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
-    HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, 10);
-    uint32_t raw = HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
+    // ADC_ChannelConfTypeDef sConfig = {0};
+    // sConfig.Channel      = ADC_CHANNEL_VBAT;
+    // sConfig.Rank         = ADC_REGULAR_RANK_1;
+    // sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
+    // HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+    // HAL_ADC_Start(&hadc1);
+    // HAL_ADC_PollForConversion(&hadc1, 10);
+    // uint32_t raw = HAL_ADC_GetValue(&hadc1);
+    // HAL_ADC_Stop(&hadc1);
 
     // board divider 2:1
-    return (raw * 3000UL * 2) / 4096UL;
+    return (50 * 3000UL * 2) / 4096UL;
 }
 
 void sysmon_input(button_t btn) {

@@ -22,6 +22,13 @@ extern tImage hr;
 extern tImage battery;
 extern tImage stepsImg;
 
+static int monthTable[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+int dayOfWeek(int y, int m, int d) {
+    // treat Jan & Feb as months 13 & 14 of the PREVIOUS year
+    y -= m < 3;
+    return (y + y/4 - y/100 + y/400 + monthTable[m-1] + d) % 7;
+}
+
 void draw_biometric_data(void) {
     char date_str[10];
     char hr_str[10];
@@ -31,15 +38,17 @@ void draw_biometric_data(void) {
     char dateStr[8];
 
     // day of week
-    int dayOfWeek = (g_app_data.timeVal.day + 2 * g_app_data.timeVal.month +
-                    3 * (g_app_data.timeVal.month + 1) / 5 + g_app_data.timeVal.year +
-                    g_app_data.timeVal.year / 4 - g_app_data.timeVal.year / 100 +
-                    g_app_data.timeVal.year / 400) % 7;
 
-    const char* days[] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-    snprintf(dayStr, sizeof(dayStr), "%s", days[dayOfWeek]);
-    snprintf(dateStr, sizeof(dateStr), "%02d / %02d",
-             g_app_data.timeVal.month, g_app_data.timeVal.day);
+
+    int dow = dayOfWeek(g_app_data.timeVal.year,
+                    g_app_data.timeVal.month,
+                    g_app_data.timeVal.day);
+
+    const char* days[] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
+    snprintf(dayStr, sizeof dayStr, "%s", days[dow]);
+    snprintf(dateStr, sizeof dateStr, "%02d / %02d",
+             g_app_data.timeVal.month,
+             g_app_data.timeVal.day);
 
     // day
     draw_text(dayStr, CENTER_X, 90, &montserrat_reg, COLOR_WHITE, 0.75, true);
@@ -108,7 +117,7 @@ void draw_watch_face(void) {
 
 void draw_hour_markers(void) {
     for (int i = 0; i < 12; i++) {
-        float angle = i * 30.0f;
+        float angle = (i * 30.0f) + 270.0f;  // Add 270 degrees (same as subtracting 90)
         float rad = angle * (M_PI / 180.0f);
 
         int x_outer = CENTER_X + (int)(WATCH_RADIUS * cosf(rad) + 0.5f);
@@ -123,9 +132,9 @@ void draw_hour_markers(void) {
 void draw_watch_hands(uint8_t hours, uint8_t minutes, uint8_t seconds) {
     const float degToRad = M_PI / 180.0f;
 
-    float hour_angle = ((hours % 12) + minutes / 60.0f) * 30.0f;
-    float minute_angle = minutes * 6.0f;
-    float second_angle = seconds * 6.0f;
+    float hour_angle = (((hours % 12) + minutes / 60.0f) * 30.0f) + 270.0f;
+    float minute_angle = (minutes * 6.0f) + 270.0f;
+    float second_angle = (seconds * 6.0f) + 270.0f;
 
     float hour_rad = hour_angle * degToRad;
     int hour_x = CENTER_X + (int)(HOUR_HAND_LENGTH * cosf(hour_rad) + 0.5f);

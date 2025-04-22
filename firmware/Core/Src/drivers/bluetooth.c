@@ -20,6 +20,8 @@ volatile char     rxBuffer[RX_BUFFER_SIZE];
 volatile uint16_t rxIndex          = 0;
 
 extern app_data_t g_app_data;
+extern app_t apps[APP_COUNT];
+extern RTC_HandleTypeDef hrtc;
 
 volatile uint32_t last_ack_time    = 0;
 volatile bool     waiting_for_ack  = false;
@@ -195,12 +197,12 @@ void parseBluetoothCommand(char *cmd)
     else if (strcmp(module, "APP") == 0) {
         if (strcmp(command, "LIST") == 0) {
             // the list of available apps
-            char appList[512] = "";
+            char appList[512] = "DATA:APPLIST:";
             for (int i = 0; i < APP_COUNT; i++) {
                 if (i > 0) strcat(appList, ",");
                 strcat(appList, app_names[i]);
             }
-            strcat(appList, "\n");
+            strcat(appList, ":\n");
             HAL_UART_Transmit(&huart3, (uint8_t *)appList, strlen(appList), 1000);
         }
         else if (strcmp(command, "LAUNCH") == 0) {
@@ -258,17 +260,38 @@ void parseBluetoothCommand(char *cmd)
             HAL_UART_Transmit(&huart3, (uint8_t *)timeStr, strlen(timeStr), 1000);
         } else if (strcmp(command, "SET") == 0 && parameter) {
             int h, m, s;
-            if (sscanf(parameter, "%d:%d:%d", &h, &m, &s) == 3) {
+            if (sscanf(parameter, "%02d%02d%02d", &h, &m, &s) == 3) {
                 g_app_data.timeVal.hour = h;
                 g_app_data.timeVal.minute = m;
                 g_app_data.timeVal.second = s;
+                RTC_TimeTypeDef time = {0};
+                RTC_DateTypeDef date = {0};
+                time.Hours = g_app_data.timeVal.hour;
+                time.Minutes = g_app_data.timeVal.minute;
+                time.Seconds = g_app_data.timeVal.second;
+                date.Month = g_app_data.timeVal.month;
+                date.Year = g_app_data.timeVal.year;
+                date.Date = g_app_data.timeVal.day;
+                HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+                HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
+
             } else printf("Error: Invalid time format\r\n");
         } else if (strcmp(command, "DATE") == 0 && parameter) {
             int y, mon, d;
             if (sscanf(parameter, "%d-%d-%d", &y, &mon, &d) == 3) {
-                g_app_data.timeVal.year  = y;
                 g_app_data.timeVal.month = mon;
-                g_app_data.timeVal.day   = d;
+                g_app_data.timeVal.day = d;
+                g_app_data.timeVal.year = y;
+                RTC_TimeTypeDef time = {0};
+                RTC_DateTypeDef date = {0};
+                time.Hours = g_app_data.timeVal.hour;
+                time.Minutes = g_app_data.timeVal.minute;
+                time.Seconds = g_app_data.timeVal.second;
+                date.Month = g_app_data.timeVal.month;
+                date.Year = g_app_data.timeVal.year;
+                date.Date = g_app_data.timeVal.day;
+                HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+                HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
             } else printf("Error: Invalid date format\r\n");
         } else { printf("Unknown TIME command: %s\r\n", command); }
     }

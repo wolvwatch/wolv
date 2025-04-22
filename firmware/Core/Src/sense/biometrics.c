@@ -7,7 +7,7 @@
 #include "sense/filter.h"
 #include "displays/data.h"
 
-#define HR_WINDOW 500.0
+#define HR_WINDOW 300.0
 
 extern max_struct_t max30102_sensor;
 extern app_data_t g_app_data;

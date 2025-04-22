@@ -8,6 +8,4 @@ void launcher_update(void);
 void launcher_draw(void);
 void launcher_input(button_t btn);
 
-extern const app_t launcher_app;
-
 #endif // LAUNCHER_H 

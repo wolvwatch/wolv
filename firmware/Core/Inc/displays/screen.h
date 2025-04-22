@@ -5,14 +5,14 @@
 #include "stdbool.h"
 
 typedef enum {
-  SCREEN_LAUNCHER = 0, // not done
+    WATCHFACE_ANALOG = 0, // not done
   WATCHFACE_DIGITAL, // done
-  WATCHFACE_ANALOG, // done
+    SCREEN_LAUNCHER,
   SCREEN_WEATHER, // not done
   SCREEN_GAMES, // flappy bird
   SCREEN_TIMER, // done
-  SCREEN_MEDCARD, //not done
-  SCREEN_METRONOME, // not done
+  //SCREEN_MEDCARD, //not done
+  //SCREEN_METRONOME, // not done
   SCREEN_SYSMON, // done
   SCREEN_FLASHLIGHT, // done
   SCREEN_COUNT // not done

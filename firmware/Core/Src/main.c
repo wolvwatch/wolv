@@ -42,6 +42,7 @@
 #include "displays/flashlight.h"
 #include "drivers/haptic.h"
 #include "drivers/apps.h"
+#include "displays/weather.h"
 #include "drivers/lights.h"
 #include "sense/accel.h"
 /* USER CODE END Includes */
@@ -78,6 +79,7 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 uint8_t max30102_head = 0;
+extern app_t apps[APP_COUNT];
 extern max_struct_t max30102_sensor;
 uint8_t rx_buffer[1];
 uint8_t rxData = 0;
@@ -108,7 +110,7 @@ static void MX_TIM3_Init(void);
 
 app_data_t g_app_data = {
   .display = {
-      .active_screen = WATCHFACE_DIGITAL,
+      .active_screen = SCREEN_LAUNCHER,
       .on = true,
       .metric = false,
       .show_heart = true,
@@ -172,6 +174,7 @@ void watch_init() {
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
     
     // launcher and apps
+
     launcher_init();
     flappy_init();
     timer_init();
@@ -188,49 +191,61 @@ void watch_tick() {
   update_time_from_rtc();
   screen_clear(0x0000);
   set_brightness(g_app_data.settings.brightness);
-    
-
   switch (g_app_data.display.active_screen) {
-    case SCREEN_LAUNCHER:
+    case SCREEN_LAUNCHER: {
       launcher_update();
       launcher_draw();
       break;
-
-    case WATCHFACE_DIGITAL:
+    }
+    case WATCHFACE_ANALOG: {
+      apps[APP_WATCHFACE_ANALOG].update();
+      apps[APP_WATCHFACE_ANALOG].draw();
+      break;
+    }
+    case WATCHFACE_DIGITAL: {
       apps[APP_WATCHFACE_DIGITAL].update();
       apps[APP_WATCHFACE_DIGITAL].draw();
       break;
-
-    case WATCHFACE_ANALOG:
-      apps[APP_WATCHFACE_ANALOG].update();
-      apps[APP_WATCHFACE_ANALOG].draw();
+    }
+    case SCREEN_WEATHER: {
+      apps[APP_WEATHER].update();
+      apps[APP_WEATHER].draw();
       break;
+    }
 
-    case SCREEN_GAMES:
+
+
+    case SCREEN_GAMES: {
       apps[APP_GAMES].update();
       apps[APP_GAMES].draw();
       break;
+    }
 
-    case SCREEN_TIMER:
+
+    case SCREEN_TIMER: {
       apps[APP_TIMER].update();
       apps[APP_TIMER].draw();
       break;
+    }
 
-    case SCREEN_SYSMON:
+
+    case SCREEN_SYSMON: {
       apps[APP_SYSINFO].update();
       apps[APP_SYSINFO].draw();
       break;
-
-    case SCREEN_FLASHLIGHT:
+    }
+    case SCREEN_FLASHLIGHT: {
       apps[APP_FLASHLIGHT].update();
       apps[APP_FLASHLIGHT].draw();
       break;
-
-    default:
-      apps[APP_WATCHFACE_ANALOG].update();
-      apps[APP_WATCHFACE_ANALOG].draw();
+    }
+    default: {
+      //screen_render();
       break;
+    }
+
   }
+  screen_render();
 }
 
 /* USER CODE END 0 */
@@ -275,6 +290,9 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   watch_init();
+  // screen_clear(0xFFFF);
+  // screen_render();
+  // return -1;
 
 
   /* USER CODE END 2 */
@@ -516,8 +534,8 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 1;
+  sDate.Month = RTC_MONTH_APRIL;
+  sDate.Date = 23;
   sDate.Year = 0;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
@@ -870,7 +888,7 @@ static void MX_GPIO_Init(void)
   #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 PUTCHAR_PROTOTYPE {
-    HAL_UART_Transmit(&hlpuart1, (uint8_t *) &ch, 1, 0xFFFF);
+    HAL_UART_Transmit(&huart3, (uint8_t *) &ch, 1, 0xFFFF);
     return ch;
 }
 
@@ -879,15 +897,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     button_t btn;
     if (GPIO_Pin == BTN1_Pin) {
         btn = BTN_UP;
-        Haptic_Buzz(50); // Short 
+        Haptic_Buzz(); // Short
     }
     else if (GPIO_Pin == BTN2_Pin) {
         btn = BTN_SEL;
-        Haptic_Buzz(100); // Medium 
+        Haptic_Buzz(); // Medium
     }
     else if (GPIO_Pin == BTN3_Pin) {
         btn = BTN_DOWN;
-        Haptic_Buzz(50); // Short 
+        Haptic_Buzz(); // Short
     }
     else {
         return;
@@ -895,42 +913,59 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
     // Route button input to current app
     switch (g_app_data.display.active_screen) {
-        case SCREEN_LAUNCHER:
-            launcher_input(btn);
-            break;
+        case SCREEN_LAUNCHER: {
+          launcher_input(btn);
+          break;
+        }
+
             
-        case WATCHFACE_DIGITAL:
-            apps[APP_WATCHFACE_DIGITAL].input(btn);
-            break;
+        case WATCHFACE_DIGITAL: {
+          apps[APP_WATCHFACE_DIGITAL].input(btn);
+          break;
+        }
+
             
-        case WATCHFACE_ANALOG:
-            apps[APP_WATCHFACE_ANALOG].input(btn);
-            break;
+        case WATCHFACE_ANALOG:{
+          apps[APP_WATCHFACE_ANALOG].input(btn);
+          break;
+        }
+
             
-        case SCREEN_GAMES:
-            apps[APP_GAMES].input(btn);
-            break;
+        case SCREEN_GAMES: {
+          apps[APP_GAMES].input(btn);
+          break;
+        }
+
             
-        case SCREEN_TIMER:
-            apps[APP_TIMER].input(btn);
-            break;
+        case SCREEN_TIMER:{
+          apps[APP_TIMER].input(btn);
+          break;
+        }
+
             
-        case SCREEN_SYSMON:
-            apps[APP_SYSINFO].input(btn);
-            break;
+        case SCREEN_SYSMON: {
+          apps[APP_SYSINFO].input(btn);
+          break;
+        }
+
             
-        case SCREEN_FLASHLIGHT:
-            apps[APP_FLASHLIGHT].input(btn);
-            break;
+        case SCREEN_FLASHLIGHT: {
+          apps[APP_FLASHLIGHT].input(btn);
+          break;
+        }
+
             
-        default:
-            apps[APP_WATCHFACE_ANALOG].input(btn);
-            break;
+        default: {
+          apps[APP_WATCHFACE_ANALOG].input(btn);
+          break;
+        }
+
     }
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   update_accel_data();
+  update_biometrics(filter,&detector);
 }
 
 /* USER CODE END 4 */

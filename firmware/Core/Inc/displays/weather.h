@@ -8,6 +8,4 @@ void weather_update(void);
 void weather_draw(void);
 void weather_input(button_t button);
 
-extern const app_t weather_app;
-
 #endif //WEATHER_H 

@@ -7,6 +7,6 @@ void Haptic_Start(void);
 
 void Haptic_Stop(void);
 
-void Haptic_Buzz(uint32_t duration_ms);
+void Haptic_Buzz(void);
 
 #endif // HAPTIC_H
