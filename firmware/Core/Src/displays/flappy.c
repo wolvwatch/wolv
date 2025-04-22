@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include "displays/launcher.h"
 
 #include "stm32l4xx_hal.h"
 
@@ -19,6 +20,8 @@
 #define BIRD_RADIUS    7
 #define GROUND_Y       225
 #define MAX_ROTATION   30.0f
+
+extern app_data_t g_app_data;
 
 static float velY;
 static uint16_t birdY;
@@ -124,21 +127,26 @@ void flappy_draw(void) {
     }
 }
 
-// Tap to flap or restart
-// void flappy_input(button_t btn) {
-//     if (btn != BTN_SEL) return;
-//     if (gameOver) {
-//         flappy_reset();
-//     } else {
-//         velY = FLAP_V;
-//         rotation = -MAX_ROTATION * 0.5f;  // Tilt up when flapping
-//     }
-// }
+void flappy_input(button_t btn) {
+    if (btn == BTN_UP || btn == BTN_DOWN) {
+        // if button up or down, return to launcher
+        g_app_data.display.active_screen = SCREEN_LAUNCHER;
+        launcher_init();
+        return;
+    }
+    
+    if (btn == BTN_SEL) {
+        if (gameOver) {
+            flappy_reset();
+        } else {
+            velY = FLAP_V;
+        }
+    }
+}
 
-// Public descriptor
-// const app_t flappy_app = {
-//     .init   = flappy_init,
-//     .update = flappy_update,
-//     .draw   = flappy_draw,
-//     .input  = flappy_input
-// };
+const app_t flappy_app = {
+    .init = flappy_init,
+    .update = flappy_update,
+    .draw = flappy_draw,
+    .input = flappy_input
+};

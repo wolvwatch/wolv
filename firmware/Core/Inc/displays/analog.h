@@ -2,10 +2,8 @@
 #define ANALOG_H
 
 #include <stdint.h>
+#include "drivers/apps.h"
 
-/**
- * @brief Initialize the analog watch face.
- */
 void analog_init(void);
 
 
@@ -16,6 +14,14 @@ void draw_hour_markers(void);
 void draw_watch_hands(uint8_t hours, uint8_t minutes, uint8_t seconds);
 void draw_biometric_data(void);
 void draw_center_dot(void);
+
+
+void watchface_analog_init(void);
+void watchface_analog_update(void);
 void watchface_analog_draw(void);
+void watchface_analog_input(button_t button);
+
+
+extern const app_t analog_app;
 
 #endif /* ANALOG_H */

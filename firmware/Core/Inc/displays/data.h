@@ -18,6 +18,16 @@ typedef struct {
 } biometrics_t;
 
 typedef struct {
+    float temp_current; // Current temperature
+    float temp_high; // high temperature
+    float temp_low; // low temperature
+    uint8_t humidity; // humidity percentage
+    uint8_t condition; // condition code (0=sunny, 1=partly cloudy, 2=cloudy, 3=rain, 4=storm, 5=snow)
+    char location[32]; // location name
+    char description[32]; // weather description
+} weather_t;
+
+typedef struct {
     uint16_t month;
     uint16_t day;
     uint16_t year;
@@ -31,6 +41,7 @@ typedef struct {
     settings_t settings;
     biometrics_t biometrics;
     timeVal_t timeVal;
+    weather_t weather;
 } app_data_t;
 
 #ifndef COLOR_WHITE

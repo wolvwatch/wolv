@@ -9,8 +9,13 @@
 #include <stdint.h>
 #include <string.h>
 #include "displays/data.h"
+#include "displays/launcher.h"
+
 extern uint32_t end_of_heap;
 extern uint32_t start_of_stack;
+extern uint32_t __HeapBase;
+extern uint32_t __StackTop;
+extern app_data_t g_app_data;
 
 #define UPDATE_MS 500
 #define CPU_RING_RADIUS 40
@@ -25,7 +30,7 @@ static uint16_t coreTempC;
 static uint32_t vbatmV;
 static uint32_t sysclkMHz;
 
-/*extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc1;
 
 // forward
 static uint16_t read_core_temp(void);
@@ -46,8 +51,8 @@ void sysmon_init(void) {
     //MX_ADC1_Init();
 
     // sysclk & RAM size
-    sysclkMHz  = HAL_RCC_GetSysClockFreq() / 1000000UL;
-    totalRam   = (uint32_t)&start_of_stack - (uint32_t)&end_of_heap;
+    sysclkMHz = HAL_RCC_GetSysClockFreq() / 1000000UL;
+    totalRam = (uint32_t)&__StackTop  - (uint32_t)&__HeapBase;
 }
 
 void sysmon_update(void) {
@@ -61,11 +66,10 @@ void sysmon_update(void) {
     uint32_t exp = dm * sysclkMHz * 1000UL;
     cpuLoadPc = (uint8_t)((dC * 100UL + exp/2) / exp);
     lastCycles = cc;
-    lastMs       = now;
-
-    uint32_t sp      = __get_MSP();
-    uint32_t freeRam = sp - (uint32_t)&end_of_heap;
-    usedRam         = totalRam - freeRam;
+    lastMs = now;
+    uint32_t sp = __get_MSP();
+    uint32_t freeRam = sp - (uint32_t)&__HeapBase;
+    usedRam = totalRam - freeRam;
     coreTempC = read_core_temp();
     vbatmV    = read_vbat_mv();
 }
@@ -168,9 +172,18 @@ static uint32_t read_vbat_mv(void) {
     return (raw * 3000UL * 2) / 4096UL;
 }
 
-//const app_t sysmon_app = {
-//    .init   = sysmon_init,
-//    .update = sysmon_update,
-//    .draw   = sysmon_draw,
-//    .input  = sysmon_input
-//};*/
+void sysmon_input(button_t btn) {
+    // any button press returns to launcher
+    if (btn == BTN_UP || btn == BTN_DOWN || btn == BTN_SEL) {
+        g_app_data.display.active_screen = SCREEN_LAUNCHER;
+        launcher_init();
+    }
+}
+
+const app_t sysmon_app = {
+    .init = sysmon_init,
+    .update = sysmon_update,
+    .draw = sysmon_draw,
+    .input = sysmon_input
+};
+

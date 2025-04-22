@@ -177,6 +177,13 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  /* top of RAM = initial stack pointer */
+      _estack = ORIGIN(RAM) + LENGTH(RAM);
+
+      /* make C‐symbols out of those two addresses: */
+      PROVIDE(end_of_heap     = _ebss);
+      PROVIDE(start_of_stack = _estack);
+
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {
